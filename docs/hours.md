@@ -3,4 +3,5 @@
 | Day | Hours | Details |
 | ----- | ----- | ------ |
 | 6.9. | 1 | Starting project with frontend, investigating react-calendar |
-| Sum | 1 | |
+| 26.3.| 3 | Trying to implement customised date picking to calendar | 
+| Sum | 4 | |

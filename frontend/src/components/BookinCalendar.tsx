@@ -3,36 +3,61 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 const BookingCalendar: React.FC = () => {
-  // Define the state for selected dates as an array of Date or null
   const [selectedDates, setSelectedDates] = useState<Date[] | null>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [startDate, setStartDate] = useState<Date | null>(null);
 
-  // Handler for date selection
-  const handleDateChange = (date: Date | Date[]) => {
-    if (Array.isArray(date)) {
-      return; // If the user selects a range, ignore it
+  // Handler for clicking a date
+  const handleDateClick = (date: Date) => {
+    if (!isSelecting) {
+      // Start selection
+      setIsSelecting(true);
+      setStartDate(date);
+      setSelectedDates([date]); // Start with the initial date
+    } else if (startDate) {
+      // End selection
+      const adjustedEndDate = new Date(startDate);
+      adjustedEndDate.setDate(startDate.getDate() + 3); // Force end date to be 3 days ahead
+      const range = calculateDateRange(startDate, adjustedEndDate);
+      setSelectedDates(range);
+      setIsSelecting(false); // Exit selection mode
+      setStartDate(null);
+    }
+  };
+
+  // Handler for hovering over a date
+  const handleDateHover = (date: Date) => {
+    if (isSelecting && startDate) {
+      const range = calculateDateRange(startDate, date);
+      setSelectedDates(range);
+    }
+  };
+
+  // Utility function to calculate the range of dates between two dates
+  const calculateDateRange = (start: Date, end: Date): Date[] => {
+    const range: Date[] = [];
+    const current = new Date(start);
+    const increment = start <= end ? 1 : -1; // Handle reverse selection
+    let daysCount = 0;
+
+    while (
+      ((increment > 0 && current <= end) || (increment < 0 && current >= end)) &&
+      daysCount < 4 // Limit to a maximum of 4 days (inclusive of start date)
+    ) {
+      range.push(new Date(current));
+      current.setDate(current.getDate() + increment);
+      daysCount++;
     }
 
-    // Calculate the next three days after the selected day
-    const secondDay = new Date(date);
-    secondDay.setDate(secondDay.getDate() + 1);
-
-    const thirdDay = new Date(date);
-    thirdDay.setDate(thirdDay.getDate() + 2);
-
-    const fourthDay = new Date(date);
-    fourthDay.setDate(fourthDay.getDate() + 3);
-
-    // Set the selected dates as an array
-    setSelectedDates([date, secondDay, thirdDay, fourthDay]);
+    return range;
   };
 
   return (
     <div>
       <Calendar
-        onChange={handleDateChange}
-        value={selectedDates ?? undefined} // Handle case where selectedDates is null
-        selectRange={false} // Disable range selection as we're manually handling it
-        tileClassName={({ date, view }) => {
+        locale="fi-Fi"
+        onClickDay={(date) => handleDateClick(date)} // Handle date click
+        tileClassName={({ date }) => {
           // Add a class to highlight the selected range
           if (
             selectedDates &&
@@ -47,6 +72,12 @@ const BookingCalendar: React.FC = () => {
           }
           return null;
         }}
+        tileContent={({ date }) => (
+          <div
+            onMouseEnter={() => handleDateHover(date)} // Handle hover
+            style={{ height: '100%', width: '100%' }}
+          />
+        )}
       />
       <style>
         {`

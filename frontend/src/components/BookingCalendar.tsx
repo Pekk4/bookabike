@@ -3,7 +3,8 @@ import Calendar from "react-calendar";
 
 import "./BookingCalendar.css";
 
-import Modal from "./Modal";
+//import Modal from "./Modal";
+import Modal from "./ConfirmationModal";
 
 const BookingCalendar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -39,13 +40,25 @@ const BookingCalendar = () => {
       // Second click - set end date if it's within the valid range
       if (date.getTime() !== startDate.getTime()) {
         setEndDate(date);
-        setmodalMessage(
-          `Booking: ${startDate.toLocaleDateString()} to ${date.toLocaleDateString()}`
-        );
+        handleBooking(startDate, date);
+        //setmodalMessage(
+        //  `Booking: ${startDate.toLocaleDateString()} to ${date.toLocaleDateString()}`
+        //);
       } else {
         // Clicked on the same date again, reset selection
         resetCalendar();
       }
+    }
+  };
+
+  const handleBooking = (start: Date | null, end: Date | null) => {
+    const startFormatted = start?.toLocaleDateString();
+    const endFormatted = end?.toLocaleDateString();
+
+    if (startFormatted && endFormatted) {
+      setmodalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
+    } else {
+      setmodalMessage("Please select a start and end date.");
     }
   };
 
@@ -54,9 +67,17 @@ const BookingCalendar = () => {
     setEndDate(null);
   };
 
+  const handleYes = () => {
+    setmodalMessage(null);
+    resetCalendar();
+  }
+  const handleNo = () => {
+    setmodalMessage(null);
+  }
+
   return (
     <div>
-      <Modal message={modalMessage} />
+      <Modal message={modalMessage} yesHandler={handleYes} noHandler={handleNo} />
       <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
         <div className="border-2 border-black"></div>
         <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">

@@ -1,8 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-//import userEvent from "@testing-library/user-event";
 
-import Modal from "./Modal";
+import Modal from "./InformationModal";
 
 describe("Modal component", () => {
   test("renders with the correct message", () => {

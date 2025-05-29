@@ -156,7 +156,8 @@
 }
 
 /* custom definitions */
-.start-date, .end-date {
+.start-date,
+.end-date {
   background-color: #4285f4;
   color: white;
   /*border-radius: 50%;*/
@@ -166,7 +167,7 @@
   cursor: not-allowed;
 }
 .react-calendar__tile--now {
-  background-color: #4CAF50 !important;
+  background-color: #4caf50 !important;
   color: white !important;
   /*border-radius: 50%;*/
 }

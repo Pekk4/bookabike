@@ -1,10 +1,10 @@
-import { useState } from "react";
-import Calendar from "react-calendar";
+import { useState } from 'react';
+import Calendar from 'react-calendar';
 
-import "./BookingCalendar.css";
+import './BookingCalendar.css';
 
 //import Modal from "./Modal";
-import Modal from "./ConfirmationModal";
+import Modal from './ConfirmationModal';
 
 const BookingCalendar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -29,7 +29,7 @@ const BookingCalendar = () => {
     // Max booking range is 3 days from the start date
     maxDate.setDate(startDateTime.getDate() + 3);
     // TODO: consider parameterizing the limit
-  
+
     return currentDate >= startDateTime && currentDate <= maxDate;
   };
 
@@ -58,7 +58,7 @@ const BookingCalendar = () => {
     if (startFormatted && endFormatted) {
       setmodalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
     } else {
-      setmodalMessage("Please select a start and end date.");
+      setmodalMessage('Please select a start and end date.');
     }
   };
 
@@ -70,10 +70,10 @@ const BookingCalendar = () => {
   const handleYes = () => {
     setmodalMessage(null);
     resetCalendar();
-  }
+  };
   const handleNo = () => {
     setmodalMessage(null);
-  }
+  };
 
   return (
     <div>
@@ -83,9 +83,7 @@ const BookingCalendar = () => {
         <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">
           <div className="top-0 absolute">
             {/* <h1>Booking Calendar</h1> */}
-            {startDate && !endDate && (
-              <p>Now select an end date (up to 3 days after start date)</p>
-            )}
+            {startDate && !endDate && <p>Now select an end date (up to 3 days after start date)</p>}
             {/*startDate && endDate && (
               /*<div>
                 <p>
@@ -103,10 +101,10 @@ const BookingCalendar = () => {
             tileClassName={({ date }) => {
               // Set classnames for CSS styling to highlight the allowed range of dates
               if (startDate && date.toDateString() === startDate.toDateString()) {
-                return "start-date";
+                return 'start-date';
               }
               if (endDate && date.toDateString() === endDate.toDateString()) {
-                return "end-date";
+                return 'end-date';
               }
               return null;
             }}

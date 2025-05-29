@@ -1,16 +1,14 @@
 //import { useState } from 'react'
-import './App.css'
-
+import './App.css';
 
 //import { useState } from 'react';
 //import Calendar from 'react-calendar';
 //import 'react-calendar/dist/Calendar.css';
-import BookingCalendar from "./components/BookingCalendar";
+import BookingCalendar from './components/BookingCalendar';
 
 //type ValuePiece = Date | null;
 
 //type Value = ValuePiece | [ValuePiece, ValuePiece];
-
 
 function App() {
   //const [value, onChange] = useState<Value>(new Date());
@@ -22,7 +20,7 @@ function App() {
         <BookingCalendar />
       </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

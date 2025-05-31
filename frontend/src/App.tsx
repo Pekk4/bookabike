@@ -1,10 +1,11 @@
 //import { useState } from 'react'
 import './App.css';
+import Banner from './components/Banner';
 
 //import { useState } from 'react';
 //import Calendar from 'react-calendar';
 //import 'react-calendar/dist/Calendar.css';
-import BookingCalendar from './components/BookingCalendar';
+import HomeDemo from './components/Home';
 
 //type ValuePiece = Date | null;
 
@@ -15,12 +16,14 @@ function App() {
 
   return (
     <>
-      <div>
-        {/*<Calendar onChange={onChange} value={value} />*/}
-        <BookingCalendar />
-      </div>
+      <Banner />
+      <HomeDemo />
     </>
   );
 }
 
 export default App;
+
+//<div>
+//  {/*<Calendar onChange={onChange} value={value} />*/}
+//</div>

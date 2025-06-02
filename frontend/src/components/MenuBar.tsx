@@ -1,0 +1,99 @@
+import { useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+
+import useKeycloak from '../hooks/useKeycloak';
+
+// !!
+const BANNER_HEIGHT = 80; // TODO
+// !!
+
+const MenuBar = () => {
+  const { keycloak, authenticated } = useKeycloak();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  return (
+    <div className="fixed top-0 left-0 right-0 mx-auto z-50">
+      <div className="relative w-full">
+        <div className="bg-gradient-to-b from-org-gray to-black w-screen border-b-2 border-orange-500 h-20 relative">
+          {/* TODO: adjust shadows etc */}
+          <div
+            className="
+              absolute left-1/2 bottom-0
+              w-[179px] h-[71px]
+              -translate-x-1/2 translate-y-1/2
+              bg-[url(./assets/images/logo.png)] bg-no-repeat bg-center
+              pointer-events-none
+              drop-shadow-sm
+              drop-shadow-white
+            "
+          />
+          <div className="flex flex-row justify-between items-center h-full px-4">
+            <IconButton
+              onClick={() => setDrawerOpen(true)}
+              className="hover:cursor-pointer sm:px-3"
+              size="large"
+              edge="start"
+              sx={{ color: 'white' }}
+              aria-label="menu"
+            >
+              <MenuIcon fontSize="large" className="hover:text-orange-500" />
+            </IconButton>
+            <div className="hover:cursor-pointer sm:px-3">
+              {authenticated ? (
+                <LogoutIcon
+                  onClick={() => {
+                    keycloak?.logout();
+                  }}
+                  fontSize="large"
+                  className="text-white hover:text-orange-500"
+                />
+              ) : (
+                <LoginIcon
+                  onClick={() => {
+                    keycloak?.login();
+                  }}
+                  fontSize="large"
+                  className="text-white hover:text-orange-500"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          sx={{
+            '& .MuiPaper-root': {
+              marginTop: `${BANNER_HEIGHT}px`,
+              height: `calc(100% - ${BANNER_HEIGHT}px)`,
+            },
+          }}
+        >
+          <div
+            className="w-[250px]"
+            role="presentation"
+            onClick={() => setDrawerOpen(false)}
+            onKeyDown={() => setDrawerOpen(false)}
+          >
+            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+              Varauskalenteri
+            </button>
+            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+              Omat varaukseni
+            </button>
+            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+              Omat tiedot
+            </button>
+          </div>
+        </Drawer>
+      </div>
+    </div>
+  );
+};
+
+export default MenuBar;

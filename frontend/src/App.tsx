@@ -1,11 +1,14 @@
 //import { useState } from 'react'
 import './App.css';
-import Banner from './components/Banner';
+import MenuBar from './components/MenuBar';
 
 //import { useState } from 'react';
 //import Calendar from 'react-calendar';
 //import 'react-calendar/dist/Calendar.css';
 import HomeDemo from './components/Home';
+
+import { KeycloakProvider } from './context/KeycloakContext';
+import ErrorBoundary from './context/ErrorBoundary';
 
 //type ValuePiece = Date | null;
 
@@ -16,8 +19,12 @@ function App() {
 
   return (
     <>
-      <Banner />
-      <HomeDemo />
+      <KeycloakProvider>
+        <ErrorBoundary>
+          <MenuBar />
+          <HomeDemo />
+        </ErrorBoundary>
+      </KeycloakProvider>
     </>
   );
 }

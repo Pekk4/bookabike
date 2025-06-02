@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
-import Modal from './ConfirmationModal';
+import Modal from './Modal';
 
 describe('Modal component', () => {
   test('renders with the correct message', () => {

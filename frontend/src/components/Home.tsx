@@ -5,7 +5,7 @@ import BookingCalendar from './BookingCalendar';
 const HomeDemo = () => {
   const { keycloak, authenticated, admin } = useKeycloak();
 
-  console.log(keycloak?.tokenParsed);
+  //console.log(keycloak?.tokenParsed); // DELETE
   return (
     <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
       <div>

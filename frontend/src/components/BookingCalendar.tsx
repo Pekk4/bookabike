@@ -1,19 +1,27 @@
 import { useState } from 'react';
 import Calendar from 'react-calendar';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import './BookingCalendar.css';
 
-//import Modal from "./Modal";
-import Modal from './ConfirmationModal';
+import Modal from './Modal';
+import BookingService from '../services/BookingService';
+
+import { ModalButtonMode } from '../types';
 
 const BookingCalendar = () => {
+  // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [modalMessage, setmodalMessage] = useState<string | null>(null);
-  //const [modalStyle, setmodalStyle] = useState<boolean | null>(null);
+  // Modal states
+  const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
+  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
+    ModalButtonMode.NoButtons
+  );
 
   const isDateClickable = (date: Date): boolean => {
     // Normalize dates for comparison
+    // TODO: investigate if really necessary, corner cases etc
     const normalizeDate = (d: Date): Date => {
       const normalized = new Date(d);
       normalized.setHours(0, 0, 0, 0);
@@ -41,11 +49,9 @@ const BookingCalendar = () => {
       if (date.getTime() !== startDate.getTime()) {
         setEndDate(date);
         handleBooking(startDate, date);
-        //setmodalMessage(
-        //  `Booking: ${startDate.toLocaleDateString()} to ${date.toLocaleDateString()}`
-        //);
       } else {
         // Clicked on the same date again, reset selection
+        // TODO: not very smooth atm
         resetCalendar();
       }
     }
@@ -56,9 +62,11 @@ const BookingCalendar = () => {
     const endFormatted = end?.toLocaleDateString();
 
     if (startFormatted && endFormatted) {
-      setmodalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
+      setModalButtonMode(ModalButtonMode.YesNoButtons);
+      setModalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
     } else {
-      setmodalMessage('Please select a start and end date.');
+      setModalMessage('Please select a start and end date.');
+      // TODO: handle this better
     }
   };
 
@@ -67,31 +75,52 @@ const BookingCalendar = () => {
     setEndDate(null);
   };
 
-  const handleYes = () => {
-    setmodalMessage(null);
+  const handleConfirm = async () => {
+    // Sketch for booking confirmation
+    // To be improved...
+    if (!startDate || !endDate) return;
+
+    setModalButtonMode(ModalButtonMode.NoButtons);
+    setModalMessage(<CircularProgress color="inherit" />);
+
+    const booking = await BookingService.create({
+      startDate: startDate,
+      endDate: endDate,
+      userId: '666', // TODO: keycloak user ID
+    });
+
+    setModalButtonMode(ModalButtonMode.OkButton);
+    setModalMessage(
+      <div>
+        <p>Varaus onnistui!</p>
+        <p>
+          Varattu: {String(booking.startDate)} - {String(booking.endDate)}
+        </p>
+      </div>
+    );
+
     resetCalendar();
   };
-  const handleNo = () => {
-    setmodalMessage(null);
+
+  const handleCancel = () => {
+    resetCalendar();
+    setModalMessage(null);
   };
 
   return (
     <div>
-      <Modal message={modalMessage} yesHandler={handleYes} noHandler={handleNo} />
+      <Modal
+        message={modalMessage}
+        mode={modalButtonMode}
+        confirmHandler={handleConfirm}
+        cancelHandler={handleCancel}
+      />
       <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
         <div className="border-2 border-black"></div>
         <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">
           <div className="top-0 absolute">
-            {/* <h1>Booking Calendar</h1> */}
+            {/* TODO: improve this */}
             {startDate && !endDate && <p>Now select an end date (up to 3 days after start date)</p>}
-            {/*startDate && endDate && (
-              /*<div>
-                <p>
-                  Booking: {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
-                </p>
-                <button onClick={resetCalendar}>Reset Selection</button>
-              </div>
-            )*/}
           </div>
           <Calendar
             locale="fi-FI"

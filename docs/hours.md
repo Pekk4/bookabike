@@ -10,4 +10,6 @@
 | 29.5.| 1 | Investigating and deploying Prettier in the project |
 | 30.5.| 4 | Investigating Keycloak for IAM purposes |
 | 31.5.| 8 | Testing Keycloak, designing frontend |
-| Sum | 29 | |
+| 2.6.| 6 | Designing more calendar & booking functionalities, refactoring components |
+| 3.6.| 2 | Refactoring more components, writing unit tests |
+| Sum | 35 | |

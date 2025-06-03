@@ -1,24 +1,24 @@
 import clsx from 'clsx';
 import Button from '@mui/material/Button';
 
+import { ModalButtonMode } from '../types';
+
 interface ModalProps {
   message: React.ReactNode;
-  textOnly?: boolean;
+  mode?: ModalButtonMode;
   confirmHandler?: () => void;
   cancelHandler?: () => void;
-  closeHandler?: () => void;
-  rogerThat?: boolean;
+  //closeHandler?: () => void;
   errorMode?: boolean;
 }
 
 const Modal = ({
   message,
-  textOnly = false, // If true, only text with no buttons will be shown
+  mode = ModalButtonMode.NoButtons,
   confirmHandler, // Handler for "Yes" button
   cancelHandler, // Handler for "No" button
-  closeHandler, // Handler for "OK" button or modal close, maybe merged to cancelHandler later
-  rogerThat = false, // If true, shows "OK" button instead of "Yes" and "No"
-  errorMode = false, // TODO: not sure about this yet
+  //closeHandler, // Handler for "OK" button or modal close, maybe merged to cancelHandler later
+  errorMode = false,
 }: ModalProps) => {
   if (message === null) return null;
 
@@ -46,11 +46,11 @@ const Modal = ({
   return (
     <div
       className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
-      onClick={closeHandler}
+      onClick={cancelHandler}
     >
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         {message}
-        {!textOnly && !rogerThat && confirmHandler && cancelHandler && (
+        {mode === 'yesNoButtons' && confirmHandler && cancelHandler && (
           <div className="flex flex-row items-center justify-center">
             <div className="m-4">
               <Button variant="contained" size="medium" onClick={confirmHandler}>
@@ -64,8 +64,8 @@ const Modal = ({
             </div>
           </div>
         )}
-        {!textOnly && rogerThat && (
-          <Button variant="contained" size="medium" onClick={closeHandler}>
+        {mode === 'okButton' && cancelHandler && (
+          <Button variant="contained" size="medium" onClick={cancelHandler}>
             OK
           </Button>
         )}

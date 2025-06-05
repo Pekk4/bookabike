@@ -8,16 +8,13 @@ import (
 
 	"github.com/gorilla/mux"
 	// Testify to be added later
+
+	"github.com/pekk4/bookabike/backend/pkg/db"
+	t "github.com/pekk4/bookabike/backend/pkg/types"
 )
 
 type Message struct {
 	Text string `json:"text"`
-}
-
-type Booking struct {
-	StartDate string  `json:"startDate"`
-	EndDate   string  `json:"endDate"`
-	UserID    *string `json:"userId,omitempty"` // optional, to be deleted, ID needed
 }
 
 func pingHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,18 +27,30 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 func bookingHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received booking request from %s", r.RemoteAddr)
 
-	var booking Booking
+	var booking t.Booking
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Booking details: %+v", booking)
+	dbConn := db.NewConnection()
+	defer dbConn.Close()
+
+	createdBooking, err := dbConn.CreateBooking(booking)
+	if err != nil {
+		log.Printf("Error creating booking: %v", err)
+		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Booking created successfully: %+v", createdBooking)
+
+	//log.Printf("Booking details: %+v", booking)
 
 	w.Header().Set("Content-Type", "application/json")
 	//response := map[string]string{"status": "success", "message": "Booking received"}
 	//json.NewEncoder(w).Encode(response)
-	json.NewEncoder(w).Encode(booking)
+	json.NewEncoder(w).Encode(createdBooking)
 }
 
 // ad hoc CORS middleware setup // TODO: improve & clean up
@@ -59,6 +68,13 @@ func corsMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	c := db.NewConnection()
+	err := c.Ping()
+	if err != nil {
+		log.Fatalf("Failed to connect to the database: %v", err)
+	}
+	defer c.Close()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
 	r.HandleFunc("/api/booking", bookingHandler).Methods("POST")
@@ -74,6 +90,8 @@ func main() {
 	handler := corsMiddleware(r)
 
 	port := os.Getenv("PORT")
+	log.Println(port)
+	log.Println("Port: ", port)
 	if port == "" {
 		port = "3000"
 	}

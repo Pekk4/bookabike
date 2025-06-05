@@ -12,4 +12,6 @@
 | 31.5.| 8 | Testing Keycloak, designing frontend |
 | 2.6.| 6 | Designing more calendar & booking functionalities, refactoring components |
 | 3.6.| 2 | Refactoring more components, writing unit tests |
-| Sum | 35 | |
+| 4.6.| 3 | Sketching initial backend functionality |
+| 5.6.| 3 | Deploy PostgreSQL, continue with backend development |
+| Sum | 41 | |

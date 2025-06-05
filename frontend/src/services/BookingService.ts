@@ -23,13 +23,25 @@ const getAll = async () => {
 };
 
 const create = async (object: Booking) => {
-  //const { data } = await axios.post<Booking>(`${apiBaseUrl}/bookings`, object);
+  // TODO: handle timezone concerns
+  // Currently JSON conversion turns Date objects into ISO strings
+  // which may cause corner cases with timezones
+  console.log('Creating booking with object:', object);
 
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  // Return the same object
-  return object;
+  //console.log('Sending payload:', object);
 
-  //return data;
+  const { data } = await axios.post<Booking>(`${apiBaseUrl}/booking`, object);
+
+  //await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
+
+  console.log('Received data:', data);
+
+  return {
+    ...data,
+    // Convert startDate and endDate back to Date objects // TODO: check
+    startDate: new Date(data.startDate),
+    endDate: new Date(data.endDate),
+  } as Booking;
 };
 
 //const getById = async (id: string) => {

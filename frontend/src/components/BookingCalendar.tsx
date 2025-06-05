@@ -86,8 +86,10 @@ const BookingCalendar = () => {
     const booking = await BookingService.create({
       startDate: startDate,
       endDate: endDate,
-      userId: '666', // TODO: keycloak user ID
+      userId: crypto.randomUUID(),
     });
+
+    console.log('Booking confirmed:', booking);
 
     setModalButtonMode(ModalButtonMode.OkButton);
     setModalMessage(

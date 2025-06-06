@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -18,6 +18,29 @@ const BookingCalendar = () => {
   const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
     ModalButtonMode.NoButtons
   );
+  const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    // AD HOC placeholder shit // TODO: clean up
+    const fetchBookings = async () => {
+      const data = await BookingService.getAll();
+
+      if (data) {
+        // Build a set of all booked dates as ISO strings
+        const dates = new Set<string>();
+        data.forEach((booking) => {
+          const current = new Date(booking.startDate);
+          const end = new Date(booking.endDate);
+          while (current <= end) {
+            dates.add(current.toDateString());
+            current.setDate(current.getDate() + 1);
+          }
+        });
+        setBookedDates(dates);
+      }
+    };
+    fetchBookings();
+  }, []);
 
   const isDateClickable = (date: Date): boolean => {
     // Normalize dates for comparison
@@ -127,7 +150,13 @@ const BookingCalendar = () => {
           <Calendar
             locale="fi-FI"
             onClickDay={handleDateClick}
-            tileDisabled={({ date }) => startDate !== null && !isDateClickable(date)}
+            //tileDisabled={({ date }) => startDate !== null && !isDateClickable(date)}
+            tileDisabled={({ date }) => {
+              // Disable if date is in bookedDates set
+              if (bookedDates.has(date.toDateString())) return true;
+              // Also disable if not in allowed range, as before
+              return startDate !== null && !isDateClickable(date);
+            }}
             // Set date outside the range to be unclickable
             tileClassName={({ date }) => {
               // Set classnames for CSS styling to highlight the allowed range of dates

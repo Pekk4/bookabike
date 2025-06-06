@@ -6,10 +6,17 @@ import (
 	t "github.com/pekk4/bookabike/backend/pkg/types"
 )
 
+//
+//
+// Consider deploying GORM here
+// https://gorm.io/
+//
+//
+
 type BookingRepository interface {
 	CreateBooking(b t.Booking) (t.Booking, error)
+	GetAllBookings() ([]t.Booking, error)
 	//GetBooking(id int) (t.Booking, error)
-	//GetAllBookings(id int) (t.Booking, error)
 }
 
 func (c conn) CreateBooking(b t.Booking) (t.Booking, error) {
@@ -20,10 +27,50 @@ func (c conn) CreateBooking(b t.Booking) (t.Booking, error) {
     `
 	var booking t.Booking
 
-	err := c.db.QueryRow(query, b.StartDate, b.EndDate, b.UserID).Scan(&booking.ID, &booking.StartDate, &booking.EndDate, &booking.CreatedAt)
+	err := c.db.QueryRow(
+		query,
+		b.StartDate,
+		b.EndDate,
+		b.UserID,
+	).Scan(
+		&booking.ID,
+		&booking.StartDate,
+		&booking.EndDate,
+		&booking.CreatedAt,
+	)
 	if err != nil {
 		return t.Booking{}, fmt.Errorf("CreateBooking: %w", err)
 	}
 
 	return booking, nil
+}
+
+func (c conn) GetAllBookings() ([]t.Booking, error) {
+	query := `SELECT id, start_date, end_date, user_id, created_at FROM bookings`
+	rows, err := c.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("GetAllBookings: %w", err)
+	}
+	defer rows.Close()
+
+	var bookings []t.Booking
+
+	for rows.Next() {
+		var booking t.Booking
+
+		if err := rows.Scan(
+			&booking.ID,
+			&booking.StartDate,
+			&booking.EndDate,
+			&booking.UserID,
+			&booking.CreatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("GetAllBookings: %w", err)
+		}
+		bookings = append(bookings, booking)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("GetAllBookings: %w", err)
+	}
+	return bookings, nil
 }

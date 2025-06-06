@@ -53,6 +53,25 @@ func bookingHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdBooking)
 }
 
+func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request for all bookings from %s", r.RemoteAddr)
+
+	dbConn := db.NewConnection()
+	defer dbConn.Close()
+
+	bookings, err := dbConn.GetAllBookings()
+	if err != nil {
+		log.Printf("Error retrieving bookings: %v", err)
+		http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Retrieved %d bookings", len(bookings))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(bookings)
+}
+
 // ad hoc CORS middleware setup // TODO: improve & clean up
 func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +97,7 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
 	r.HandleFunc("/api/booking", bookingHandler).Methods("POST")
+	r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
 
 	// CORS preflight requests
 	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

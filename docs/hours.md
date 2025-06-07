@@ -14,4 +14,6 @@
 | 3.6.| 2 | Refactoring more components, writing unit tests |
 | 4.6.| 3 | Sketching initial backend functionality |
 | 5.6.| 3 | Deploy PostgreSQL, continue with backend development |
-| Sum | 41 | |
+| 6.6.| 2 | Implementing logics for getting current bookings in the system |
+| Sum | 45 | |
+

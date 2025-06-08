@@ -15,5 +15,6 @@
 | 4.6.| 3 | Sketching initial backend functionality |
 | 5.6.| 3 | Deploy PostgreSQL, continue with backend development |
 | 6.6.| 2 | Implementing logics for getting current bookings in the system |
-| Sum | 45 | |
+| 8.6.| 3 | Integrating Keycloak to booking creation & investigating securing API with it |
+| Sum | 48 | |
 

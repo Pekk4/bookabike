@@ -13,7 +13,7 @@ const HomeDemo = () => {
       </div>
       {authenticated ? (
         <div>
-          <BookingCalendar />
+          <BookingCalendar userId={keycloak?.idTokenParsed?.sub} />
         </div>
       ) : (
         <div className="">

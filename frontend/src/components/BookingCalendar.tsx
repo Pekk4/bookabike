@@ -9,7 +9,11 @@ import BookingService from '../services/BookingService';
 
 import { ModalButtonMode } from '../types';
 
-const BookingCalendar = () => {
+interface BookingCalendarProps {
+  userId?: string;
+}
+
+const BookingCalendar = ({ userId }: BookingCalendarProps) => {
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -109,7 +113,7 @@ const BookingCalendar = () => {
     const booking = await BookingService.create({
       startDate: startDate,
       endDate: endDate,
-      userId: crypto.randomUUID(),
+      userId,
     });
 
     console.log('Booking confirmed:', booking);
@@ -123,6 +127,16 @@ const BookingCalendar = () => {
         </p>
       </div>
     );
+
+    // TODO: clean up
+    const newBookedDates = new Set(bookedDates);
+    const current = new Date(booking.startDate);
+    const end = new Date(booking.endDate);
+    while (current <= end) {
+      newBookedDates.add(current.toDateString());
+      current.setDate(current.getDate() + 1);
+    }
+    setBookedDates(newBookedDates);
 
     resetCalendar();
   };

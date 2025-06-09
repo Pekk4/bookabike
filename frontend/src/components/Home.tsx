@@ -6,6 +6,8 @@ const HomeDemo = () => {
   const { keycloak, authenticated, admin } = useKeycloak();
 
   //console.log(keycloak?.tokenParsed); // DELETE
+  console.log('access token should be here: ');
+  console.log(keycloak?.token);
   return (
     <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
       <div>

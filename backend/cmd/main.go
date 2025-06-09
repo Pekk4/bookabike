@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	// Testify to be added later
 
+	"github.com/pekk4/bookabike/backend/pkg/authi"
 	"github.com/pekk4/bookabike/backend/pkg/db"
 	t "github.com/pekk4/bookabike/backend/pkg/types"
 )
@@ -94,6 +95,10 @@ func main() {
 	}
 	defer c.Close()
 
+	keycloak := authi.NewKeycloak() // Initialize Keycloak client
+
+	middleware := authi.NewMiddleware(keycloak) // Initialize Keycloak middleware
+
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
 	r.HandleFunc("/api/booking", bookingHandler).Methods("POST")
@@ -106,6 +111,8 @@ func main() {
 			return
 		}
 	}).Methods("OPTIONS")
+
+	r.Use(middleware.VerifyToken) // Apply Keycloak middleware to all routes
 
 	handler := corsMiddleware(r)
 

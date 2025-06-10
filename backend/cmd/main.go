@@ -7,8 +7,8 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	// Testify to be added later
 
+	m "github.com/pekk4/bookabike/backend/internal/middleware"
 	"github.com/pekk4/bookabike/backend/pkg/db"
 	t "github.com/pekk4/bookabike/backend/pkg/types"
 )
@@ -72,20 +72,6 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(bookings)
 }
 
-// ad hoc CORS middleware setup // TODO: improve & clean up
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
 func main() {
 	c := db.NewConnection()
 	err := c.Ping()
@@ -100,14 +86,14 @@ func main() {
 	r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
 
 	// CORS preflight requests
-	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusNoContent)
-			return
-		}
-	}).Methods("OPTIONS")
+	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	//	if r.Method == "OPTIONS" {
+	//		w.WriteHeader(http.StatusNoContent)
+	//		return
+	//	}
+	//}).Methods("OPTIONS")
 
-	handler := corsMiddleware(r)
+	handler := m.CORSMiddleware(m.AuthMiddleware(r))
 
 	port := os.Getenv("PORT")
 	log.Println(port)

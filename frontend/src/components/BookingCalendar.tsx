@@ -8,12 +8,14 @@ import Modal from './Modal';
 import BookingService from '../services/BookingService';
 
 import { ModalButtonMode } from '../types';
+import Keycloak from 'keycloak-js';
 
 interface BookingCalendarProps {
-  userId?: string;
+  keycloak?: Keycloak;
+  //userId?: string;
 }
 
-const BookingCalendar = ({ userId }: BookingCalendarProps) => {
+const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -27,7 +29,7 @@ const BookingCalendar = ({ userId }: BookingCalendarProps) => {
   useEffect(() => {
     // AD HOC placeholder shit // TODO: clean up
     const fetchBookings = async () => {
-      const data = await BookingService.getAll();
+      const data = await BookingService.getAll(keycloak?.token);
 
       if (data) {
         // Build a set of all booked dates as ISO strings
@@ -113,8 +115,8 @@ const BookingCalendar = ({ userId }: BookingCalendarProps) => {
     const booking = await BookingService.create({
       startDate: startDate,
       endDate: endDate,
-      userId,
-    });
+      userId: keycloak?.idTokenParsed?.sub,
+    }, keycloak?.token);
 
     console.log('Booking confirmed:', booking);
 

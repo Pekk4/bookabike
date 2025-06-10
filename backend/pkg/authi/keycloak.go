@@ -1,6 +1,6 @@
 package authi
 
-import "github.com/Nerzal/gocloak/v7"
+import "github.com/Nerzal/gocloak"
 
 type keycloak struct {
 	gocloak      gocloak.GoCloak // keycloak client
@@ -13,7 +13,7 @@ func NewKeycloak() *keycloak {
 	return &keycloak{
 		gocloak:      gocloak.NewClient("http://localhost:8080"),
 		clientId:     "testi-backend",
-		clientSecret: "lkRAIttbs4YmkmNTbTM3LnX1FivGtpgz",
+		clientSecret: "d4LC4BvGGPbQYRtxId8h3o6LO8REpCEQ",
 		realm:        "testi",
 	}
 }

@@ -95,9 +95,9 @@ func main() {
 	}
 	defer c.Close()
 
-	keycloak := authi.NewKeycloak() // Initialize Keycloak client
+	//keycloak := authi.NewKeycloak() // Initialize Keycloak client
 
-	middleware := authi.NewMiddleware(keycloak) // Initialize Keycloak middleware
+	//middleware := authi.AuthMiddleware() // Initialize Keycloak middleware
 
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
@@ -112,9 +112,9 @@ func main() {
 		}
 	}).Methods("OPTIONS")
 
-	r.Use(middleware.VerifyToken) // Apply Keycloak middleware to all routes
+	//r.Use(middleware.VerifyToken) // Apply Keycloak middleware to all routes
 
-	handler := corsMiddleware(r)
+	handler := corsMiddleware(authi.AuthMiddleware(r))
 
 	port := os.Getenv("PORT")
 	log.Println(port)

@@ -16,5 +16,6 @@
 | 5.6.| 3 | Deploy PostgreSQL, continue with backend development |
 | 6.6.| 2 | Implementing logics for getting current bookings in the system |
 | 8.6.| 3 | Integrating Keycloak to booking creation & investigating securing API with it |
-| Sum | 48 | |
-
+| 9.6.| 8 | Mostly fighting with gocloak & Keycloak, trying to get API authorization working |
+| 10.6.| 8 | Decision to leave gocloak and start over, after hours of fighting finally working PoC |
+| Sum | 64 | |

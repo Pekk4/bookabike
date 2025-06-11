@@ -5,17 +5,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import './BookingCalendar.css';
 
 import Modal from './Modal';
-import BookingService from '../services/BookingService';
+import { useBookingService } from '../services/bookingService';
+import useKeycloak from '../hooks/useKeycloak';
 
 import { ModalButtonMode } from '../types';
-import Keycloak from 'keycloak-js';
 
-interface BookingCalendarProps {
-  keycloak?: Keycloak;
-  //userId?: string;
-}
-
-const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
+const BookingCalendar = () => {
+  // Hooks
+  const { getAllBookings, createBooking } = useBookingService();
+  const { keycloak } = useKeycloak();
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -24,50 +22,45 @@ const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
   const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
     ModalButtonMode.NoButtons
   );
+  // Booked dates state
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     // AD HOC placeholder shit // TODO: clean up
     const fetchBookings = async () => {
-      const data = await BookingService.getAll(keycloak?.token);
+      try {
+        const { data } = await getAllBookings();
 
-      if (data) {
-        // Build a set of all booked dates as ISO strings
-        const dates = new Set<string>();
-        data.forEach((booking) => {
-          const current = new Date(booking.startDate);
-          const end = new Date(booking.endDate);
-          while (current <= end) {
-            dates.add(current.toDateString());
-            current.setDate(current.getDate() + 1);
-          }
-        });
-        setBookedDates(dates);
+        if (data) {
+          // Build a set of all booked dates to add into a calendar
+          const dates = new Set<string>();
+          data.forEach((booking) => {
+            const current = new Date(booking.startDate);
+            const end = new Date(booking.endDate);
+            while (current <= end) {
+              dates.add(current.toDateString());
+              current.setDate(current.getDate() + 1);
+            }
+          });
+          setBookedDates(dates);
+        }
+      } catch (error) {
+        // TODO: handle properly
+        console.log('Error with fetching bookings: ', error);
       }
     };
     fetchBookings();
-  }, []);
+  }, [getAllBookings]);
 
   const isDateClickable = (date: Date): boolean => {
-    // Normalize dates for comparison
-    // TODO: investigate if really necessary, corner cases etc
-    const normalizeDate = (d: Date): Date => {
-      const normalized = new Date(d);
-      normalized.setHours(0, 0, 0, 0);
-      return normalized;
-    };
-
     // All dates are clickable until the start date is selected
     if (!startDate) return true;
 
-    const currentDate = normalizeDate(date);
-    const startDateTime = normalizeDate(startDate);
-    const maxDate = new Date(startDateTime);
+    const maxDate = new Date(startDate);
     // Max booking range is 3 days from the start date
-    maxDate.setDate(startDateTime.getDate() + 3);
-    // TODO: consider parameterizing the limit
+    maxDate.setDate(startDate.getDate() + 3); // TODO: consider parameterizing the limit
 
-    return currentDate >= startDateTime && currentDate <= maxDate;
+    return date >= startDate && date <= maxDate;
   };
 
   const handleDateClick = (date: Date) => {
@@ -90,6 +83,8 @@ const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
     const startFormatted = start?.toLocaleDateString();
     const endFormatted = end?.toLocaleDateString();
 
+    console.log('Booking dates:', startFormatted, endFormatted);
+
     if (startFormatted && endFormatted) {
       setModalButtonMode(ModalButtonMode.YesNoButtons);
       setModalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
@@ -105,6 +100,9 @@ const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
   };
 
   const handleConfirm = async () => {
+    //
+    // TBD: successful booking could redirect to somewhere else as only one booking allowed per user
+    //
     // Sketch for booking confirmation
     // To be improved...
     if (!startDate || !endDate) return;
@@ -112,35 +110,44 @@ const BookingCalendar = ({ keycloak }: BookingCalendarProps) => {
     setModalButtonMode(ModalButtonMode.NoButtons);
     setModalMessage(<CircularProgress color="inherit" />);
 
-    const booking = await BookingService.create({
-      startDate: startDate,
-      endDate: endDate,
-      userId: keycloak?.idTokenParsed?.sub,
-    }, keycloak?.token);
+    try {
+      const { data } = await createBooking({
+        startDate,
+        endDate,
+        userId: keycloak?.idTokenParsed?.sub,
+      });
 
-    console.log('Booking confirmed:', booking);
+      const booking = data;
+      console.log('Booking confirmed:', booking); // DELETE
 
-    setModalButtonMode(ModalButtonMode.OkButton);
-    setModalMessage(
-      <div>
-        <p>Varaus onnistui!</p>
-        <p>
-          Varattu: {String(booking.startDate)} - {String(booking.endDate)}
-        </p>
-      </div>
-    );
+      const bookingStartDate = new Date(booking.startDate).toLocaleDateString(); // TODO: clean
+      const bookingEndDate = new Date(booking.endDate).toLocaleDateString();
 
-    // TODO: clean up
-    const newBookedDates = new Set(bookedDates);
-    const current = new Date(booking.startDate);
-    const end = new Date(booking.endDate);
-    while (current <= end) {
-      newBookedDates.add(current.toDateString());
-      current.setDate(current.getDate() + 1);
+      setModalButtonMode(ModalButtonMode.OkButton);
+      setModalMessage(
+        <div>
+          <p>Varaus onnistui!</p>
+          <p>
+            Varattu: {String(bookingStartDate)} - {String(bookingEndDate)}
+          </p>
+        </div>
+      );
+
+      // TODO: clean up
+      const newBookedDates = new Set(bookedDates);
+      const current = new Date(booking.startDate);
+      const end = new Date(booking.endDate);
+      while (current <= end) {
+        newBookedDates.add(current.toDateString());
+        current.setDate(current.getDate() + 1);
+      }
+      setBookedDates(newBookedDates);
+
+      resetCalendar();
+    } catch (error) {
+      // TODO: handle properly
+      console.error('Error creating booking:', error);
     }
-    setBookedDates(newBookedDates);
-
-    resetCalendar();
   };
 
   const handleCancel = () => {

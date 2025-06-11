@@ -3,11 +3,11 @@ import useKeycloak from '../hooks/useKeycloak';
 import BookingCalendar from './BookingCalendar';
 
 const HomeDemo = () => {
-  const { keycloak, authenticated, admin } = useKeycloak();
+  const { authenticated } = useKeycloak();
 
   //console.log(keycloak?.tokenParsed); // DELETE
-  console.log('access token should be here: ');
-  console.log(keycloak?.token);
+  //console.log('access token should be here: ');
+  //console.log(keycloak?.token);
   return (
     <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
       <div>
@@ -16,7 +16,7 @@ const HomeDemo = () => {
       {authenticated ? (
         <div>
           {/*<BookingCalendar userId={keycloak?.idTokenParsed?.sub} />*/}
-          <BookingCalendar keycloak={keycloak} />
+          <BookingCalendar />
         </div>
       ) : (
         <div className="">

@@ -6,14 +6,12 @@ import './BookingCalendar.css';
 
 import Modal from './Modal';
 import { useBookingService } from '../services/bookingService';
-import useKeycloak from '../hooks/useKeycloak';
 
 import { ModalButtonMode } from '../types';
 
 const BookingCalendar = () => {
-  // Hooks
+  // Hooks for fetching and creating bookings
   const { getAllBookings, createBooking } = useBookingService();
-  const { keycloak } = useKeycloak();
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -50,7 +48,8 @@ const BookingCalendar = () => {
       }
     };
     fetchBookings();
-  }, [getAllBookings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isDateClickable = (date: Date): boolean => {
     // All dates are clickable until the start date is selected
@@ -114,7 +113,6 @@ const BookingCalendar = () => {
       const { data } = await createBooking({
         startDate,
         endDate,
-        userId: keycloak?.idTokenParsed?.sub,
       });
 
       const booking = data;

@@ -18,4 +18,5 @@
 | 8.6.| 3 | Integrating Keycloak to booking creation & investigating securing API with it |
 | 9.6.| 8 | Mostly fighting with gocloak & Keycloak, trying to get API authorization working |
 | 10.6.| 8 | Decision to leave gocloak and start over, after hours of fighting finally working PoC |
-| Sum | 64 | |
+| 11.6.| 8 | Fighting with Keycloak stuff, improving token & data usage in frontend side, sketching MyBookings view |
+| Sum | 72 | |

@@ -27,11 +27,21 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 func bookingHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received booking request from %s", r.RemoteAddr)
 
+	// Read the raw body
+	//body, err := io.ReadAll(r.Body)
+	//if err != nil {
+	//	http.Error(w, "Failed to read request body", http.StatusBadRequest)
+	//	return
+	//}
+	//log.Printf("Raw JSON body: %s", string(body))
+
 	var booking t.Booking
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
+
+	log.Println("Booking details:", booking)
 
 	dbConn := db.NewConnection()
 	defer dbConn.Close()
@@ -72,6 +82,37 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(bookings)
 }
 
+func getBookingsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Received request for booking by ID from %s", r.RemoteAddr)
+
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		http.Error(w, "Booking ID is required", http.StatusBadRequest)
+		return
+	}
+
+	dbConn := db.NewConnection()
+	defer dbConn.Close()
+
+	booking, err := dbConn.GetBookingsByUserID(id)
+	if err != nil {
+		log.Printf("Error retrieving booking with ID %s: %v", id, err)
+		http.Error(w, "Failed to retrieve booking", http.StatusInternalServerError)
+		return
+	}
+
+	if booking == nil {
+		http.Error(w, "Booking not found", http.StatusNotFound)
+		return
+	}
+
+	log.Printf("Retrieved booking with ID %s: %+v", id, booking)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(booking)
+}
+
 func main() {
 	c := db.NewConnection()
 	err := c.Ping()
@@ -84,6 +125,8 @@ func main() {
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
 	r.HandleFunc("/api/booking", bookingHandler).Methods("POST")
 	r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
+	// TODO: fix endpoint naming
+	r.HandleFunc("/api/booking/{id}", getBookingsByUserIDHandler).Methods("GET")
 
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

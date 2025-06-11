@@ -28,13 +28,24 @@ export const useBookingService = () => {
   const createBooking = async (object: Booking) => {
     const config = await buildHeader();
     const payload = {
-      ...object,
       startDate: object.startDate.toDateString(),
       endDate: object.endDate.toDateString(),
+      userId: keycloak?.idTokenParsed?.sub,
     };
 
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };
 
-  return { getAllBookings, createBooking };
+  const getBookingsByUserId = async (id: string) => {
+    const config = await buildHeader();
+
+    // TODO: fix end point naming
+    return await axios.get<Booking[]>(`${apiBaseUrl}/booking/${id}`, config);
+  };
+
+  return {
+    getAllBookings,
+    createBooking,
+    getBookingsByUserId,
+  };
 };

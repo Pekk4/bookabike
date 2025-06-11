@@ -1,6 +1,7 @@
 import useKeycloak from '../hooks/useKeycloak';
 
 import BookingCalendar from './BookingCalendar';
+import MyBookings from './MyBookings';
 
 const HomeDemo = () => {
   const { authenticated } = useKeycloak();
@@ -16,7 +17,8 @@ const HomeDemo = () => {
       {authenticated ? (
         <div>
           {/*<BookingCalendar userId={keycloak?.idTokenParsed?.sub} />*/}
-          <BookingCalendar />
+          {/*<BookingCalendar />*/}
+          <MyBookings />
         </div>
       ) : (
         <div className="">

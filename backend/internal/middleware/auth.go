@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -11,6 +12,27 @@ import (
 
 	u "github.com/pekk4/bookabike/backend/pkg/utils"
 )
+
+type contextKey string
+
+const (
+	ContextKeyIsAdmin  = contextKey("isAdmin")
+	ContextKeyIsVendor = contextKey("isVendor")
+)
+
+func pickRoles(claims jwt.MapClaims) []string {
+	// TODO: consider env variable for the key
+	if roles, ok := claims["bookabike-roles"].([]any); ok {
+		var result []string
+		for _, role := range roles {
+			if roleStr, ok := role.(string); ok {
+				result = append(result, roleStr)
+			}
+		}
+		return result
+	}
+	return nil
+}
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -45,7 +67,27 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		//fmt.Println("Token valid:", token.Claims)
+		ctx := r.Context()
+		// Init to false by default
+		ctx = context.WithValue(ctx, ContextKeyIsAdmin, false)
+		ctx = context.WithValue(ctx, ContextKeyIsVendor, false)
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			roles := pickRoles(claims)
+			for _, role := range roles {
+				switch role {
+				case "bookabike-admin":
+					ctx = context.WithValue(ctx, ContextKeyIsAdmin, true)
+				case "bookabike-vendor":
+					ctx = context.WithValue(ctx, ContextKeyIsVendor, true)
+				}
+			}
+			//fmt.Println("Claims are:", token.Claims)
+		} else {
+			fmt.Println("Token valid, but could not extract 'sub' claim")
+		}
+		r = r.WithContext(ctx)
+
 		next.ServeHTTP(w, r)
 	})
 }

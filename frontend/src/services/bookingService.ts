@@ -36,11 +36,11 @@ export const useBookingService = () => {
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };
 
-  const getBookingsByUserId = async (id: string) => {
+  const getBookingsByUserId = async (userId: string) => {
     const config = await buildHeader();
 
     // TODO: fix end point naming
-    return await axios.get<Booking[]>(`${apiBaseUrl}/booking/${id}`, config);
+    return await axios.get<Booking[]>(`${apiBaseUrl}/booking?user=${userId}`, config);
   };
 
   return {

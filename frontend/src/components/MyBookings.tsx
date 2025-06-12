@@ -17,6 +17,7 @@ const MyBookings = () => {
         const userId = keycloak?.idTokenParsed?.sub;
         if (!userId) return;
         const { data } = await getBookingsByUserId(userId);
+        if (!data) return;
         setBookings(data);
       } catch (error) {
         console.error('Error fetching bookings:', error);

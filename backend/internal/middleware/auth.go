@@ -18,6 +18,7 @@ type contextKey string
 const (
 	ContextKeyIsAdmin  = contextKey("isAdmin")
 	ContextKeyIsVendor = contextKey("isVendor")
+	ContextKeyUserID   = contextKey("userID")
 )
 
 func pickRoles(claims jwt.MapClaims) []string {
@@ -34,7 +35,17 @@ func pickRoles(claims jwt.MapClaims) []string {
 	return nil
 }
 
+func pickUserID(claims jwt.MapClaims) (string, error) {
+	if userID, ok := claims["sub"].(string); ok {
+		return userID, nil
+	}
+	return "", fmt.Errorf("could not extract 'sub' claim from JWT")
+}
+
 func AuthMiddleware(next http.Handler) http.Handler {
+	//
+	// TODO: error handling & logging
+	//
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
@@ -68,11 +79,20 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		ctx := r.Context()
-		// Init to false by default
 		ctx = context.WithValue(ctx, ContextKeyIsAdmin, false)
 		ctx = context.WithValue(ctx, ContextKeyIsVendor, false)
+		ctx = context.WithValue(ctx, ContextKeyUserID, "")
 
+		// TODO: refactor/clean up
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			userID, err := pickUserID(claims)
+			if err != nil {
+				log.Printf("Error parsing claims: %s", err)
+				http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
+				return
+			}
+			ctx = context.WithValue(ctx, ContextKeyUserID, userID)
+
 			roles := pickRoles(claims)
 			for _, role := range roles {
 				switch role {

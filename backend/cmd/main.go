@@ -24,7 +24,7 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-func bookingHandler(w http.ResponseWriter, r *http.Request) {
+func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Received booking request from %s", r.RemoteAddr)
 
 	// Read the raw body
@@ -64,53 +64,36 @@ func bookingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received request for all bookings from %s", r.RemoteAddr)
-
+	// these the fuck out of here
 	dbConn := db.NewConnection()
 	defer dbConn.Close()
 
-	bookings, err := dbConn.GetAllBookings()
-	if err != nil {
-		log.Printf("Error retrieving bookings: %v", err)
-		http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
-		return
-	}
+	var (
+		bookings []t.Booking
+		err      error
+	)
 
-	log.Printf("Retrieved %d bookings", len(bookings))
+	// Admin gets all bookings
+	if r.Context().Value(m.ContextKeyIsAdmin).(bool) {
+		bookings, err = dbConn.GetAllBookings()
+		if err != nil {
+			log.Printf("Error retrieving bookings: %v", err)
+			http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
+			return
+		}
+		// Regular user gets their own bookings
+	} else if r.Context().Value(m.ContextKeyUserID) != "" {
+		userId := r.Context().Value(m.ContextKeyUserID).(string)
+		bookings, err = dbConn.GetBookingsByUserID(userId)
+		if err != nil {
+			log.Printf("Error retrieving bookings for user %s: %v", userId, err)
+			http.Error(w, "Failed to retrieve bookings for user", http.StatusInternalServerError)
+			return
+		}
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(bookings)
-}
-
-func getBookingsByUserIDHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received request for booking by ID from %s", r.RemoteAddr)
-
-	vars := mux.Vars(r)
-	id, ok := vars["id"]
-	if !ok {
-		http.Error(w, "Booking ID is required", http.StatusBadRequest)
-		return
-	}
-
-	dbConn := db.NewConnection()
-	defer dbConn.Close()
-
-	booking, err := dbConn.GetBookingsByUserID(id)
-	if err != nil {
-		log.Printf("Error retrieving booking with ID %s: %v", id, err)
-		http.Error(w, "Failed to retrieve booking", http.StatusInternalServerError)
-		return
-	}
-
-	if booking == nil {
-		http.Error(w, "Booking not found", http.StatusNotFound)
-		return
-	}
-
-	log.Printf("Retrieved booking with ID %s: %+v", id, booking)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(booking)
 }
 
 func main() {
@@ -123,10 +106,8 @@ func main() {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
-	r.HandleFunc("/api/booking", bookingHandler).Methods("POST")
+	r.HandleFunc("/api/booking", createBookingHandler).Methods("POST")
 	r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
-	// TODO: fix endpoint naming
-	r.HandleFunc("/api/booking/{id}", getBookingsByUserIDHandler).Methods("GET")
 
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -139,8 +120,6 @@ func main() {
 	handler := m.CORSMiddleware(m.AuthMiddleware(r))
 
 	port := os.Getenv("PORT")
-	log.Println(port)
-	log.Println("Port: ", port)
 	if port == "" {
 		port = "3000"
 	}

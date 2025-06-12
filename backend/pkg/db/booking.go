@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"log"
 
 	t "github.com/pekk4/bookabike/backend/pkg/types"
 )
@@ -76,6 +77,7 @@ func (c conn) GetAllBookings() ([]t.Booking, error) {
 }
 
 func (c conn) GetBookingsByUserID(userID string) ([]t.Booking, error) {
+	log.Println("GetBookingsByUserID called with userID:", userID)
 	query := `SELECT id, start_date, end_date, user_id, created_at FROM bookings WHERE user_id = $1`
 	rows, err := c.db.Query(query, userID)
 	if err != nil {

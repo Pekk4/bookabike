@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
+import { Card, CardContent, Typography } from '@mui/material';
 
 import { useBookingService } from '../services/bookingService';
 import useKeycloak from '../hooks/useKeycloak';
+import Modal from './Modal';
 
-import { Booking } from '../types';
+import { Booking, ModalButtonMode } from '../types';
 
 const MyBookings = () => {
   const { getBookingsByUserId } = useBookingService();
   const { keycloak } = useKeycloak();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
+  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
+    ModalButtonMode.NoButtons
+  );
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -24,27 +30,69 @@ const MyBookings = () => {
       }
     };
     fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleBookingClick = (booking: Booking) => {
+    setModalMessage(
+      <>
+        <Typography variant="h5">
+          {(() => {
+            const month = new Date(booking.startDate).toLocaleString('fi-FI', {
+              month: 'long',
+            });
+            // voi vittu sentään
+            return month.charAt(0).toUpperCase() + month.slice(1);
+          })()}
+        </Typography>
+        <Typography className="p-3" variant="body2">
+          Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+        </Typography>
+        <Typography className="p3" variant="body2">
+          Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+        </Typography>
+      </>
+    );
+  };
+
+  const handleModalClose = () => {
+    setModalMessage(null);
+  };
+
   return (
-    <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
+    <div className="h-screen w-screen grid grid-rows-6 justify-center items-center text-center">
+      <Modal message={modalMessage} mode={modalButtonMode} cancelHandler={handleModalClose} />
       <div>
-        <p className="text-xl font-bold">Book a bike!</p>
+        <p className="text-xl font-bold">Omat varaukseni</p>
       </div>
-      <div>
+      <div className="row-span-2">
         {bookings &&
           bookings.map((booking, index) => (
-            <div key={index} className="border p-4 m-2">
-              <p>Booking ID: {index}</p>
-              <p>Start Date: {new Date(booking.startDate).toLocaleDateString()}</p>
-              <p>End Date: {new Date(booking.endDate).toLocaleDateString()}</p>
-              <p>User ID: {booking.userId}</p>
-            </div>
+            <Card onClick={() => {handleBookingClick(booking)}} key={index} sx={{ maxWidth: 345, ':hover': { boxShadow: 10, cursor: 'pointer' } }}>
+              <CardContent>
+                <Typography className="px-20 py-3" variant="h5" component="div">
+                  {(() => {
+                    const month = new Date(booking.startDate).toLocaleString('fi-FI', {
+                      month: 'long',
+                    });
+                    // voi vittu sentään
+                    return month.charAt(0).toUpperCase() + month.slice(1);
+                  })()}
+                </Typography>
+                <Typography className="p-3" variant="body2">
+                  Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+                </Typography>
+                {/*<Typography variant="body2" color="text.secondary">*/}
+                <Typography className="p3" variant="body2">
+                  Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                </Typography>
+              </CardContent>
+            </Card>
           ))}
         {bookings.length === 0 && <p>{'No bookings yet :('}</p>}
       </div>
       <div>
-        <p>Placeholder</p>
+        <p className="text-xl font-bold">Omat toiveeni</p>
       </div>
     </div>
   );

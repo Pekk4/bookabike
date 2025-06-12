@@ -1,6 +1,6 @@
 import useKeycloak from '../hooks/useKeycloak';
 
-import BookingCalendar from './BookingCalendar';
+//import BookingCalendar from './BookingCalendar';
 import MyBookings from './MyBookings';
 
 const HomeDemo = () => {
@@ -11,9 +11,7 @@ const HomeDemo = () => {
   //console.log(keycloak?.token);
   return (
     <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
-      <div>
-        <p className="text-xl font-bold">Book a bike!</p>
-      </div>
+      <div>{/*<p className="text-xl font-bold">Book a bike!</p>*/}</div>
       {authenticated ? (
         <div>
           {/*<BookingCalendar userId={keycloak?.idTokenParsed?.sub} />*/}
@@ -25,9 +23,7 @@ const HomeDemo = () => {
           <p>Kirjaudu sisään varataksesi moottoripyörän!</p>
         </div>
       )}
-      <div>
-        <p>Placeholder</p>
-      </div>
+      <div>{/*<p>Placeholder</p>*/}</div>
     </div>
   );
 };

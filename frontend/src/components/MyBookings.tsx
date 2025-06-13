@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
+import { Button, Card, CardContent, Typography } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useBookingService } from '../services/bookingService';
 import useKeycloak from '../hooks/useKeycloak';
 import Modal from './Modal';
+import EditOrDeleteBar from './EditOrDeleteBar';
 
 import { Booking, ModalButtonMode } from '../types';
 
@@ -36,7 +38,7 @@ const MyBookings = () => {
   const handleBookingClick = (booking: Booking) => {
     setModalMessage(
       <>
-        <Typography variant="h5">
+        <Typography className="px-20 py-3" variant="h5" component="div">
           {(() => {
             const month = new Date(booking.startDate).toLocaleString('fi-FI', {
               month: 'long',
@@ -45,12 +47,17 @@ const MyBookings = () => {
             return month.charAt(0).toUpperCase() + month.slice(1);
           })()}
         </Typography>
-        <Typography className="p-3" variant="body2">
+        <Typography className="p-1.5" variant="body2">
           Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
         </Typography>
-        <Typography className="p3" variant="body2">
+        {/*<Typography variant="body2" color="text.secondary">*/}
+        <Typography className="p-1.5" variant="body2">
           Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
         </Typography>
+        <Typography className="p-1.5" variant="body2">
+          Status: {booking.status}
+        </Typography>
+        <EditOrDeleteBar />
       </>
     );
   };
@@ -59,9 +66,19 @@ const MyBookings = () => {
     setModalMessage(null);
   };
 
+  const handleBookingEditing = () => {
+    console.log('placeholder');
+    setModalMessage(null);
+  };
+
   return (
     <div className="h-screen w-screen grid grid-rows-6 justify-center items-center text-center">
-      <Modal message={modalMessage} mode={modalButtonMode} cancelHandler={handleModalClose} />
+      <Modal
+        message={modalMessage}
+        mode={modalButtonMode}
+        confirmHandler={handleBookingEditing}
+        cancelHandler={handleModalClose}
+      />
       <div>
         <p className="text-xl font-bold">Omat varaukseni</p>
       </div>

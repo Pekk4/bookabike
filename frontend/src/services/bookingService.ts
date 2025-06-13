@@ -30,6 +30,7 @@ export const useBookingService = () => {
     const payload = {
       startDate: object.startDate.toDateString(),
       endDate: object.endDate.toDateString(),
+      status: 'pending',
       userId: keycloak?.idTokenParsed?.sub,
     };
 

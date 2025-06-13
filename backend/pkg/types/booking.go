@@ -5,5 +5,6 @@ type Booking struct {
 	StartDate string  `json:"startDate"`
 	EndDate   string  `json:"endDate"`
 	UserID    string  `json:"userId"`
+	Status    string  `json:"status"`
 	CreatedAt *string `json:"createdAt,omitempty"`
 }

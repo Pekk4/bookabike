@@ -79,12 +79,15 @@ const MyBookings = () => {
                     return month.charAt(0).toUpperCase() + month.slice(1);
                   })()}
                 </Typography>
-                <Typography className="p-3" variant="body2">
+                <Typography className="p-1.5" variant="body2">
                   Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
                 </Typography>
                 {/*<Typography variant="body2" color="text.secondary">*/}
-                <Typography className="p3" variant="body2">
+                <Typography className="p-1.5" variant="body2">
                   Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                </Typography>
+                <Typography className="p-1.5" variant="body2">
+                  Status: {booking.status}
                 </Typography>
               </CardContent>
             </Card>

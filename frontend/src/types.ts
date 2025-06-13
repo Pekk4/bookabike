@@ -1,6 +1,7 @@
 export interface Booking {
   startDate: Date;
   endDate: Date;
+  status: string;
   userId?: string | null;
 }
 

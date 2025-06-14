@@ -25,6 +25,7 @@ const MyBookings = () => {
       try {
         const userId = keycloak?.idTokenParsed?.sub;
         if (!userId) return;
+        // Fetching will most likely change later
         const { data } = await getBookingsByUserId(userId);
         if (!data) return;
         setBookings(data);
@@ -154,7 +155,9 @@ const MyBookings = () => {
                 </CardContent>
               </Card>
           ))}
-        {bookings.length === 0 && <p>{'No bookings yet :('}</p>}
+        {bookings.filter((booking) => booking.status !== 'wished').length === 0 && (
+          <p>{'No bookings yet :('}</p>
+        )}
       </div>
       <div>
         <p className="text-xl font-bold">Omat toiveeni</p>
@@ -199,7 +202,9 @@ const MyBookings = () => {
                 </CardContent>
               </Card>
             ))}
-        {bookings.length === 0 && <p>{'No wished bookings yet :('}</p>}
+        {bookings.filter((booking) => booking.status === 'wished').length === 0 && (
+          <p>{'No wished bookings yet :('}</p>
+        )}
       </div>
     </div>
   );

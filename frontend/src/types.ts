@@ -6,7 +6,7 @@ export interface Booking {
   userId?: string | null; // Is this ever null?
 }
 
-export type NewBooking = Omit<Booking, 'id'>;
+export type NewBooking = Omit<Booking, 'id' | 'status'>;
 
 export enum ModalButtonMode {
   NoButtons = 'noButtons',

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import useKeycloak from '../hooks/useKeycloak';
 
-import { Booking } from '../types';
+import { Booking, NewBooking } from '../types';
 
 export const useBookingService = () => {
   const { keycloak } = useKeycloak();
@@ -25,12 +25,14 @@ export const useBookingService = () => {
     return await axios.get<Booking[]>(`${apiBaseUrl}/booking`, config);
   };
 
-  const createBooking = async (object: Booking) => {
+  const createBooking = async (object: NewBooking) => {
     const config = await buildHeader();
     const payload = {
       startDate: object.startDate.toDateString(),
       endDate: object.endDate.toDateString(),
-      status: 'pending',
+      // default status moved to be handled by db
+      //status: 'pending',
+      // userId will most likely be handled from the JWT
       userId: keycloak?.idTokenParsed?.sub,
     };
 

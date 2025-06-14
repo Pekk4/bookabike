@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 import { useBookingService } from '../services/bookingService';
 import useKeycloak from '../hooks/useKeycloak';
@@ -19,6 +20,8 @@ const MyBookings = () => {
     ModalButtonMode.NoButtons
   );
   const [modalConfirmAction, setModalConfirmAction] = useState<() => void>(() => {});
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -50,7 +53,8 @@ const MyBookings = () => {
     });
   };
 
-  const handleEditBooking = () => {
+  const handleEditBooking = (booking: Booking) => {
+    navigate('/edit-booking', { state: { booking } });
     // placeholder/sketch
     console.log('Edit button clicked');
     handleModalClose();
@@ -92,7 +96,9 @@ const MyBookings = () => {
           Status: {booking.status}
         </Typography>
         <EditOrDeleteBar
-          onEdit={handleEditBooking}
+          onEdit={() => {
+            handleEditBooking(booking);
+          }}
           onDelete={() => {
             handleDeleteClick(booking.id);
           }}

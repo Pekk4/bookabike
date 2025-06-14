@@ -7,9 +7,14 @@ import './BookingCalendar.css';
 import Modal from './Modal';
 import { useBookingService } from '../services/bookingService';
 
-import { ModalButtonMode } from '../types';
+import { Booking, ModalButtonMode } from '../types';
 
-const BookingCalendar = () => {
+interface BookingCalendarProps {
+  // TODO: delete?
+  bookingToEdit?: Booking;
+}
+
+const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
   // Hooks for fetching and creating bookings
   const { getAllBookings, createBooking } = useBookingService();
   // States for date selection
@@ -23,6 +28,8 @@ const BookingCalendar = () => {
   // Booked dates state
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
+  //const bookingToEdit = useLocation().state?.booking;
+
   useEffect(() => {
     // AD HOC placeholder shit // TODO: clean up
     const fetchBookings = async () => {
@@ -33,11 +40,13 @@ const BookingCalendar = () => {
           // Build a set of all booked dates to add into a calendar
           const dates = new Set<string>();
           data.forEach((booking) => {
-            const current = new Date(booking.startDate);
-            const end = new Date(booking.endDate);
-            while (current <= end) {
-              dates.add(current.toDateString());
-              current.setDate(current.getDate() + 1);
+            if (!bookingToEdit || booking.id !== bookingToEdit.id) {
+              const current = new Date(booking.startDate);
+              const end = new Date(booking.endDate);
+              while (current <= end) {
+                dates.add(current.toDateString());
+                current.setDate(current.getDate() + 1);
+              }
             }
           });
           setBookedDates(dates);

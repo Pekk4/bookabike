@@ -35,7 +35,7 @@ function App() {
             <AppRoutes />
             {/* Modal wont cover menubar with router anymore // TODO: check out*/}
             <MenuBar />
-            <HomeDemo />
+            {/*<HomeDemo />*/}
           </Router>
         </ErrorBoundary>
       </KeycloakProvider>

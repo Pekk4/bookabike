@@ -6,18 +6,19 @@ import useKeycloak from '../hooks/useKeycloak';
 import Modal from './Modal';
 import EditOrDeleteBar from './EditOrDeleteBar';
 
-//import { Booking, ModalButtonMode } from '../types';
-import { Booking } from '../types';
+import { Booking, ModalButtonMode } from '../types';
+//import { Booking } from '../types';
 
 const MyBookings = () => {
-  const { getBookingsByUserId } = useBookingService();
+  const { getBookingsByUserId, deleteBooking } = useBookingService();
   const { keycloak } = useKeycloak();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
-  //const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
-  //  ModalButtonMode.NoButtons
-  //);
+  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
+    ModalButtonMode.NoButtons
+  );
+  const [modalConfirmAction, setModalConfirmAction] = useState<() => void>(() => {});
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -37,6 +38,15 @@ const MyBookings = () => {
 
   const handleModalClose = () => {
     setModalMessage(null);
+    setModalButtonMode(ModalButtonMode.NoButtons);
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setModalButtonMode(ModalButtonMode.YesNoButtons);
+    setModalMessage('Haluatko varmasti poistaa varauksesi?');
+    setModalConfirmAction(() => () => {
+      handleDeleteBooking(id);
+    });
   };
 
   const handleEditBooking = () => {
@@ -45,10 +55,17 @@ const MyBookings = () => {
     handleModalClose();
   };
 
-  const handleDeleteBooking = () => {
-    // placeholder/sketch
-    console.log('Delete button clicked');
-    handleModalClose();
+  const handleDeleteBooking = async (id: number) => {
+    try {
+      await deleteBooking(id);
+      // TODO: clean this shit up
+      setBookings((prevBookings) => prevBookings.filter((booking) => booking.id !== id));
+      handleModalClose();
+    } catch (error) {
+      // TODO: handle properly
+      console.error('Error deleting booking:', error);
+      setModalMessage('Varauksen poistaminen epäonnistui.');
+    }
   };
 
   const handleBookingClick = (booking: Booking) => {
@@ -73,14 +90,24 @@ const MyBookings = () => {
         <Typography className="p-1.5" variant="body2">
           Status: {booking.status}
         </Typography>
-        <EditOrDeleteBar onEdit={handleEditBooking} onDelete={handleDeleteBooking} />
+        <EditOrDeleteBar
+          onEdit={handleEditBooking}
+          onDelete={() => {
+            handleDeleteClick(booking.id);
+          }}
+        />
       </div>
     );
   };
 
   return (
     <div className="h-screen w-screen grid grid-rows-6 justify-center items-center text-center">
-      <Modal message={modalMessage} cancelHandler={handleModalClose} />
+      <Modal
+        message={modalMessage}
+        mode={modalButtonMode}
+        confirmHandler={modalConfirmAction}
+        cancelHandler={handleModalClose}
+      />
       <div></div>
       <div className="row-span-2">
         <Typography variant="h5" component="div">
@@ -89,9 +116,9 @@ const MyBookings = () => {
         {bookings &&
           bookings
             .filter((booking) => booking.status !== 'wished')
-            .map((booking, index) => (
+            .map((booking) => (
               <Card
-                key={index}
+                key={booking.id}
                 onClick={() => {
                   handleBookingClick(booking);
                 }}
@@ -134,9 +161,9 @@ const MyBookings = () => {
         {bookings &&
           bookings
             .filter((booking) => booking.status === 'wished')
-            .map((booking, index) => (
+            .map((booking) => (
               <Card
-                key={index}
+                key={booking.id}
                 onClick={() => {
                   handleBookingClick(booking);
                 }}

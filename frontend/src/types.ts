@@ -1,9 +1,12 @@
 export interface Booking {
+  id: number;
   startDate: Date;
   endDate: Date;
   status: string;
-  userId?: string | null;
+  userId?: string | null; // Is this ever null?
 }
+
+export type NewBooking = Omit<Booking, 'id'>;
 
 export enum ModalButtonMode {
   NoButtons = 'noButtons',

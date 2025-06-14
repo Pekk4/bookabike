@@ -37,6 +37,7 @@ export const useBookingService = () => {
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };
 
+  // Possibly unnecessary??
   const getBookingsByUserId = async (userId: string) => {
     const config = await buildHeader();
 
@@ -44,9 +45,17 @@ export const useBookingService = () => {
     return await axios.get<Booking[]>(`${apiBaseUrl}/booking?user=${userId}`, config);
   };
 
+  const deleteBooking = async (bookingId: number) => {
+    const config = await buildHeader();
+
+    //return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
+    return Promise.resolve({ status: 200, data: { message: 'Booking deleted successfully', bookingId } });
+  };
+
   return {
     getAllBookings,
     createBooking,
-    getBookingsByUserId,
+    getBookingsByUserId, // TBD
+    deleteBooking,
   };
 };

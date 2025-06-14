@@ -1,31 +1,35 @@
-import { Button } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-const EditOrDeleteBar = () => {
+type EditOrDeleteBarProps = {
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+const EditOrDeleteBar = ({ onEdit, onDelete }: EditOrDeleteBarProps) => {
   return (
-    <div>
+    // Not sure about this...
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4}>
       <Button
         variant="contained"
         color="primary"
         size="medium"
-        className="p-20 m-20"
         startIcon={<EditIcon />}
-        onClick={() => console.log('Edit booking')}
+        onClick={onEdit}
       >
         Muokkaa
       </Button>
       <Button
-        className="p-20 m-20"
         variant="contained"
         color="error"
         size="medium"
         startIcon={<DeleteIcon />}
-        onClick={() => console.log('Delete booking')}
+        onClick={onDelete}
       >
         Poista
       </Button>
-    </div>
+    </Stack>
   );
 };
 

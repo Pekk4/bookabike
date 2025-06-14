@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Button, Card, CardContent, Typography } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Card, CardContent, Typography } from '@mui/material';
 
 import { useBookingService } from '../services/bookingService';
 import useKeycloak from '../hooks/useKeycloak';
 import Modal from './Modal';
 import EditOrDeleteBar from './EditOrDeleteBar';
 
-import { Booking, ModalButtonMode } from '../types';
+//import { Booking, ModalButtonMode } from '../types';
+import { Booking } from '../types';
 
 const MyBookings = () => {
   const { getBookingsByUserId } = useBookingService();
@@ -15,9 +15,9 @@ const MyBookings = () => {
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
-  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
-    ModalButtonMode.NoButtons
-  );
+  //const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
+  //  ModalButtonMode.NoButtons
+  //);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -35,9 +35,25 @@ const MyBookings = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const handleModalClose = () => {
+    setModalMessage(null);
+  };
+
+  const handleEditBooking = () => {
+    // placeholder/sketch
+    console.log('Edit button clicked');
+    handleModalClose();
+  };
+
+  const handleDeleteBooking = () => {
+    // placeholder/sketch
+    console.log('Delete button clicked');
+    handleModalClose();
+  };
+
   const handleBookingClick = (booking: Booking) => {
     setModalMessage(
-      <>
+      <div className="">
         <Typography className="px-20 py-3" variant="h5" component="div">
           {(() => {
             const month = new Date(booking.startDate).toLocaleString('fi-FI', {
@@ -57,62 +73,106 @@ const MyBookings = () => {
         <Typography className="p-1.5" variant="body2">
           Status: {booking.status}
         </Typography>
-        <EditOrDeleteBar />
-      </>
+        <EditOrDeleteBar onEdit={handleEditBooking} onDelete={handleDeleteBooking} />
+      </div>
     );
-  };
-
-  const handleModalClose = () => {
-    setModalMessage(null);
-  };
-
-  const handleBookingEditing = () => {
-    console.log('placeholder');
-    setModalMessage(null);
   };
 
   return (
     <div className="h-screen w-screen grid grid-rows-6 justify-center items-center text-center">
-      <Modal
-        message={modalMessage}
-        mode={modalButtonMode}
-        confirmHandler={handleBookingEditing}
-        cancelHandler={handleModalClose}
-      />
-      <div>
-        <p className="text-xl font-bold">Omat varaukseni</p>
-      </div>
+      <Modal message={modalMessage} cancelHandler={handleModalClose} />
+      <div></div>
       <div className="row-span-2">
+        <Typography variant="h5" component="div">
+          Omat varaukseni
+        </Typography>
         {bookings &&
-          bookings.map((booking, index) => (
-            <Card onClick={() => {handleBookingClick(booking)}} key={index} sx={{ maxWidth: 345, ':hover': { boxShadow: 10, cursor: 'pointer' } }}>
-              <CardContent>
-                <Typography className="px-20 py-3" variant="h5" component="div">
-                  {(() => {
-                    const month = new Date(booking.startDate).toLocaleString('fi-FI', {
-                      month: 'long',
-                    });
-                    // voi vittu sentään
-                    return month.charAt(0).toUpperCase() + month.slice(1);
-                  })()}
-                </Typography>
-                <Typography className="p-1.5" variant="body2">
-                  Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
-                </Typography>
-                {/*<Typography variant="body2" color="text.secondary">*/}
-                <Typography className="p-1.5" variant="body2">
-                  Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
-                </Typography>
-                <Typography className="p-1.5" variant="body2">
-                  Status: {booking.status}
-                </Typography>
-              </CardContent>
-            </Card>
+          bookings
+            .filter((booking) => booking.status !== 'wished')
+            .map((booking, index) => (
+              <Card
+                key={index}
+                onClick={() => {
+                  handleBookingClick(booking);
+                }}
+                sx={{
+                  maxWidth: 345,
+                  ':hover': {
+                    boxShadow: '0 4px 20px 0 #ff9800',
+                    cursor: 'pointer',
+                  },
+                  border: '1px solid #ff9800',
+                }}
+              >
+                <CardContent>
+                  <Typography className="px-20 py-3" variant="h5" component="div">
+                    {(() => {
+                      const month = new Date(booking.startDate).toLocaleString('fi-FI', {
+                        month: 'long',
+                      });
+                      // voi vittu sentään
+                      return month.charAt(0).toUpperCase() + month.slice(1);
+                    })()}
+                  </Typography>
+                  <Typography className="p-1.5" variant="body2">
+                    Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+                  </Typography>
+                  {/*<Typography variant="body2" color="text.secondary">*/}
+                  <Typography className="p-1.5" variant="body2">
+                    Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                  </Typography>
+                  <Typography className="p-1.5" variant="body2">
+                    Status: {booking.status}
+                  </Typography>
+                </CardContent>
+              </Card>
           ))}
         {bookings.length === 0 && <p>{'No bookings yet :('}</p>}
       </div>
       <div>
         <p className="text-xl font-bold">Omat toiveeni</p>
+        {bookings &&
+          bookings
+            .filter((booking) => booking.status === 'wished')
+            .map((booking, index) => (
+              <Card
+                key={index}
+                onClick={() => {
+                  handleBookingClick(booking);
+                }}
+                sx={{
+                  maxWidth: 345,
+                  ':hover': {
+                    boxShadow: '0 4px 20px 0 #2196f3',
+                    cursor: 'pointer',
+                  },
+                  border: '1px solid #2196f3',
+                }}
+              >
+                <CardContent>
+                  <Typography className="px-20 py-3" variant="h5" component="div">
+                    {(() => {
+                      const month = new Date(booking.startDate).toLocaleString('fi-FI', {
+                        month: 'long',
+                      });
+                      // voi vittu sentään
+                      return month.charAt(0).toUpperCase() + month.slice(1);
+                    })()}
+                  </Typography>
+                  <Typography className="p-1.5" variant="body2">
+                    Aloitus: {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+                  </Typography>
+                  {/*<Typography variant="body2" color="text.secondary">*/}
+                  <Typography className="p-1.5" variant="body2">
+                    Palautus: {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                  </Typography>
+                  <Typography className="p-1.5" variant="body2">
+                    Status: {booking.status}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+        {bookings.length === 0 && <p>{'No wished bookings yet :('}</p>}
       </div>
     </div>
   );

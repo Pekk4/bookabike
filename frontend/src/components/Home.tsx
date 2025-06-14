@@ -4,7 +4,7 @@ import useKeycloak from '../hooks/useKeycloak';
 import MyBookings from './MyBookings';
 
 const HomeDemo = () => {
-  const { authenticated } = useKeycloak();
+  const { authenticated, keycloak } = useKeycloak();
 
   //console.log(keycloak?.tokenParsed); // DELETE
   //console.log('access token should be here: ');
@@ -16,7 +16,8 @@ const HomeDemo = () => {
         <div>
           {/*<BookingCalendar userId={keycloak?.idTokenParsed?.sub} />*/}
           {/*<BookingCalendar />*/}
-          <MyBookings />
+          {/*<MyBookings />*/}
+          <p>Hello, {keycloak?.idTokenParsed.preferred_username}!</p>
         </div>
       ) : (
         <div className="">

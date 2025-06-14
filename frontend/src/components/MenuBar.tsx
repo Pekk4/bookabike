@@ -4,6 +4,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
+import { Link } from 'react-router-dom';
 
 import useKeycloak from '../hooks/useKeycloak';
 
@@ -20,17 +21,19 @@ const MenuBar = () => {
       <div className="relative w-full">
         <div className="bg-gradient-to-b from-org-gray to-black w-screen border-b-2 border-orange-500 h-20 relative">
           {/* TODO: adjust shadows etc */}
-          <div
-            className="
-              absolute left-1/2 bottom-0
-              w-[179px] h-[71px]
-              -translate-x-1/2 translate-y-1/2
-              bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
-              pointer-events-none
-              drop-shadow-sm
-              drop-shadow-white
-            "
-          />
+          <Link to="/">
+            <div
+              className="
+                absolute left-1/2 bottom-0
+                w-[179px] h-[71px]
+                -translate-x-1/2 translate-y-1/2
+                bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
+                #pointer-events-none # TODO: delete?
+                drop-shadow-sm
+                drop-shadow-white
+              "
+            />
+          </Link>
           <div className="flex flex-row justify-between items-center h-full px-4">
             <IconButton
               onClick={() => setDrawerOpen(true)}
@@ -80,15 +83,21 @@ const MenuBar = () => {
             onClick={() => setDrawerOpen(false)}
             onKeyDown={() => setDrawerOpen(false)}
           >
-            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-              Varauskalenteri
-            </button>
-            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-              Omat varaukseni
-            </button>
-            <button className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-              Omat tiedot
-            </button>
+            <Link to="/calendar">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Varauskalenteri
+              </div>
+            </Link>
+            <Link to="/my-bookings">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Omat varaukseni
+              </div>
+            </Link>
+            <Link to="/">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Omat tiedot
+              </div>
+            </Link>
           </div>
         </Drawer>
       </div>

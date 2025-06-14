@@ -1,3 +1,4 @@
+import { BrowserRouter as Router } from 'react-router-dom';
 import { useEffect } from 'react';
 import axios from 'axios';
 //import { useState } from 'react'
@@ -11,6 +12,7 @@ import HomeDemo from './components/Home';
 
 import { KeycloakProvider } from './context/KeycloakContext';
 import ErrorBoundary from './context/ErrorBoundary';
+import AppRoutes from './AppRoutes';
 
 import { apiBaseUrl } from './constants';
 
@@ -29,8 +31,12 @@ function App() {
     <>
       <KeycloakProvider>
         <ErrorBoundary>
-          <MenuBar />
-          <HomeDemo />
+          <Router>
+            <AppRoutes />
+            {/* Modal wont cover menubar with router anymore // TODO: check out*/}
+            <MenuBar />
+            <HomeDemo />
+          </Router>
         </ErrorBoundary>
       </KeycloakProvider>
     </>

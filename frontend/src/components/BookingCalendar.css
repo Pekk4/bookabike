@@ -171,3 +171,13 @@
   color: white !important;
   /*border-radius: 50%;*/
 }
+
+
+
+
+.sunday-tile {
+  background: #ffe0e0;
+}
+.saturday-tile {
+  background: #e0e0ff;
+}

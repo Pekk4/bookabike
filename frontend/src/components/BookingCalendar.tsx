@@ -196,6 +196,9 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
               if (endDate && date.toDateString() === endDate.toDateString()) {
                 return 'end-date';
               }
+              // Example of coloring tiles
+              if (date.getDay() === 0) return 'sunday-tile';
+              if (date.getDay() === 6) return 'saturday-tile';
               return null;
             }}
             //value={startDate} // TODO check this

@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	t "github.com/pekk4/bookabike/backend/pkg/types"
+	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
 //
@@ -12,13 +12,13 @@ import (
 // https://gorm.io/
 //
 
-func (c conn) CreateBooking(b t.Booking) (t.Booking, error) {
+func (c conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	query := `
 		INSERT INTO bookings (start_date, end_date, status, user_id)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id, start_date, end_date, status, created_at
 	`
-	var booking t.Booking
+	var booking m.Booking
 
 	err := c.db.QueryRow(
 		query,
@@ -35,12 +35,12 @@ func (c conn) CreateBooking(b t.Booking) (t.Booking, error) {
 	)
 	if err != nil {
 		// TODO: error handling and logging
-		return t.Booking{}, fmt.Errorf("CreateBooking: %w", err)
+		return m.Booking{}, fmt.Errorf("CreateBooking: %w", err)
 	}
 	return booking, nil
 }
 
-func (c conn) GetBookings(userID string) ([]t.Booking, error) {
+func (c conn) GetBookings(userID string) ([]m.Booking, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -61,10 +61,10 @@ func (c conn) GetBookings(userID string) ([]t.Booking, error) {
 	}
 	defer rows.Close()
 
-	var bookings []t.Booking
+	var bookings []m.Booking
 
 	for rows.Next() {
-		var booking t.Booking
+		var booking m.Booking
 
 		if err := rows.Scan(
 			&booking.ID,

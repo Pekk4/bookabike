@@ -10,7 +10,7 @@ import (
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/golang-jwt/jwt/v5"
 
-	u "github.com/pekk4/bookabike/backend/pkg/utils"
+	u "github.com/pekk4/bookabike/backend/internal/utils"
 )
 
 type contextKey string

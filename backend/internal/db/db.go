@@ -7,7 +7,7 @@ import (
 
 	_ "github.com/lib/pq"
 
-	u "github.com/pekk4/bookabike/backend/pkg/utils"
+	u "github.com/pekk4/bookabike/backend/internal/utils"
 )
 
 type conn struct {

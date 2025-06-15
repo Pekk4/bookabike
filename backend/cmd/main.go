@@ -8,9 +8,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	m "github.com/pekk4/bookabike/backend/internal/middleware"
-	"github.com/pekk4/bookabike/backend/pkg/db"
-	t "github.com/pekk4/bookabike/backend/pkg/types"
+	"github.com/pekk4/bookabike/backend/internal/db"
+	mw "github.com/pekk4/bookabike/backend/internal/middleware"
+	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
 type Message struct {
@@ -35,7 +35,7 @@ func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 	//}
 	//log.Printf("Raw JSON body: %s", string(body))
 
-	var booking t.Booking
+	var booking m.Booking
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
@@ -48,11 +48,11 @@ func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 
 	// ad hoc test, bad practice
 	var (
-		createdBooking t.Booking
+		createdBooking m.Booking
 		err            error
 	)
 
-	userID, ok := r.Context().Value(m.ContextKeyUserID).(string)
+	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
@@ -94,12 +94,12 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 	defer dbConn.Close()
 
 	var (
-		bookings []t.Booking
+		bookings []m.Booking
 		err      error
 	)
 
 	// Admin gets all bookings
-	if r.Context().Value(m.ContextKeyIsAdmin).(bool) {
+	if r.Context().Value(mw.ContextKeyIsAdmin).(bool) {
 		//bookings, err = dbConn.GetAllBookings()
 		bookings, err = dbConn.GetBookings("")
 		if err != nil {
@@ -108,8 +108,8 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// Regular user gets their own bookings
-	} else if r.Context().Value(m.ContextKeyUserID) != "" {
-		userID := r.Context().Value(m.ContextKeyUserID).(string)
+	} else if r.Context().Value(mw.ContextKeyUserID) != "" {
+		userID := r.Context().Value(mw.ContextKeyUserID).(string)
 		//bookings, err = dbConn.GetBookingsByUserID(userID)
 		bookings, err = dbConn.GetBookings(userID)
 		if err != nil {
@@ -144,7 +144,7 @@ func main() {
 	//	}
 	//}).Methods("OPTIONS")
 
-	handler := m.CORSMiddleware(m.AuthMiddleware(r))
+	handler := mw.CORSMiddleware(mw.AuthMiddleware(r))
 
 	port := os.Getenv("PORT")
 	if port == "" {

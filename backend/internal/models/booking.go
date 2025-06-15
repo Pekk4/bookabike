@@ -1,4 +1,4 @@
-package types
+package models
 
 type Booking struct {
 	ID        int     `json:"id"`

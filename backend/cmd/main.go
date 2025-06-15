@@ -46,8 +46,37 @@ func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 	dbConn := db.NewConnection()
 	defer dbConn.Close()
 
-	createdBooking, err := dbConn.CreateBooking(booking)
+	// ad hoc test, bad practice
+	var (
+		createdBooking t.Booking
+		err            error
+	)
+
+	userID, ok := r.Context().Value(m.ContextKeyUserID).(string)
+	if !ok || userID == "" {
+		log.Println("User ID not found in context, interrupting...")
+		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
+		return
+	}
+
+	countActiveBookings, err := dbConn.CountActiveBookingsForUser(userID)
 	if err != nil {
+		// TODO: error handling and logging
+		log.Printf("Error counting active bookings for user %s: %v", userID, err)
+		http.Error(w, "Failed to count active bookings", http.StatusInternalServerError)
+		return
+	}
+
+	if countActiveBookings > 0 {
+		booking.Status = "wished"
+	} else {
+		booking.Status = "pending"
+	}
+
+	booking.UserID = userID
+	createdBooking, err = dbConn.CreateBooking(booking)
+	if err != nil {
+		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)
 		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
 		return
@@ -55,11 +84,7 @@ func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Booking created successfully: %+v", createdBooking)
 
-	//log.Printf("Booking details: %+v", booking)
-
 	w.Header().Set("Content-Type", "application/json")
-	//response := map[string]string{"status": "success", "message": "Booking received"}
-	//json.NewEncoder(w).Encode(response)
 	json.NewEncoder(w).Encode(createdBooking)
 }
 
@@ -75,7 +100,8 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Admin gets all bookings
 	if r.Context().Value(m.ContextKeyIsAdmin).(bool) {
-		bookings, err = dbConn.GetAllBookings()
+		//bookings, err = dbConn.GetAllBookings()
+		bookings, err = dbConn.GetBookings("")
 		if err != nil {
 			log.Printf("Error retrieving bookings: %v", err)
 			http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
@@ -83,10 +109,11 @@ func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		// Regular user gets their own bookings
 	} else if r.Context().Value(m.ContextKeyUserID) != "" {
-		userId := r.Context().Value(m.ContextKeyUserID).(string)
-		bookings, err = dbConn.GetBookingsByUserID(userId)
+		userID := r.Context().Value(m.ContextKeyUserID).(string)
+		//bookings, err = dbConn.GetBookingsByUserID(userID)
+		bookings, err = dbConn.GetBookings(userID)
 		if err != nil {
-			log.Printf("Error retrieving bookings for user %s: %v", userId, err)
+			log.Printf("Error retrieving bookings for user %s: %v", userID, err)
 			http.Error(w, "Failed to retrieve bookings for user", http.StatusInternalServerError)
 			return
 		}

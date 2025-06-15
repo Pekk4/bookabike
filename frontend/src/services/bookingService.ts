@@ -25,15 +25,13 @@ export const useBookingService = () => {
     return await axios.get<Booking[]>(`${apiBaseUrl}/booking`, config);
   };
 
-  const createBooking = async (object: NewBooking) => {
+  const createBooking = async (booking: NewBooking) => {
     const config = await buildHeader();
     const payload = {
-      startDate: object.startDate.toDateString(),
-      endDate: object.endDate.toDateString(),
-      // default status moved to be handled by db
-      //status: 'pending',
+      startDate: booking.startDate.toDateString(),
+      endDate: booking.endDate.toDateString(),
       // userId will most likely be handled from the JWT
-      userId: keycloak?.idTokenParsed?.sub,
+      //userId: keycloak?.idTokenParsed?.sub,
     };
 
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);

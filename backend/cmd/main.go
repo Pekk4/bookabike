@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -9,92 +8,11 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/pekk4/bookabike/backend/internal/db"
+	"github.com/pekk4/bookabike/backend/internal/handlers"
+	h "github.com/pekk4/bookabike/backend/internal/handlers"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
-	m "github.com/pekk4/bookabike/backend/internal/models"
 	s "github.com/pekk4/bookabike/backend/internal/services"
 )
-
-type Message struct {
-	Text string `json:"text"`
-}
-
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received ping request from %s", r.RemoteAddr)
-	msg := Message{Text: "pong"}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(msg)
-}
-
-func createBookingHandler(w http.ResponseWriter, r *http.Request) {
-	var booking m.Booking
-	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
-		// TODO: error handling and logging
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	log.Println("Booking details:", booking)
-
-	dbConn := db.NewConnection()
-	defer dbConn.Close()
-
-	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
-	if !ok || userID == "" {
-		// TODO: error handling and logging
-		log.Println("User ID not found in context, interrupting...")
-		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
-		return
-	}
-
-	bookingService := s.NewBookingService(dbConn)
-	createdBooking, err := bookingService.CreateBooking(userID, booking)
-	if err != nil {
-		// TODO: error handling and logging
-		log.Printf("Error creating booking: %v", err)
-		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
-		return
-	}
-
-	log.Printf("Booking created successfully: %+v", createdBooking)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(createdBooking)
-}
-
-func getBookingsHandler(w http.ResponseWriter, r *http.Request) {
-	// these the fuck out of here
-	dbConn := db.NewConnection()
-	defer dbConn.Close()
-
-	var (
-		bookings []m.Booking
-		err      error
-	)
-
-	// Admin gets all bookings
-	if r.Context().Value(mw.ContextKeyIsAdmin).(bool) {
-		//bookings, err = dbConn.GetAllBookings()
-		bookings, err = dbConn.GetBookings("")
-		if err != nil {
-			log.Printf("Error retrieving bookings: %v", err)
-			http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
-			return
-		}
-		// Regular user gets their own bookings
-	} else if r.Context().Value(mw.ContextKeyUserID) != "" {
-		userID := r.Context().Value(mw.ContextKeyUserID).(string)
-		//bookings, err = dbConn.GetBookingsByUserID(userID)
-		bookings, err = dbConn.GetBookings(userID)
-		if err != nil {
-			log.Printf("Error retrieving bookings for user %s: %v", userID, err)
-			http.Error(w, "Failed to retrieve bookings for user", http.StatusInternalServerError)
-			return
-		}
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(bookings)
-}
 
 func main() {
 	c := db.NewConnection()
@@ -104,10 +22,17 @@ func main() {
 	}
 	defer c.Close()
 
+	// What the hell man??
+	var repo db.BookingRepository = c
+	bookingService := s.NewBookingService(repo)
+	bookingHandler := h.NewBookingHandler(bookingService)
+
 	r := mux.NewRouter()
-	r.HandleFunc("/api/ping", pingHandler).Methods("GET")
-	r.HandleFunc("/api/booking", createBookingHandler).Methods("POST")
-	r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
+	r.HandleFunc("/api/ping", handlers.Healthcheck).Methods("GET")
+	r.HandleFunc("/api/booking", bookingHandler.CreateBooking).Methods("POST")
+
+	// Getting bookings disabled until new changes are implemented
+	//r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
 
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -125,5 +50,6 @@ func main() {
 	}
 
 	log.Printf("Server running on :%s\n", port)
+	// TODO: implement a graceful shutdown mechanism
 	log.Fatal(http.ListenAndServe(":"+port, handler))
 }

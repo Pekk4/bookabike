@@ -12,7 +12,13 @@ import (
 // https://gorm.io/
 //
 
-func (c conn) CreateBooking(b m.Booking) (m.Booking, error) {
+type BookingRepository interface {
+	CreateBooking(b m.Booking) (m.Booking, error)
+	GetBookings(userID string) ([]m.Booking, error)
+	CountActiveBookingsForUser(userID string) (int, error)
+}
+
+func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	query := `
 		INSERT INTO bookings (start_date, end_date, status, user_id)
 		VALUES ($1, $2, $3, $4)
@@ -40,7 +46,7 @@ func (c conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	return booking, nil
 }
 
-func (c conn) GetBookings(userID string) ([]m.Booking, error) {
+func (c *conn) GetBookings(userID string) ([]m.Booking, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -86,7 +92,7 @@ func (c conn) GetBookings(userID string) ([]m.Booking, error) {
 	return bookings, nil
 }
 
-func (c conn) CountActiveBookingsForUser(userID string) (int, error) {
+func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 	var count int
 
 	query := `SELECT COUNT(*) FROM bookings WHERE user_id = $1 AND status != 'wished'`

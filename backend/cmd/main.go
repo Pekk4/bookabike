@@ -11,6 +11,7 @@ import (
 	"github.com/pekk4/bookabike/backend/internal/db"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
 	m "github.com/pekk4/bookabike/backend/internal/models"
+	s "github.com/pekk4/bookabike/backend/internal/services"
 )
 
 type Message struct {
@@ -25,18 +26,9 @@ func pingHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createBookingHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received booking request from %s", r.RemoteAddr)
-
-	// Read the raw body
-	//body, err := io.ReadAll(r.Body)
-	//if err != nil {
-	//	http.Error(w, "Failed to read request body", http.StatusBadRequest)
-	//	return
-	//}
-	//log.Printf("Raw JSON body: %s", string(body))
-
 	var booking m.Booking
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
+		// TODO: error handling and logging
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -46,35 +38,16 @@ func createBookingHandler(w http.ResponseWriter, r *http.Request) {
 	dbConn := db.NewConnection()
 	defer dbConn.Close()
 
-	// ad hoc test, bad practice
-	var (
-		createdBooking m.Booking
-		err            error
-	)
-
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
+		// TODO: error handling and logging
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
 		return
 	}
 
-	countActiveBookings, err := dbConn.CountActiveBookingsForUser(userID)
-	if err != nil {
-		// TODO: error handling and logging
-		log.Printf("Error counting active bookings for user %s: %v", userID, err)
-		http.Error(w, "Failed to count active bookings", http.StatusInternalServerError)
-		return
-	}
-
-	if countActiveBookings > 0 {
-		booking.Status = "wished"
-	} else {
-		booking.Status = "pending"
-	}
-
-	booking.UserID = userID
-	createdBooking, err = dbConn.CreateBooking(booking)
+	bookingService := s.NewBookingService(dbConn)
+	createdBooking, err := bookingService.CreateBooking(userID, booking)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)

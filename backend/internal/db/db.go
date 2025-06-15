@@ -14,6 +14,7 @@ type conn struct {
 	db *sql.DB
 }
 
+// To be deleted...
 type Conn interface {
 	Close() error
 	Ping() error

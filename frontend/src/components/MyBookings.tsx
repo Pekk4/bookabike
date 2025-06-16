@@ -11,7 +11,7 @@ import { Booking, ModalButtonMode } from '../types';
 //import { Booking } from '../types';
 
 const MyBookings = () => {
-  const { getBookingsByUserId, deleteBooking } = useBookingService();
+  const { getUserBookings, deleteBooking } = useBookingService();
   const { keycloak } = useKeycloak();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -29,7 +29,7 @@ const MyBookings = () => {
         const userId = keycloak?.idTokenParsed?.sub;
         if (!userId) return;
         // Fetching will most likely change later
-        const { data } = await getBookingsByUserId(userId);
+        const { data } = await getUserBookings();
         if (!data) return;
         setBookings(data);
       } catch (error) {

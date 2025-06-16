@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"fmt"
 
 	m "github.com/pekk4/bookabike/backend/internal/models"
@@ -14,7 +13,8 @@ import (
 
 type BookingRepository interface {
 	CreateBooking(b m.Booking) (m.Booking, error)
-	GetAllBookings(userID string) ([]m.Booking, error)
+	GetAllBookings() ([]m.Booking, error)
+	GetAllBookingsByUserID(userID string) ([]m.Booking, error)
 	CountActiveBookingsForUser(userID string) (int, error)
 	GetAllBookedDates() ([]m.PublicBooking, error)
 }
@@ -47,21 +47,50 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	return booking, nil
 }
 
-func (c *conn) GetAllBookings(userID string) ([]m.Booking, error) {
-	var rows *sql.Rows
-	var err error
-
+func (c *conn) GetAllBookings() ([]m.Booking, error) {
 	query := `
 		SELECT id, start_date, end_date, status, user_id, created_at
 		FROM bookings
 	`
-	if userID == "" {
-		rows, err = c.db.Query(query)
-	} else {
-		query += " WHERE user_id = $1"
-		rows, err = c.db.Query(query, userID)
+	rows, err := c.db.Query(query)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, fmt.Errorf("GetBookings: %w", err)
 	}
+	defer rows.Close()
 
+	var bookings []m.Booking
+
+	for rows.Next() {
+		var booking m.Booking
+
+		if err := rows.Scan(
+			&booking.ID,
+			&booking.StartDate,
+			&booking.EndDate,
+			&booking.Status,
+			&booking.UserID,
+			&booking.CreatedAt,
+		); err != nil {
+			// TODO: error handling and logging
+			return nil, fmt.Errorf("GetBookings: %w", err)
+		}
+		bookings = append(bookings, booking)
+	}
+	if err := rows.Err(); err != nil {
+		// TODO: error handling and logging
+		return nil, fmt.Errorf("GetBookings: %w", err)
+	}
+	return bookings, nil
+}
+
+func (c *conn) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
+	query := `
+		SELECT id, start_date, end_date, status, user_id, created_at
+		FROM bookings
+		WHERE user_id = $1
+	`
+	rows, err := c.db.Query(query, userID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetBookings: %w", err)
@@ -108,8 +137,9 @@ func (c *conn) GetAllBookedDates() ([]m.PublicBooking, error) {
 	query := `
 		SELECT id, start_date, end_date
 		FROM bookings
-		WHERE status = 'confirmed'
 	`
+	//	WHERE status = 'confirmed'
+	//`
 	rows, err := c.db.Query(query)
 	if err != nil {
 		// TODO: error handling and logging

@@ -41,9 +41,9 @@ func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Bookin
 	var err error
 
 	if isAdmin {
-		bookings, err = s.Repo.GetAllBookings("")
+		bookings, err = s.Repo.GetAllBookings()
 	} else {
-		bookings, err = s.Repo.GetAllBookings(userID)
+		bookings, err = s.Repo.GetAllBookingsByUserID(userID)
 	}
 
 	if err != nil {
@@ -52,6 +52,15 @@ func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Bookin
 	}
 	return bookings, nil
 }
+
+//func (s *BookingService) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
+//	bookings, err := s.Repo.GetAllBookingsByUserID(userID)
+//	if err != nil {
+//		// TODO: error handling and logging
+//		return nil, err
+//	}
+//	return bookings, nil
+//}
 
 func (s *BookingService) GetAllBookedDates() ([]m.PublicBooking, error) {
 	bookings, err := s.Repo.GetAllBookedDates()

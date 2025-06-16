@@ -48,6 +48,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *BookingHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
+	// TODO: should we need to check this as well?
 	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {

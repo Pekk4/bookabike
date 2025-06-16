@@ -8,6 +8,8 @@ export interface Booking {
 
 export type NewBooking = Omit<Booking, 'id' | 'status'>;
 
+export type PublicBooking = Omit<Booking, 'id' | 'status' | 'userId'>;
+
 export enum ModalButtonMode {
   NoButtons = 'noButtons',
   OkButton = 'okButton',

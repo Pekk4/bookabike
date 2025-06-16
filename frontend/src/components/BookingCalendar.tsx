@@ -16,7 +16,7 @@ interface BookingCalendarProps {
 
 const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
   // Hooks for fetching and creating bookings
-  const { getAllBookings, createBooking } = useBookingService();
+  const { getAllBookedDates, createBooking } = useBookingService();
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -34,7 +34,7 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
     // AD HOC placeholder shit // TODO: clean up
     const fetchBookings = async () => {
       try {
-        const { data } = await getAllBookings();
+        const { data } = await getAllBookedDates();
 
         if (data) {
           // Build a set of all booked dates to add into a calendar

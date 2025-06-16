@@ -35,3 +35,29 @@ func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Boo
 	}
 	return &createdBooking, nil
 }
+
+func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Booking, error) {
+	var bookings []m.Booking
+	var err error
+
+	if isAdmin {
+		bookings, err = s.Repo.GetAllBookings("")
+	} else {
+		bookings, err = s.Repo.GetAllBookings(userID)
+	}
+
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, err
+	}
+	return bookings, nil
+}
+
+func (s *BookingService) GetAllBookedDates() ([]m.PublicBooking, error) {
+	bookings, err := s.Repo.GetAllBookedDates()
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, err
+	}
+	return bookings, nil
+}

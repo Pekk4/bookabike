@@ -22,7 +22,13 @@ export const useBookingService = () => {
   const getAllBookings = async () => {
     const config = await buildHeader();
 
-    return await axios.get<Booking[]>(`${apiBaseUrl}/booking`, config);
+    return await axios.get<NewBooking[]>(`${apiBaseUrl}/booking`, config);
+  };
+
+  const getAllBookedDates = async () => {
+    const config = await buildHeader();
+
+    return await axios.get<Date[]>(`${apiBaseUrl}/booking/dates`, config);
   };
 
   const createBooking = async (booking: NewBooking) => {
@@ -54,6 +60,7 @@ export const useBookingService = () => {
 
   return {
     getAllBookings,
+    getAllBookedDates,
     createBooking,
     getBookingsByUserId, // TBD
     deleteBooking,

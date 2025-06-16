@@ -14,8 +14,9 @@ import (
 
 type BookingRepository interface {
 	CreateBooking(b m.Booking) (m.Booking, error)
-	GetBookings(userID string) ([]m.Booking, error)
+	GetAllBookings(userID string) ([]m.Booking, error)
 	CountActiveBookingsForUser(userID string) (int, error)
+	GetAllBookedDates() ([]m.PublicBooking, error)
 }
 
 func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
@@ -46,7 +47,7 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	return booking, nil
 }
 
-func (c *conn) GetBookings(userID string) ([]m.Booking, error) {
+func (c *conn) GetAllBookings(userID string) ([]m.Booking, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -101,4 +102,39 @@ func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 		return 0, fmt.Errorf("GetUsersActiveBookingsCount: %w", err)
 	}
 	return count, nil
+}
+
+func (c *conn) GetAllBookedDates() ([]m.PublicBooking, error) {
+	query := `
+		SELECT id, start_date, end_date
+		FROM bookings
+		WHERE status = 'confirmed'
+	`
+	rows, err := c.db.Query(query)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, fmt.Errorf("GetAllBookingDates: %w", err)
+	}
+	defer rows.Close()
+
+	var bookings []m.PublicBooking
+
+	for rows.Next() {
+		var booking m.PublicBooking
+
+		if err := rows.Scan(
+			&booking.ID,
+			&booking.StartDate,
+			&booking.EndDate,
+		); err != nil {
+			// TODO: error handling and logging
+			return nil, fmt.Errorf("GetAllBookingDates: %w", err)
+		}
+		bookings = append(bookings, booking)
+	}
+	if err := rows.Err(); err != nil {
+		// TODO: error handling and logging
+		return nil, fmt.Errorf("GetAllBookingDates: %w", err)
+	}
+	return bookings, nil
 }

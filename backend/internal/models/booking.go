@@ -8,3 +8,10 @@ type Booking struct {
 	Status    string  `json:"status"`
 	CreatedAt *string `json:"createdAt,omitempty"`
 }
+
+// PublicBooking hides sensitive information from regular users
+type PublicBooking struct {
+	ID        int    `json:"id"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+}

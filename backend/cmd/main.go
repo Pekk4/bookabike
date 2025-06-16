@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/pekk4/bookabike/backend/internal/db"
-	"github.com/pekk4/bookabike/backend/internal/handlers"
 	h "github.com/pekk4/bookabike/backend/internal/handlers"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
 	s "github.com/pekk4/bookabike/backend/internal/services"
@@ -28,11 +27,12 @@ func main() {
 	bookingHandler := h.NewBookingHandler(bookingService)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/api/ping", handlers.Healthcheck).Methods("GET")
+	r.HandleFunc("/api/ping", h.Healthcheck).Methods("GET")
 	r.HandleFunc("/api/booking", bookingHandler.CreateBooking).Methods("POST")
 
 	// Getting bookings disabled until new changes are implemented
-	//r.HandleFunc("/api/booking", getBookingsHandler).Methods("GET")
+	r.HandleFunc("/api/booking", bookingHandler.GetAllBookings).Methods("GET")
+	r.HandleFunc("/api/booking/dates", bookingHandler.GetAllBookedDates).Methods("GET")
 
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

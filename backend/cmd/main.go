@@ -32,6 +32,8 @@ func main() {
 	// This will be moved under /admin later
 	r.HandleFunc("/api/booking", bookingHandler.GetAllBookings).Methods("GET")
 
+	r.HandleFunc("/api/booking/{id}", bookingHandler.DeleteBookingByID).Methods("DELETE")
+
 	r.HandleFunc("/api/calendar", bookingHandler.GetAllBookedDates).Methods("GET")
 
 	r.HandleFunc("/api/me", bookingHandler.GetAllBookings).Methods("GET")

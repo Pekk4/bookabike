@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 
 	m "github.com/pekk4/bookabike/backend/internal/models"
@@ -17,6 +18,8 @@ type BookingRepository interface {
 	GetAllBookingsByUserID(userID string) ([]m.Booking, error)
 	CountActiveBookingsForUser(userID string) (int, error)
 	GetAllBookedDates() ([]m.PublicBooking, error)
+	DeleteBookingByID(bookingID int) error
+	GetBookingByID(bookingID int) (m.Booking, error)
 }
 
 func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
@@ -167,4 +170,38 @@ func (c *conn) GetAllBookedDates() ([]m.PublicBooking, error) {
 		return nil, fmt.Errorf("GetAllBookingDates: %w", err)
 	}
 	return bookings, nil
+}
+
+func (c *conn) DeleteBookingByID(bookingID int) error {
+	query := `DELETE FROM bookings WHERE id = $1`
+	_, err := c.db.Exec(query, bookingID)
+	if err != nil {
+		// TODO: error handling and logging
+		return fmt.Errorf("DeleteBookingByID: %w", err)
+	}
+	return nil
+}
+
+func (c *conn) GetBookingByID(bookingID int) (m.Booking, error) {
+	query := `
+		SELECT id, start_date, end_date, status, user_id, created_at
+		FROM bookings
+		WHERE id = $1
+	`
+	var booking m.Booking
+
+	if err := c.db.QueryRow(query, bookingID).Scan(
+		&booking.ID,
+		&booking.StartDate,
+		&booking.EndDate,
+		&booking.Status,
+		&booking.UserID,
+		&booking.CreatedAt,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return m.Booking{}, fmt.Errorf("GetBookingByID: booking with ID %d not found", bookingID)
+		}
+		return m.Booking{}, fmt.Errorf("GetBookingByID: %w", err)
+	}
+	return booking, nil
 }

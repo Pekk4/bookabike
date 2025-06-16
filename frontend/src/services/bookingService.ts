@@ -49,13 +49,14 @@ export const useBookingService = () => {
   };
 
   const deleteBooking = async (bookingId: number) => {
-    //const config = await buildHeader();
-    //return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
+    const config = await buildHeader();
 
-    return Promise.resolve({
-      status: 200,
-      data: { message: 'Booking deleted successfully', bookingId },
-    });
+    return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
+
+    //return Promise.resolve({
+    //  status: 200,
+    //  data: { message: 'Booking deleted successfully', bookingId },
+    //});
   };
 
   return {

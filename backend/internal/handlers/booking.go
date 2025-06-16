@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
 	m "github.com/pekk4/bookabike/backend/internal/models"
@@ -81,4 +84,33 @@ func (h *BookingHandler) GetAllBookedDates(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(bookedDates)
+}
+
+func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	bookingID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Booking ID is required", http.StatusBadRequest)
+		return
+	}
+
+	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
+	userID := r.Context().Value(mw.ContextKeyUserID).(string)
+
+	err = h.Service.DeleteBookingByID(bookingID, userID, isAdmin)
+	if err != nil {
+		// TODO: error handling and logging
+		switch err {
+		case s.ErrBookingNotFound:
+			http.Error(w, "Booking not found", http.StatusNotFound)
+		case s.ErrUnauthorized:
+			http.Error(w, "Unauthorized to delete this booking", http.StatusUnauthorized)
+		default:
+			log.Printf("Error deleting booking: %v", err)
+			http.Error(w, "Failed to delete booking", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

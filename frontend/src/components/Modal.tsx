@@ -4,7 +4,7 @@ import Button from '@mui/material/Button';
 import { ModalButtonMode } from '../types';
 
 interface ModalProps {
-  message: React.ReactNode;
+  message: React.ReactNode; // To be renamed to content for the sake of clarity
   mode?: ModalButtonMode;
   confirmHandler?: () => void;
   cancelHandler?: () => void;

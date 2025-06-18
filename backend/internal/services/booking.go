@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"sort"
 
 	"github.com/pekk4/bookabike/backend/internal/db"
 	m "github.com/pekk4/bookabike/backend/internal/models"
@@ -67,13 +68,32 @@ func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Bookin
 //	return bookings, nil
 //}
 
-func (s *BookingService) GetAllBookedDates() ([]m.PublicBooking, error) {
+// func (s *BookingService) GetAllBookedDates() ([]m.PublicBooking, error) {
+func (s *BookingService) GetAllBookedDates() ([]string, error) {
 	bookings, err := s.Repo.GetAllBookedDates()
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
 	}
-	return bookings, nil
+
+	datesMap := make(map[string]struct{})
+	for _, booking := range bookings {
+		start := booking.StartDate
+		end := booking.EndDate
+
+		for d := start; !d.After(end); d = d.AddDate(0, 0, 1) {
+			dateStr := d.Format("Mon Jan 2 2006") // JS-like date string
+			datesMap[dateStr] = struct{}{}
+		}
+	}
+
+	var bookedDates []string
+	for date := range datesMap {
+		bookedDates = append(bookedDates, date)
+	}
+	sort.Strings(bookedDates) // Sort the dates
+
+	return bookedDates, nil
 }
 
 func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin bool) error {

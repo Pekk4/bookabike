@@ -9,6 +9,8 @@ import { useBookingService } from '../services/bookingService';
 
 import { Booking, ModalButtonMode } from '../types';
 
+import buildDatesSet from '../utils/buildDatesSet';
+
 interface BookingCalendarProps {
   // TODO: delete?
   bookingToEdit?: Booking;
@@ -37,19 +39,8 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
         const { data } = await getAllBookedDates();
 
         if (data) {
-          // Build a set of all booked dates to add into a calendar
-          const dates = new Set<string>();
-          data.forEach((booking) => {
-            if (!bookingToEdit || booking.id !== bookingToEdit.id) {
-              const current = new Date(booking.startDate);
-              const end = new Date(booking.endDate);
-              while (current <= end) {
-                dates.add(current.toDateString());
-                current.setDate(current.getDate() + 1);
-              }
-            }
-          });
-          setBookedDates(dates);
+          const datesSet = new Set<string>(data);
+          setBookedDates(datesSet);
         }
       } catch (error) {
         // TODO: handle properly
@@ -140,16 +131,8 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
         </div>
       );
 
-      // TODO: clean up
-      const newBookedDates = new Set(bookedDates);
-      const current = new Date(booking.startDate);
-      const end = new Date(booking.endDate);
-      while (current <= end) {
-        newBookedDates.add(current.toDateString());
-        current.setDate(current.getDate() + 1);
-      }
+      const newBookedDates = buildDatesSet(bookedDates, booking);
       setBookedDates(newBookedDates);
-
       resetCalendar();
     } catch (error) {
       // TODO: handle properly

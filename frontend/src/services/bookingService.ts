@@ -40,6 +40,9 @@ export const useBookingService = () => {
       endDate: booking.endDate.toDateString(),
     };
 
+    // TODO: delete
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };
 

@@ -11,6 +11,8 @@ import { Booking, ModalButtonMode } from '../types';
 
 import buildDatesSet from '../utils/buildDatesSet';
 
+import useBookingCreation from '../hooks/useBookingCreation';
+
 interface BookingCalendarProps {
   // TODO: delete?
   bookingToEdit?: Booking;
@@ -22,34 +24,36 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
   // States for date selection
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  // Modal states
-  const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
-  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
-    ModalButtonMode.NoButtons
-  );
   // Booked dates state
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
+  const resetCalendar = () => {
+    setStartDate(null);
+    setEndDate(null);
+  };
+
+  const { handleBooking } = useBookingCreation(resetCalendar);
+
   //const bookingToEdit = useLocation().state?.booking;
 
-  useEffect(() => {
-    // AD HOC placeholder shit // TODO: clean up
-    const fetchBookings = async () => {
-      try {
-        const { data } = await getAllBookedDates();
-
-        if (data) {
-          const datesSet = new Set<string>(data);
-          setBookedDates(datesSet);
-        }
-      } catch (error) {
-        // TODO: handle properly
-        console.log('Error with fetching bookings: ', error);
-      }
-    };
-    fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //useEffect(() => {
+  //  // AD HOC placeholder shit // TODO: clean up
+  //  const fetchBookings = async () => {
+  //    try {
+  //      const { data } = await getAllBookedDates();
+  //
+  //      if (data) {
+  //        const datesSet = new Set<string>(data);
+  //        setBookedDates(datesSet);
+  //      }
+  //    } catch (error) {
+  //      // TODO: handle properly
+  //      console.log('Error with fetching bookings: ', error);
+  //    }
+  //  };
+  //  fetchBookings();
+  //  // eslint-disable-next-line react-hooks/exhaustive-deps
+  //}, []);
 
   const isDateClickable = (date: Date): boolean => {
     // All dates are clickable until the start date is selected
@@ -78,81 +82,8 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
     }
   };
 
-  const handleBooking = (start: Date | null, end: Date | null) => {
-    const startFormatted = start?.toLocaleDateString();
-    const endFormatted = end?.toLocaleDateString();
-
-    console.log('Booking dates:', startFormatted, endFormatted);
-
-    if (startFormatted && endFormatted) {
-      setModalButtonMode(ModalButtonMode.YesNoButtons);
-      setModalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
-    } else {
-      setModalMessage('Please select a start and end date.');
-      // TODO: handle this better
-    }
-  };
-
-  const resetCalendar = () => {
-    setStartDate(null);
-    setEndDate(null);
-  };
-
-  const handleConfirm = async () => {
-    //
-    // TBD: successful booking could redirect to somewhere else as only one booking allowed per user
-    //
-    // Sketch for booking confirmation
-    // To be improved...
-    if (!startDate || !endDate) return;
-
-    setModalButtonMode(ModalButtonMode.NoButtons);
-    setModalMessage(<CircularProgress color="inherit" />);
-
-    try {
-      const { data } = await createBooking({
-        startDate,
-        endDate,
-      });
-
-      const booking = data;
-      console.log('Booking confirmed:', booking); // DELETE
-
-      const bookingStartDate = new Date(booking.startDate).toLocaleDateString(); // TODO: clean
-      const bookingEndDate = new Date(booking.endDate).toLocaleDateString();
-
-      setModalButtonMode(ModalButtonMode.OkButton);
-      setModalMessage(
-        <div>
-          <p>Varaus onnistui!</p>
-          <p>
-            Varattu: {String(bookingStartDate)} - {String(bookingEndDate)}
-          </p>
-        </div>
-      );
-
-      const newBookedDates = buildDatesSet(bookedDates, booking);
-      setBookedDates(newBookedDates);
-      resetCalendar();
-    } catch (error) {
-      // TODO: handle properly
-      console.error('Error creating booking:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    resetCalendar();
-    setModalMessage(null);
-  };
-
   return (
     <div>
-      <Modal
-        message={modalMessage}
-        mode={modalButtonMode}
-        confirmHandler={handleConfirm}
-        cancelHandler={handleCancel}
-      />
       <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
         <div className="border-2 border-black"></div>
         <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">

@@ -15,10 +15,25 @@ import ErrorBoundary from './context/ErrorBoundary';
 import AppRoutes from './AppRoutes';
 
 import { apiBaseUrl } from './constants';
+import Modal from './components/Modal';
+import { ModalProvider } from './context/ModalContext';
+import useModal from './hooks/useModal';
 
 //type ValuePiece = Date | null;
 
 //type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+const ModalRoot = () => {
+  const { content, buttonMode, hideModal, confirmHandler, cancelHandler } = useModal();
+  return (
+    <Modal
+      message={content}
+      mode={buttonMode}
+      confirmHandler={confirmHandler}
+      cancelHandler={cancelHandler || hideModal}
+    />
+  );
+};
 
 function App() {
   //const [value, onChange] = useState<Value>(new Date());
@@ -31,12 +46,15 @@ function App() {
     <>
       <KeycloakProvider>
         <ErrorBoundary>
-          <Router>
-            <AppRoutes />
-            {/* Modal wont cover menubar with router anymore // TODO: check out*/}
-            <MenuBar />
-            {/*<HomeDemo />*/}
-          </Router>
+          <ModalProvider>
+            <ModalRoot />
+            <Router>
+              <AppRoutes />
+              {/* Modal wont cover menubar with router anymore // TODO: check out*/}
+              <MenuBar />
+              {/*<HomeDemo />*/}
+            </Router>
+          </ModalProvider>
         </ErrorBoundary>
       </KeycloakProvider>
     </>

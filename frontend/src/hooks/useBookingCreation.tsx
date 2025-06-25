@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { useBookingService } from '../services/bookingService';
@@ -7,6 +8,7 @@ import useModal from './useModal';
 const useBookingCreation = (resetCalendar: () => void) => {
   const { createBooking } = useBookingService();
   const { showModal, hideModal } = useModal();
+  const navigate = useNavigate();
 
   const startDateRef = useRef<Date | null>(null);
   const endDateRef = useRef<Date | null>(null);
@@ -24,8 +26,8 @@ const useBookingCreation = (resetCalendar: () => void) => {
       showModal(
         `Varataanko: ${startFormatted} - ${endFormatted}?`,
         'ask',
-        handleConfirmBooking,
-        handleCancelBooking
+        handleConfirmDialog,
+        handleCancelDialog
       );
     } else {
       // TODO: handle this situation
@@ -33,12 +35,11 @@ const useBookingCreation = (resetCalendar: () => void) => {
     }
   };
 
-  const handleConfirmBooking = async () => {
+  const handleConfirmDialog = async () => {
     const startDate = startDateRef.current;
     const endDate = endDateRef.current;
 
     if (startDate && endDate) {
-      console.log('Confirming booking with dates:', startDate, endDate); // DELETE
       showModal(<CircularProgress color="inherit" />);
 
       try {
@@ -47,14 +48,23 @@ const useBookingCreation = (resetCalendar: () => void) => {
           endDate,
         });
 
-        // TODO: handle successful booking
-        const booking = data;
-        console.log('Booking confirmed:', booking); // DELETE later
+        if (data) {
+          // Necessary?
+          const booking = data;
+          const bookingStartDate = new Date(booking.startDate).toLocaleDateString();
+          const bookingEndDate = new Date(booking.endDate).toLocaleDateString();
+          const message = (
+            <div>
+              <p>Varaus onnistui!</p>
+              <p>
+                Varattu: {String(bookingStartDate)} - {String(bookingEndDate)}
+              </p>
+            </div>
+          );
 
-        const bookingStartDate = new Date(booking.startDate).toLocaleDateString();
-        const bookingEndDate = new Date(booking.endDate).toLocaleDateString();
-
-        showModal('Varaus onnistui!', 'ok');
+          // handleAfterBooking to both, confirm and cancel actions of the modal
+          showModal(message, 'ok', handleAfterBooking, handleAfterBooking);
+        }
       } catch (error) {
         console.error('Error confirming booking:', error);
         showModal('Varauksen luominen epäonnistui. Yritä uudelleen.', 'error');
@@ -65,8 +75,13 @@ const useBookingCreation = (resetCalendar: () => void) => {
     }
   };
 
-  const handleCancelBooking = () => {
+  const handleCancelDialog = () => {
     resetCalendar();
+    hideModal();
+  };
+
+  const handleAfterBooking = () => {
+    navigate('/my-bookings');
     hideModal();
   };
 
@@ -74,3 +89,9 @@ const useBookingCreation = (resetCalendar: () => void) => {
 };
 
 export default useBookingCreation;
+
+//
+//
+// TODO: UI shit mostly
+//
+//

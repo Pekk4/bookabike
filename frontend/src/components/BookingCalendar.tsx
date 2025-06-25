@@ -1,30 +1,15 @@
 import { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import './BookingCalendar.css';
 
-import Modal from './Modal';
+import { maxBookingLength } from '../constants';
 import { useBookingService } from '../services/bookingService';
-
-import { Booking, ModalButtonMode } from '../types';
-
-import buildDatesSet from '../utils/buildDatesSet';
-
 import useBookingCreation from '../hooks/useBookingCreation';
 
-interface BookingCalendarProps {
-  // TODO: delete?
-  bookingToEdit?: Booking;
-}
-
-const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
-  // Hooks for fetching and creating bookings
-  const { getAllBookedDates, createBooking } = useBookingService();
-  // States for date selection
+const BookingCalendar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  // Booked dates state
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
   const resetCalendar = () => {
@@ -33,35 +18,34 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
   };
 
   const { handleBooking } = useBookingCreation(resetCalendar);
+  const { getAllBookedDates } = useBookingService();
 
-  //const bookingToEdit = useLocation().state?.booking;
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const { data } = await getAllBookedDates();
 
-  //useEffect(() => {
-  //  // AD HOC placeholder shit // TODO: clean up
-  //  const fetchBookings = async () => {
-  //    try {
-  //      const { data } = await getAllBookedDates();
-  //
-  //      if (data) {
-  //        const datesSet = new Set<string>(data);
-  //        setBookedDates(datesSet);
-  //      }
-  //    } catch (error) {
-  //      // TODO: handle properly
-  //      console.log('Error with fetching bookings: ', error);
-  //    }
-  //  };
-  //  fetchBookings();
-  //  // eslint-disable-next-line react-hooks/exhaustive-deps
-  //}, []);
+        if (data) {
+          const datesSet = new Set<string>(data);
+          setBookedDates(datesSet);
+        }
+      } catch (error) {
+        // TODO: handle properly
+        console.log('Error with fetching bookings: ', error);
+      }
+    };
+    fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const isDateClickable = (date: Date): boolean => {
-    // All dates are clickable until the start date is selected
+    // All free dates are clickable until the start date is selected
     if (!startDate) return true;
 
+    // After that only free dates within the allowed range are clickable
+    // Allowed range is start date + maxBookingLength days
     const maxDate = new Date(startDate);
-    // Max booking range is 3 days from the start date
-    maxDate.setDate(startDate.getDate() + 3); // TODO: consider parameterizing the limit
+    maxDate.setDate(startDate.getDate() + maxBookingLength);
 
     return date >= startDate && date <= maxDate;
   };

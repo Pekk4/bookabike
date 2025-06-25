@@ -54,7 +54,7 @@ const EditBookings = () => {
 
   return (
     <>
-      <BookingCalendar bookedDates={bookedDates} />
+      <BookingCalendar bookedDates={bookedDates} bookingToUpdate={bookingToEdit} />
     </>
   );
 };

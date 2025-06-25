@@ -38,6 +38,8 @@ func main() {
 
 	r.HandleFunc("/api/me", bookingHandler.GetAllBookings).Methods("GET")
 
+	r.HandleFunc("/api/booking/{id}", bookingHandler.UpdateBookingByID).Methods("PUT")
+
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	//	if r.Method == "OPTIONS" {

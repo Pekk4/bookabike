@@ -4,13 +4,16 @@ import Calendar from 'react-calendar';
 import './BookingCalendar.css';
 
 import { maxBookingLength } from '../constants';
-import useBookingCreation from '../hooks/useBookingCreation';
+import useBookingProcess from '../hooks/useBookingProcess';
+
+import { Booking } from '../types';
 
 interface BookingCalendarProps {
   bookedDates: Set<string>;
+  bookingToUpdate?: Booking;
 }
 
-const BookingCalendar = ({ bookedDates }: BookingCalendarProps) => {
+const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
@@ -19,7 +22,7 @@ const BookingCalendar = ({ bookedDates }: BookingCalendarProps) => {
     setEndDate(null);
   };
 
-  const { handleBooking } = useBookingCreation(resetCalendar);
+  const { handleNewBooking, handleUpdateBooking } = useBookingProcess(resetCalendar);
 
   const isDateClickable = (date: Date): boolean => {
     // All free dates are clickable until the start date is selected
@@ -40,7 +43,12 @@ const BookingCalendar = ({ bookedDates }: BookingCalendarProps) => {
       // Second click - set end date if it's within the valid range
       if (date.getTime() !== startDate.getTime()) {
         setEndDate(date);
-        handleBooking(startDate, date);
+
+        if (bookingToUpdate) {
+          handleUpdateBooking(startDate, date, bookingToUpdate);
+        } else {
+          handleNewBooking(startDate, date);
+        }
       } else {
         // Clicked on the same date again, reset selection
         // TODO: not very smooth atm

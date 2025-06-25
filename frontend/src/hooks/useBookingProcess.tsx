@@ -5,15 +5,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useBookingService } from '../services/bookingService';
 import useModal from './useModal';
 
-const useBookingCreation = (resetCalendar: () => void) => {
-  const { createBooking } = useBookingService();
+import { Booking } from '../types';
+
+const useBookingProcess = (resetCalendar: () => void) => {
+  const { createBooking, updateBooking } = useBookingService();
   const { showModal, hideModal } = useModal();
   const navigate = useNavigate();
 
   const startDateRef = useRef<Date | null>(null);
   const endDateRef = useRef<Date | null>(null);
 
-  const handleBooking = (start: Date | null, end: Date | null) => {
+  const handleNewBooking = (start: Date | null, end: Date | null) => {
     const startFormatted = start?.toLocaleDateString();
     const endFormatted = end?.toLocaleDateString();
 
@@ -26,7 +28,7 @@ const useBookingCreation = (resetCalendar: () => void) => {
       showModal(
         `Varataanko: ${startFormatted} - ${endFormatted}?`,
         'ask',
-        handleConfirmDialog,
+        handleNewConfirmDialog,
         handleCancelDialog
       );
     } else {
@@ -35,7 +37,26 @@ const useBookingCreation = (resetCalendar: () => void) => {
     }
   };
 
-  const handleConfirmDialog = async () => {
+  const handleUpdateBooking = (start: Date | null, end: Date | null, booking: Booking) => {
+    const startFormatted = start?.toLocaleDateString();
+    const endFormatted = end?.toLocaleDateString();
+
+    if (startFormatted && endFormatted) {
+      startDateRef.current = start;
+      endDateRef.current = end;
+      showModal(
+        `Päivitetäänkö varaus: ${startFormatted} - ${endFormatted}?`,
+        'ask',
+        () => handleUpdateConfirmDialog(booking.id),
+        handleCancelDialog
+      );
+    } else {
+      // TODO: handle this situation
+      console.log('placeholder');
+    }
+  };
+
+  const handleNewConfirmDialog = async () => {
     const startDate = startDateRef.current;
     const endDate = endDateRef.current;
 
@@ -66,6 +87,38 @@ const useBookingCreation = (resetCalendar: () => void) => {
           showModal(message, 'ok', handleAfterBooking, handleAfterBooking);
         }
       } catch (error) {
+        // TODO: handle properly
+        console.error('Error confirming booking:', error);
+        showModal('Varauksen luominen epäonnistui. Yritä uudelleen.', 'error');
+      }
+    } else {
+      // TODO: handle this situation
+      console.log('Please select both start and end dates.');
+    }
+  };
+
+  const handleUpdateConfirmDialog = async (bookingId: number) => {
+    const startDate = startDateRef.current;
+    const endDate = endDateRef.current;
+
+    if (startDate && endDate) {
+      showModal(<CircularProgress color="inherit" />);
+
+      try {
+        await updateBooking({
+          bookingId,
+          startDate,
+          endDate,
+        });
+
+        showModal(
+          'Varauksen päivittäminen onnistui!',
+          'ok',
+          handleAfterBooking,
+          handleAfterBooking
+        );
+      } catch (error) {
+        // TODO: handle properly
         console.error('Error confirming booking:', error);
         showModal('Varauksen luominen epäonnistui. Yritä uudelleen.', 'error');
       }
@@ -85,10 +138,10 @@ const useBookingCreation = (resetCalendar: () => void) => {
     hideModal();
   };
 
-  return { handleBooking };
+  return { handleNewBooking, handleUpdateBooking };
 };
 
-export default useBookingCreation;
+export default useBookingProcess;
 
 //
 //

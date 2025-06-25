@@ -114,3 +114,9 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Request) {
+	log.Printf("UpdateBookingByID called from %s", r.RemoteAddr)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Update booking functionality not implemented yet"))
+}

@@ -19,6 +19,8 @@ import Modal from './components/Modal';
 import { ModalProvider } from './context/ModalContext';
 import useModal from './hooks/useModal';
 
+import { useLocation } from 'react-router-dom';
+
 //type ValuePiece = Date | null;
 
 //type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -35,6 +37,18 @@ const ModalRoot = () => {
   );
 };
 
+const ModalAutoCloser = () => {
+  const location = useLocation();
+  const { hideModal } = useModal();
+
+  useEffect(() => {
+    hideModal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  return null;
+};
+
 function App() {
   //const [value, onChange] = useState<Value>(new Date());
 
@@ -49,6 +63,7 @@ function App() {
           <ModalProvider>
             <ModalRoot />
             <Router>
+              <ModalAutoCloser />
               <AppRoutes />
               {/* Modal wont cover menubar with router anymore // TODO: check out*/}
               <MenuBar />

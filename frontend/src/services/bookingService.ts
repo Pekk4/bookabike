@@ -3,7 +3,7 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import useKeycloak from '../hooks/useKeycloak';
 
-import { Booking, NewBooking, PublicBooking } from '../types';
+import { BaseBooking, Booking } from '../types';
 
 export const useBookingService = () => {
   const { keycloak } = useKeycloak();
@@ -29,15 +29,20 @@ export const useBookingService = () => {
   const getAllBookedDates = async () => {
     const config = await buildHeader();
 
-    return await axios.get<PublicBooking[]>(`${apiBaseUrl}/calendar`, config);
+    //return await axios.get<PublicBooking[]>(`${apiBaseUrl}/calendar`, config);
+    return await axios.get<string[]>(`${apiBaseUrl}/calendar`, config);
   };
 
-  const createBooking = async (booking: NewBooking) => {
+  const createBooking = async (booking: BaseBooking) => {
     const config = await buildHeader();
     const payload = {
       startDate: booking.startDate.toDateString(),
       endDate: booking.endDate.toDateString(),
     };
+
+    throw new Error('This is a placeholder error for testing purposes');
+    // TODO: delete
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };

@@ -1,55 +1,33 @@
 import { useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import './BookingCalendar.css';
 
-import Modal from './Modal';
+import { maxBookingLength } from '../constants';
 import { useBookingService } from '../services/bookingService';
+import useBookingCreation from '../hooks/useBookingCreation';
 
-import { Booking, ModalButtonMode } from '../types';
-
-interface BookingCalendarProps {
-  // TODO: delete?
-  bookingToEdit?: Booking;
-}
-
-const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
-  // Hooks for fetching and creating bookings
-  const { getAllBookedDates, createBooking } = useBookingService();
-  // States for date selection
+const BookingCalendar = () => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  // Modal states
-  const [modalMessage, setModalMessage] = useState<React.ReactNode>(null);
-  const [modalButtonMode, setModalButtonMode] = useState<ModalButtonMode>(
-    ModalButtonMode.NoButtons
-  );
-  // Booked dates state
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
-  //const bookingToEdit = useLocation().state?.booking;
+  const resetCalendar = () => {
+    setStartDate(null);
+    setEndDate(null);
+  };
+
+  const { handleBooking } = useBookingCreation(resetCalendar);
+  const { getAllBookedDates } = useBookingService();
 
   useEffect(() => {
-    // AD HOC placeholder shit // TODO: clean up
     const fetchBookings = async () => {
       try {
         const { data } = await getAllBookedDates();
 
         if (data) {
-          // Build a set of all booked dates to add into a calendar
-          const dates = new Set<string>();
-          data.forEach((booking) => {
-            if (!bookingToEdit || booking.id !== bookingToEdit.id) {
-              const current = new Date(booking.startDate);
-              const end = new Date(booking.endDate);
-              while (current <= end) {
-                dates.add(current.toDateString());
-                current.setDate(current.getDate() + 1);
-              }
-            }
-          });
-          setBookedDates(dates);
+          const datesSet = new Set<string>(data);
+          setBookedDates(datesSet);
         }
       } catch (error) {
         // TODO: handle properly
@@ -61,12 +39,13 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
   }, []);
 
   const isDateClickable = (date: Date): boolean => {
-    // All dates are clickable until the start date is selected
+    // All free dates are clickable until the start date is selected
     if (!startDate) return true;
 
+    // After that only free dates within the allowed range are clickable
+    // Allowed range is start date + maxBookingLength days
     const maxDate = new Date(startDate);
-    // Max booking range is 3 days from the start date
-    maxDate.setDate(startDate.getDate() + 3); // TODO: consider parameterizing the limit
+    maxDate.setDate(startDate.getDate() + maxBookingLength);
 
     return date >= startDate && date <= maxDate;
   };
@@ -87,89 +66,8 @@ const BookingCalendar = ({ bookingToEdit }: BookingCalendarProps) => {
     }
   };
 
-  const handleBooking = (start: Date | null, end: Date | null) => {
-    const startFormatted = start?.toLocaleDateString();
-    const endFormatted = end?.toLocaleDateString();
-
-    console.log('Booking dates:', startFormatted, endFormatted);
-
-    if (startFormatted && endFormatted) {
-      setModalButtonMode(ModalButtonMode.YesNoButtons);
-      setModalMessage(`Varataanko: ${startFormatted} - ${endFormatted}?`);
-    } else {
-      setModalMessage('Please select a start and end date.');
-      // TODO: handle this better
-    }
-  };
-
-  const resetCalendar = () => {
-    setStartDate(null);
-    setEndDate(null);
-  };
-
-  const handleConfirm = async () => {
-    //
-    // TBD: successful booking could redirect to somewhere else as only one booking allowed per user
-    //
-    // Sketch for booking confirmation
-    // To be improved...
-    if (!startDate || !endDate) return;
-
-    setModalButtonMode(ModalButtonMode.NoButtons);
-    setModalMessage(<CircularProgress color="inherit" />);
-
-    try {
-      const { data } = await createBooking({
-        startDate,
-        endDate,
-      });
-
-      const booking = data;
-      console.log('Booking confirmed:', booking); // DELETE
-
-      const bookingStartDate = new Date(booking.startDate).toLocaleDateString(); // TODO: clean
-      const bookingEndDate = new Date(booking.endDate).toLocaleDateString();
-
-      setModalButtonMode(ModalButtonMode.OkButton);
-      setModalMessage(
-        <div>
-          <p>Varaus onnistui!</p>
-          <p>
-            Varattu: {String(bookingStartDate)} - {String(bookingEndDate)}
-          </p>
-        </div>
-      );
-
-      // TODO: clean up
-      const newBookedDates = new Set(bookedDates);
-      const current = new Date(booking.startDate);
-      const end = new Date(booking.endDate);
-      while (current <= end) {
-        newBookedDates.add(current.toDateString());
-        current.setDate(current.getDate() + 1);
-      }
-      setBookedDates(newBookedDates);
-
-      resetCalendar();
-    } catch (error) {
-      // TODO: handle properly
-      console.error('Error creating booking:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    resetCalendar();
-    setModalMessage(null);
-  };
-
   return (
     <div>
-      <Modal
-        message={modalMessage}
-        mode={modalButtonMode}
-        confirmHandler={handleConfirm}
-        cancelHandler={handleCancel}
-      />
       <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
         <div className="border-2 border-black"></div>
         <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">

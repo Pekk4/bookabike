@@ -1,14 +1,18 @@
-export interface Booking {
-  id: number;
+export interface BaseBooking {
   startDate: Date;
   endDate: Date;
-  status: string;
-  userId?: string | null; // Is this ever null?
 }
 
-export type NewBooking = Omit<Booking, 'id' | 'status'>;
+export interface Booking extends BaseBooking {
+  id: number;
+  status: string;
+  userId?: string;
+}
 
-export type PublicBooking = Omit<Booking, 'id' | 'status' | 'userId'>;
+// Possibly unused? 18.6.25
+export interface PublicBooking extends BaseBooking {
+  id: number;
+}
 
 export enum ModalButtonMode {
   NoButtons = 'noButtons',

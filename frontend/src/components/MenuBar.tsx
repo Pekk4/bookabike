@@ -83,6 +83,11 @@ const MenuBar = () => {
             onClick={() => setDrawerOpen(false)}
             onKeyDown={() => setDrawerOpen(false)}
           >
+            <Link to="/">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Etusivu
+              </div>
+            </Link>
             <Link to="/calendar">
               <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
                 Varauskalenteri
@@ -93,7 +98,7 @@ const MenuBar = () => {
                 Omat varaukseni
               </div>
             </Link>
-            <Link to="/">
+            <Link to="/me">
               <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
                 Omat tiedot
               </div>

@@ -1,21 +1,35 @@
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
+import { useBookingService } from '../services/bookingService';
 import BookingCalendar from '../components/BookingCalendar';
 
 const CreateBookings = () => {
-  //const { id } = useParams<{ id: string }>();
-  //const location = useLocation();
-  //const bookingToEdit = location.state?.booking;
-  //const navigate = useNavigate();
-  //
-  //if (!bookingToEdit) {
-  //  navigate('/my-bookings');
-  //  return null;
-  //}
+  const location = useLocation();
+  const { getAllBookedDates } = useBookingService();
+  const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const { data } = await getAllBookedDates();
+
+        if (data) {
+          const datesSet = new Set<string>(data);
+          setBookedDates(datesSet);
+        }
+      } catch (error) {
+        // TODO: handle properly
+        console.log('Error with fetching bookings: ', error);
+      }
+    };
+    fetchBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   return (
     <>
-      <BookingCalendar />
+      <BookingCalendar bookedDates={bookedDates} />
     </>
   );
 };

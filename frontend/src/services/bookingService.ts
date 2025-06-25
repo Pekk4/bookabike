@@ -40,9 +40,9 @@ export const useBookingService = () => {
       endDate: booking.endDate.toDateString(),
     };
 
-    throw new Error('This is a placeholder error for testing purposes');
+    //throw new Error('This is a placeholder error for testing purposes');
     // TODO: delete
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    //await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };

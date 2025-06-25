@@ -1,16 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Calendar from 'react-calendar';
 
 import './BookingCalendar.css';
 
 import { maxBookingLength } from '../constants';
-import { useBookingService } from '../services/bookingService';
 import useBookingCreation from '../hooks/useBookingCreation';
 
-const BookingCalendar = () => {
+interface BookingCalendarProps {
+  bookedDates: Set<string>;
+}
+
+const BookingCalendar = ({ bookedDates }: BookingCalendarProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
 
   const resetCalendar = () => {
     setStartDate(null);
@@ -18,25 +20,6 @@ const BookingCalendar = () => {
   };
 
   const { handleBooking } = useBookingCreation(resetCalendar);
-  const { getAllBookedDates } = useBookingService();
-
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        const { data } = await getAllBookedDates();
-
-        if (data) {
-          const datesSet = new Set<string>(data);
-          setBookedDates(datesSet);
-        }
-      } catch (error) {
-        // TODO: handle properly
-        console.log('Error with fetching bookings: ', error);
-      }
-    };
-    fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const isDateClickable = (date: Date): boolean => {
     // All free dates are clickable until the start date is selected

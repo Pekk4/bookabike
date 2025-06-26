@@ -22,6 +22,17 @@ func NewBookingService(repository db.BookingRepository) *BookingService {
 func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Booking, error) {
 	booking.UserID = userID
 
+	hasOverlaps, err := s.Repo.HasBookingOverlap(booking.StartDate, booking.EndDate, nil)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, err
+	}
+
+	if hasOverlaps {
+		// TODO error handling
+		return nil, errors.New("booking overlaps with existing bookings")
+	}
+
 	countActiveBookings, err := s.Repo.CountActiveBookingsForUser(userID)
 	if err != nil {
 		// TODO: error handling and logging
@@ -82,7 +93,7 @@ func (s *BookingService) GetAllBookedDates() ([]string, error) {
 		end := booking.EndDate
 
 		for d := start; !d.After(end); d = d.AddDate(0, 0, 1) {
-			dateStr := d.Format("Mon Jan 2 2006") // JS-like date string
+			dateStr := d.Format("Mon Jan 02 2006") // JS-like date string
 			datesMap[dateStr] = struct{}{}
 		}
 	}

@@ -20,6 +20,7 @@ type BookingRepository interface {
 	GetAllBookedDates() ([]m.PublicBooking, error)
 	DeleteBookingByID(bookingID int) error
 	GetBookingByID(bookingID int) (m.Booking, error)
+	HasBookingOverlap(startDate, endDate string, excludeBookingID *int) (bool, error)
 }
 
 func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
@@ -204,4 +205,31 @@ func (c *conn) GetBookingByID(bookingID int) (m.Booking, error) {
 		return m.Booking{}, fmt.Errorf("GetBookingByID: %w", err)
 	}
 	return booking, nil
+}
+
+func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *int) (bool, error) {
+	query := `
+		SELECT 1 FROM bookings
+		WHERE NOT (
+				$2 < start_date OR $1 > end_date
+		)
+	`
+	args := []any{startDate, endDate}
+	if excludeBookingID != nil {
+		// When updating a booking, we want to exclude the current booking from the overlap results
+		query += " AND id != $3"
+		args = append(args, *excludeBookingID)
+	}
+	query += " LIMIT 1"
+
+	var exists int
+	err := c.db.QueryRow(query, args...).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil // No overlap found
+		}
+		return false, err
+	}
+
+	return true, nil // Overlap found
 }

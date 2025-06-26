@@ -116,7 +116,36 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 }
 
 func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Request) {
-	log.Printf("UpdateBookingByID called from %s", r.RemoteAddr)
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Update booking functionality not implemented yet"))
+	idStr := mux.Vars(r)["id"]
+	bookingID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Booking ID is required", http.StatusBadRequest)
+		return
+	}
+
+	var booking m.Booking
+	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
+		// TODO: error handling and logging
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
+	if !ok || userID == "" {
+		// TODO: error handling and logging
+		log.Println("User ID not found in context, interrupting...")
+		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
+		return
+	}
+
+	updatedBooking, err := h.Service.UpdateBookingByID(bookingID, userID, booking)
+	if err != nil {
+		// TODO: error handling and logging
+		log.Printf("Error creating booking: %v", err)
+		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(updatedBooking)
 }

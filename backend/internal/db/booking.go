@@ -21,6 +21,7 @@ type BookingRepository interface {
 	DeleteBookingByID(bookingID int) error
 	GetBookingByID(bookingID int) (m.Booking, error)
 	HasBookingOverlap(startDate, endDate string, excludeBookingID *int) (bool, error)
+	UpdateBookingByID(bookingID int, b m.Booking) (m.Booking, error)
 }
 
 func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
@@ -31,7 +32,7 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	`
 	var booking m.Booking
 
-	err := c.db.QueryRow(
+	if err := c.db.QueryRow(
 		query,
 		b.StartDate,
 		b.EndDate,
@@ -43,8 +44,8 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 		&booking.EndDate,
 		&booking.Status,
 		&booking.CreatedAt,
-	)
-	if err != nil {
+	); err != nil {
+		//if err != nil {
 		// TODO: error handling and logging
 		return m.Booking{}, fmt.Errorf("CreateBooking: %w", err)
 	}
@@ -130,10 +131,10 @@ func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 	var count int
 
 	query := `SELECT COUNT(*) FROM bookings WHERE user_id = $1 AND status != 'wished'`
-	err := c.db.QueryRow(query, userID).Scan(&count)
-	if err != nil {
+	if err := c.db.QueryRow(query, userID).Scan(&count); err != nil {
 		return 0, fmt.Errorf("GetUsersActiveBookingsCount: %w", err)
 	}
+
 	return count, nil
 }
 
@@ -223,8 +224,8 @@ func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *in
 	query += " LIMIT 1"
 
 	var exists int
-	err := c.db.QueryRow(query, args...).Scan(&exists)
-	if err != nil {
+
+	if err := c.db.QueryRow(query, args...).Scan(&exists); err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil // No overlap found
 		}
@@ -232,4 +233,33 @@ func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *in
 	}
 
 	return true, nil // Overlap found
+}
+
+func (c *conn) UpdateBookingByID(bookingID int, b m.Booking) (m.Booking, error) {
+	query := `
+		UPDATE bookings
+		SET start_date = $1, end_date = $2
+		WHERE id = $3
+		RETURNING id, start_date, end_date, status, user_id, created_at
+	`
+	var updated m.Booking
+
+	// TODO: decide the representation of err/nil conditional, not sure which one is more clear
+	if err := c.db.QueryRow(
+		query,
+		b.StartDate,
+		b.EndDate,
+		bookingID,
+	).Scan(
+		&updated.ID,
+		&updated.StartDate,
+		&updated.EndDate,
+		&updated.Status,
+		&updated.UserID,
+		&updated.CreatedAt,
+	); err != nil {
+		return m.Booking{}, fmt.Errorf("UpdateBooking: %w", err)
+	}
+
+	return updated, nil
 }

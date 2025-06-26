@@ -135,3 +135,35 @@ func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin
 	}
 	return nil
 }
+
+func (s *BookingService) UpdateBookingByID(bookingID int, userID string, booking m.Booking) (*m.Booking, error) {
+	refBooking, err := s.Repo.GetBookingByID(bookingID)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, ErrBookingNotFound // AD HOC
+	}
+
+	if refBooking.UserID != userID {
+		// If the user is not the owner of the booking, we cannot update it
+		return nil, ErrUnauthorized
+	}
+
+	hasOverlaps, err := s.Repo.HasBookingOverlap(booking.StartDate, booking.EndDate, &bookingID)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, err
+	}
+
+	if hasOverlaps {
+		// TODO error handling
+		return nil, errors.New("booking overlaps with existing bookings")
+	}
+
+	updatedBooking, err := s.Repo.UpdateBookingByID(bookingID, booking)
+	if err != nil {
+		// TODO: error handling and logging
+		return nil, err
+	}
+
+	return &updatedBooking, nil
+}

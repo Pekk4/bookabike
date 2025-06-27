@@ -11,6 +11,7 @@ import (
 	h "github.com/pekk4/bookabike/backend/internal/handlers"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
 	s "github.com/pekk4/bookabike/backend/internal/services"
+	u "github.com/pekk4/bookabike/backend/internal/utils"
 )
 
 func main() {
@@ -24,7 +25,13 @@ func main() {
 	// What the hell man??
 	var repo db.BookingRepository = c
 	bookingService := s.NewBookingService(repo)
-	bookingHandler := h.NewBookingHandler(bookingService)
+	userService := s.NewUserService(
+		u.GetEnvOrFail("KEYCLOAK_BASE_URL"),
+		u.GetEnvOrFail("KEYCLOAK_REALM"),
+		u.GetEnvOrFail("KEYCLOAK_CLIENT_ID"),
+		u.GetEnvOrFail("KEYCLOAK_CLIENT_SECRET"),
+	)
+	bookingHandler := h.NewBookingHandler(bookingService, userService)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/api/ping", h.Healthcheck).Methods("GET")

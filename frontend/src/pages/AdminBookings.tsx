@@ -11,6 +11,9 @@ const AdminBookings = () => {
   const { getAllBookings } = useBookingService();
   const [bookings, setBookings] = useState<Booking[]>([]);
 
+  //
+  // To be changed to not include wished bookings
+  //
   useEffect(() => {
     const fetchBookings = async () => {
       try {

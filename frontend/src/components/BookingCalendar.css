@@ -181,3 +181,7 @@
 .saturday-tile {
   background: #e0e0ff;
 }
+
+.react-calendar__navigation__label {
+  text-transform: capitalize;
+}

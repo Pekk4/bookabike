@@ -188,3 +188,7 @@
   background: #5e5959;
   color: white;
 }
+
+.react-calendar__navigation__label {
+  text-transform: capitalize;
+}

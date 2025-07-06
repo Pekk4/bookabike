@@ -4,12 +4,12 @@ import { useLocation } from 'react-router-dom';
 import { useBookingService } from '../services/bookingService';
 import AdminCalendar from '../components/AdminCalendar';
 
-import { Booking } from '../types';
+import { AdminBooking } from '../types';
 
 const AdminBookings = () => {
   const location = useLocation();
   const { getAllBookings } = useBookingService();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<AdminBooking[]>([]);
 
   //
   // To be changed to not include wished bookings
@@ -36,6 +36,12 @@ const AdminBookings = () => {
   //    console.log('bookedDates:', Array.from(bookedDates));
   //  }
   //}, [bookedDates]);
+
+  //useEffect(() => {
+  //  if (bookings.length > 0) {
+  //    console.log('Bookings:', Array.from(bookings));
+  //  }
+  //}, [bookings]);
 
   return (
     <>

@@ -11,18 +11,15 @@ import (
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
-//var ErrUnauthorized = errors.New("unauthorized")
-//var ErrBookingNotFound = errors.New("booking not found")
-
-type UserService struct {
+type KeycloakClient struct {
 	KeycloakBaseURL string
 	Realm           string
 	ClientID        string
 	ClientSecret    string
 }
 
-func NewUserService(baseURL, realm, clientID, clientSecret string) *UserService {
-	return &UserService{
+func NewKeycloakClient(baseURL, realm, clientID, clientSecret string) *KeycloakClient {
+	return &KeycloakClient{
 		KeycloakBaseURL: baseURL,
 		Realm:           realm,
 		ClientID:        clientID,
@@ -30,25 +27,19 @@ func NewUserService(baseURL, realm, clientID, clientSecret string) *UserService 
 	}
 }
 
-//func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Booking, error) {
-//	return &createdBooking, nil
-//}
-
-func (s *UserService) GetUserFullNameByID(userID string) (m.User, error) {
-	// Fetch a fresh admin token
-	token, err := s.FetchAdminToken()
+func (c *KeycloakClient) GetUserFullNameByID(userID string) (m.User, error) {
+	// Fetch a fresh access token
+	accessToken, err := c.FetchAccessToken()
 	if err != nil {
 		return m.User{}, fmt.Errorf("failed to fetch admin token: %w", err)
 	}
-	adminToken := token
 
-	url := fmt.Sprintf("%s/admin/realms/%s/users/%s", s.KeycloakBaseURL, s.Realm, userID)
-
-	req, err := http.NewRequest("GET", url, nil)
+	endpoint := fmt.Sprintf("%s/admin/realms/%s/users/%s", c.KeycloakBaseURL, c.Realm, userID)
+	req, err := http.NewRequest("GET", endpoint, nil)
 	if err != nil {
 		return m.User{}, err
 	}
-	req.Header.Set("Authorization", "Bearer "+adminToken)
+	req.Header.Set("Authorization", "Bearer "+accessToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -81,13 +72,13 @@ func (s *UserService) GetUserFullNameByID(userID string) (m.User, error) {
 	}, nil
 }
 
-func (s *UserService) FetchAdminToken() (string, error) {
-	tokenURL := fmt.Sprintf("%s/realms/%s/protocol/openid-connect/token", s.KeycloakBaseURL, s.Realm)
+func (c *KeycloakClient) FetchAccessToken() (string, error) {
+	tokenURL := fmt.Sprintf("%s/realms/%s/protocol/openid-connect/token", c.KeycloakBaseURL, c.Realm)
 
 	data := url.Values{}
 	data.Set("grant_type", "client_credentials")
-	data.Set("client_id", s.ClientID)
-	data.Set("client_secret", s.ClientSecret)
+	data.Set("client_id", c.ClientID)
+	data.Set("client_secret", c.ClientSecret)
 
 	req, err := http.NewRequest("POST", tokenURL, bytes.NewBufferString(data.Encode()))
 	if err != nil {
@@ -104,7 +95,7 @@ func (s *UserService) FetchAdminToken() (string, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("failed to fetch admin token: %s, %s", resp.Status, string(body))
+		return "", fmt.Errorf("failed to fetch access token: %s, %s", resp.Status, string(body))
 	}
 
 	var tokenResp struct {

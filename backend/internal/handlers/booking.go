@@ -14,12 +14,11 @@ import (
 )
 
 type BookingHandler struct {
-	Service     *s.BookingService
-	UserService *s.UserService
+	Service *s.BookingService
 }
 
-func NewBookingHandler(service *s.BookingService, userService *s.UserService) *BookingHandler {
-	return &BookingHandler{Service: service, UserService: userService}
+func NewBookingHandler(service *s.BookingService) *BookingHandler {
+	return &BookingHandler{Service: service}
 }
 
 func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
@@ -69,13 +68,6 @@ func (h *BookingHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) 
 		http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
 		return
 	}
-
-	userData, err := h.UserService.GetUserFullNameByID(userID)
-	if err != nil {
-		log.Printf("Error retrieving user data: %v", err)
-		return
-	}
-	log.Printf("User data: %+v", userData)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(bookings)

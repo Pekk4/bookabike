@@ -19,3 +19,12 @@ type PublicBooking struct {
 	//EndDate   string `json:"endDate"`
 	EndDate time.Time `json:"endDate"`
 }
+
+type DetailedBooking struct {
+	ID        int    `json:"id"`
+	User      User   `json:"user"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+	Status    string `json:"status"`
+	CreatedAt string `json:"createdAt"`
+}

@@ -14,6 +14,20 @@ export interface PublicBooking extends BaseBooking {
   id: number;
 }
 
+export interface AdminBooking extends BaseBooking {
+  id: number;
+  status: string;
+  user: User;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+}
+
 export enum ModalButtonMode {
   NoButtons = 'noButtons',
   OkButton = 'okButton',

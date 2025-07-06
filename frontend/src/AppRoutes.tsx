@@ -8,6 +8,7 @@ import EditBookings from './pages/EditBookings';
 import CreateBookings from './pages/CreateBookings';
 import AdminBookings from './pages/AdminBookings';
 import TestBody from './pages/TestBody';
+import ManageBookings from './pages/ManageBookings';
 
 const AppRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AppRoutes = () => {
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/edit-booking" element={<EditBookings />} />
         <Route path="/me" element={<TestBody />} />
+        <Route path="/manage-bookings" element={<ManageBookings />} />
       </Routes>
     </div>
   );

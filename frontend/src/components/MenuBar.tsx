@@ -103,6 +103,11 @@ const MenuBar = () => {
                 Omat tiedot
               </div>
             </Link>
+            <Link to="/manage-bookings">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Varaustenhallinta
+              </div>
+            </Link>
           </div>
         </Drawer>
       </div>

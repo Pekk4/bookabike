@@ -54,6 +54,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		}
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
+		// Should be somewhere else, I guess???
 		baseURL := u.GetEnvOrFail("KEYCLOAK_BASE_URL") // TODO: consider handling trailing slash here somehow
 		realm := u.GetEnvOrFail("KEYCLOAK_REALM")
 		jwksURL := fmt.Sprintf("%s/realms/%s/protocol/openid-connect/certs", baseURL, realm)

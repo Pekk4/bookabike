@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
-
 	"github.com/pekk4/bookabike/backend/internal/db"
 	h "github.com/pekk4/bookabike/backend/internal/handlers"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
+	r "github.com/pekk4/bookabike/backend/internal/routes"
 	s "github.com/pekk4/bookabike/backend/internal/services"
+	u "github.com/pekk4/bookabike/backend/internal/utils"
 )
 
 func main() {
@@ -21,24 +21,28 @@ func main() {
 	}
 	defer c.Close()
 
-	// What the hell man??
+	// ???
 	var repo db.BookingRepository = c
+
+	keycloakClient := s.NewKeycloakClient(
+		u.GetEnvOrFail("KEYCLOAK_BASE_URL"),
+		u.GetEnvOrFail("KEYCLOAK_REALM"),
+		u.GetEnvOrFail("KEYCLOAK_CLIENT_ID"),
+		u.GetEnvOrFail("KEYCLOAK_CLIENT_SECRET"),
+	)
+
 	bookingService := s.NewBookingService(repo)
+	adminService := s.NewAdminService(repo, keycloakClient)
+
 	bookingHandler := h.NewBookingHandler(bookingService)
+	adminHandler := h.NewAdminHandler(adminService)
 
-	r := mux.NewRouter()
-	r.HandleFunc("/api/ping", h.Healthcheck).Methods("GET")
-	r.HandleFunc("/api/booking", bookingHandler.CreateBooking).Methods("POST")
-	// This will be moved under /admin later
-	r.HandleFunc("/api/booking", bookingHandler.GetAllBookings).Methods("GET")
+	handlers := &r.Handlers{
+		BookingHandler: bookingHandler,
+		AdminHandler:   adminHandler,
+	}
 
-	r.HandleFunc("/api/booking/{id}", bookingHandler.DeleteBookingByID).Methods("DELETE")
-
-	r.HandleFunc("/api/calendar", bookingHandler.GetAllBookedDates).Methods("GET")
-
-	r.HandleFunc("/api/me", bookingHandler.GetAllBookings).Methods("GET")
-
-	r.HandleFunc("/api/booking/{id}", bookingHandler.UpdateBookingByID).Methods("PUT")
+	router := r.RegisterRoutes(handlers)
 
 	// CORS preflight requests
 	//r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -48,7 +52,7 @@ func main() {
 	//	}
 	//}).Methods("OPTIONS")
 
-	handler := mw.CORSMiddleware(mw.AuthMiddleware(r))
+	handler := mw.CORSMiddleware(mw.AuthMiddleware(router))
 
 	port := os.Getenv("PORT")
 	if port == "" {

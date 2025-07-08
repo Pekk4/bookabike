@@ -28,7 +28,8 @@ func RegisterRoutes(h *Handlers) *mux.Router {
 	r.HandleFunc("/api/me", h.BookingHandler.GetAllBookings).Methods("GET")
 
 	// Admin bookings
-	r.HandleFunc("/api/booking", h.AdminHandler.GetAllBookings).Methods("GET")
+	r.HandleFunc("/api/admin/booking", h.AdminHandler.GetAllBookings).Methods("GET")
+	r.HandleFunc("/api/admin/booking/{id}/edit", h.AdminHandler.UpdateBookingStatus).Methods("POST")
 
 	return r
 }

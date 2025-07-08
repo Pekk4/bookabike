@@ -1,9 +1,9 @@
 //import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
-import { AdminBooking } from '../types';
+import { UserDataBooking } from '../types';
 
 interface BookingCardProps {
-  booking: AdminBooking;
+  booking: UserDataBooking;
 }
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);

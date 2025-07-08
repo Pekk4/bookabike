@@ -10,26 +10,28 @@ import {
   Chip,
 } from '@mui/material';
 
-import { AdminBooking } from '../types';
+import { UserDataBooking, BookingStatus as b } from '../types';
 
 interface BookingsManagerProps {
-  bookings: AdminBooking[];
+  bookings: UserDataBooking[];
+  onAccept: (bookingId: number) => void;
+  onReject: (bookingId: number) => void;
 }
 
 const statusColor = (status: string) => {
   switch (status) {
-    case 'pending':
+    case b.Pending:
       return 'warning';
-    case 'confirmed':
+    case b.Confirmed:
       return 'success';
-    case 'canceled':
+    case b.Canceled:
       return 'error';
     default:
       return 'default';
   }
 };
 
-const BookingsManager = ({ bookings }: BookingsManagerProps) => {
+const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps) => {
   return (
     <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
       <div className="row-start-2">
@@ -63,12 +65,18 @@ const BookingsManager = ({ bookings }: BookingsManagerProps) => {
                         color="success"
                         size="small"
                         style={{ marginRight: 8 }}
+                        onClick={() => onAccept(booking.id)}
                       >
                         Hyväksy
                       </Button>
                     )}
                     {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                      <Button variant="contained" color="error" size="small">
+                      <Button
+                        variant="contained"
+                        color="error"
+                        size="small"
+                        onClick={() => onReject(booking.id)}
+                      >
                         Hylkää
                       </Button>
                     )}

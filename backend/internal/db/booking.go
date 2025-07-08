@@ -238,8 +238,8 @@ func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *in
 func (c *conn) UpdateBookingByID(bookingID int, b m.Booking) (m.Booking, error) {
 	query := `
 		UPDATE bookings
-		SET start_date = $1, end_date = $2
-		WHERE id = $3
+		SET start_date = $1, end_date = $2, status = $3
+		WHERE id = $4
 		RETURNING id, start_date, end_date, status, user_id, created_at
 	`
 	var updated m.Booking
@@ -249,6 +249,7 @@ func (c *conn) UpdateBookingByID(bookingID int, b m.Booking) (m.Booking, error) 
 		query,
 		b.StartDate,
 		b.EndDate,
+		b.Status,
 		bookingID,
 	).Scan(
 		&updated.ID,

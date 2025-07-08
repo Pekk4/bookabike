@@ -7,17 +7,17 @@ import BookingCard from './BookingCard';
 import useModal from '../hooks/useModal';
 import { getCapitalizedMonth } from '../utils/date';
 
-import { AdminBooking } from '../types';
+import { UserDataBooking } from '../types';
 
 interface AdminCalendarProps {
-  bookings: AdminBooking[];
+  bookings: UserDataBooking[];
 }
 
 const AdminCalendar = ({ bookings }: AdminCalendarProps) => {
   const { showModal } = useModal();
   const [monthHeader, setMonthHeader] = useState<string>('');
   const bookedDates = new Set<string>();
-  const dateToBookingMap = new Map<string, AdminBooking>();
+  const dateToBookingMap = new Map<string, UserDataBooking>();
 
   useEffect(() => {
     const now = new Date();

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import useKeycloak from '../hooks/useKeycloak';
 
-import { AdminBooking } from '../types';
+import { UserDataBooking } from '../types';
 
 export const useAdminService = () => {
   const { keycloak } = useKeycloak();
@@ -22,10 +22,17 @@ export const useAdminService = () => {
   const getAllBookings = async () => {
     const config = await buildHeader();
 
-    return await axios.get<AdminBooking[]>(`${apiBaseUrl}/admin/booking`, config);
+    return await axios.get<UserDataBooking[]>(`${apiBaseUrl}/admin/booking`, config);
+  };
+
+  const updateBookingStatus = async (bookingId: number, status: string) => {
+    const config = await buildHeader();
+
+    return await axios.post(`${apiBaseUrl}/admin/booking/${bookingId}/edit`, { status }, config);
   };
 
   return {
     getAllBookings,
+    updateBookingStatus,
   };
 };

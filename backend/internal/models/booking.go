@@ -20,7 +20,7 @@ type PublicBooking struct {
 	EndDate time.Time `json:"endDate"`
 }
 
-type DetailedBooking struct {
+type UserDataBooking struct {
 	ID        int    `json:"id"`
 	User      User   `json:"user"`
 	StartDate string `json:"startDate"`

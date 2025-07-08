@@ -33,3 +33,10 @@ export enum ModalButtonMode {
   OkButton = 'okButton',
   YesNoButtons = 'yesNoButtons',
 }
+
+export enum BookingStatus {
+  Pending = 'pending',
+  Confirmed = 'confirmed',
+  Canceled = 'canceled',
+  Wished = 'wished',
+}

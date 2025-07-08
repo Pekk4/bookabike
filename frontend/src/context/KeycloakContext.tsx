@@ -35,6 +35,10 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
       //console.log("KCI: ", keycloakInstance);
       // DELETE
 
+      // https://er-raj-aryan.medium.com/fixing-keycloak-auto-redirect-on-refresh-a-complete-guide-to-persistent-authentication-in-spas-8f0688f074d5
+
+      // https://er-raj-aryan.medium.com/fixing-keycloak-auto-redirect-on-refresh-how-to-persist-authentication-in-spas-5aec92319b51
+
       keycloakInstance
         .init({
           onLoad: 'check-sso',

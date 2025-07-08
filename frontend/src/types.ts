@@ -14,7 +14,7 @@ export interface PublicBooking extends BaseBooking {
   id: number;
 }
 
-export interface AdminBooking extends BaseBooking {
+export interface UserDataBooking extends BaseBooking {
   id: number;
   status: string;
   user: User;

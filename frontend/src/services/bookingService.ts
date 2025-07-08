@@ -3,7 +3,7 @@ import axios from 'axios';
 import { apiBaseUrl } from '../constants';
 import useKeycloak from '../hooks/useKeycloak';
 
-import { BaseBooking, Booking, AdminBooking } from '../types';
+import { BaseBooking, Booking } from '../types';
 
 export const useBookingService = () => {
   const { keycloak } = useKeycloak();
@@ -17,14 +17,6 @@ export const useBookingService = () => {
     return {
       headers: { Authorization: `Bearer ${keycloak.token}` },
     };
-  };
-
-  // This will be dedicated for admin use only
-  const getAllBookings = async () => {
-    const config = await buildHeader();
-
-    //return await axios.get<Booking[]>(`${apiBaseUrl}/booking`, config);
-    return await axios.get<AdminBooking[]>(`${apiBaseUrl}/booking`, config);
   };
 
   const getAllBookedDates = async () => {
@@ -78,7 +70,6 @@ export const useBookingService = () => {
   };
 
   return {
-    getAllBookings,
     getAllBookedDates,
     createBooking,
     getUserBookings,

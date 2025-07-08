@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useBookingService } from '../services/bookingService';
+import { useAdminService } from '../services/adminService';
 import AdminCalendar from '../components/AdminCalendar';
 
-import { AdminBooking } from '../types';
+import { UserDataBooking } from '../types';
 
 const AdminBookings = () => {
   const location = useLocation();
-  const { getAllBookings } = useBookingService();
-  const [bookings, setBookings] = useState<AdminBooking[]>([]);
+  const { getAllBookings } = useAdminService();
+  const [bookings, setBookings] = useState<UserDataBooking[]>([]);
 
   //
   // To be changed to not include wished bookings

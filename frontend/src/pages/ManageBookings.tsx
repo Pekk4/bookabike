@@ -43,7 +43,17 @@ const ManageBookings = () => {
     try {
       const { data: updatedBooking } = await updateBookingStatus(bookingId, status);
 
-      setBookings((prev) => prev.map((b) => (b.id === bookingId ? updatedBooking : b)));
+      const statusOrder: Record<string, number> = {
+        [b.Pending]: 1,
+        [b.Confirmed]: 2,
+        [b.Canceled]: 3,
+      };
+
+      setBookings((prev) =>
+        prev
+          .map((booking) => (booking.id === bookingId ? updatedBooking : booking))
+          .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
+      );
     } catch (error) {
       // TODO: handle properly
       console.error('Error updating booking:', error);

@@ -5,7 +5,7 @@ export interface BaseBooking {
 
 export interface Booking extends BaseBooking {
   id: number;
-  status: string;
+  status: BookingStatus;
   userId?: string;
 }
 
@@ -16,8 +16,9 @@ export interface PublicBooking extends BaseBooking {
 
 export interface UserDataBooking extends BaseBooking {
   id: number;
-  status: string;
+  status: BookingStatus;
   user: User;
+  createdAt: Date;
 }
 
 export interface User {

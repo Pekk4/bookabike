@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/pekk4/bookabike/backend/internal/db"
+	d "github.com/pekk4/bookabike/backend/internal/db"
 	h "github.com/pekk4/bookabike/backend/internal/handlers"
-	mw "github.com/pekk4/bookabike/backend/internal/middleware"
+	m "github.com/pekk4/bookabike/backend/internal/middleware"
 	r "github.com/pekk4/bookabike/backend/internal/routes"
 	s "github.com/pekk4/bookabike/backend/internal/services"
 	u "github.com/pekk4/bookabike/backend/internal/utils"
@@ -24,7 +24,7 @@ func main() {
 	cfg := u.LoadConfigFromEnv()
 
 	// Init DB connection
-	c := db.NewConnection(cfg)
+	c := d.NewConnection(cfg)
 
 	// Check if the connection is successful
 	err := c.Ping()
@@ -34,15 +34,10 @@ func main() {
 	defer c.Close()
 
 	// Assign DB connection to the BookingRepository interface
-	var bookingRepo db.BookingRepository = c
+	var bookingRepo d.BookingRepository = c
 
 	// Initialize Keycloak client
-	keycloakClient := s.NewKeycloakClient(
-		cfg.KeycloakBaseURL,
-		cfg.KeycloakRealm,
-		cfg.KeycloakClientID,
-		cfg.KeycloakClientSecret,
-	)
+	keycloakClient := s.NewKeycloakClient(cfg)
 
 	// Initialize services
 	bookingService := s.NewBookingService(bookingRepo)
@@ -59,15 +54,11 @@ func main() {
 
 	// Register routes and assign middlewares
 	router := r.RegisterRoutes(handlers)
-	handler := mw.CORSMiddleware(cfg)(mw.AuthMiddleware(cfg)(router))
+	handler := m.CORSMiddleware(cfg)(m.AuthMiddleware(cfg, keycloakClient)(router))
 
-	// Configure port & server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-	}
+	// Configure server
 	server := &http.Server{
-		Addr:    ":" + port,
+		Addr:    ":" + cfg.Port,
 		Handler: handler,
 	}
 
@@ -79,7 +70,7 @@ func main() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Println("Starting server on port", port)
+		log.Println("Starting server on port", cfg.Port)
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Server error: %v", err)

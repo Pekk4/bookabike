@@ -14,31 +14,19 @@ type conn struct {
 	db *sql.DB
 }
 
-// To be deleted...
-type Conn interface {
-	Close() error
-	Ping() error
-}
-
-var (
-	host     = u.GetEnvOrFail("DB_HOST")
-	port     = u.GetEnvOrFail("DB_PORT")
-	user     = u.GetEnvOrFail("DB_USER")
-	password = u.GetEnvOrFail("DB_PASSWORD")
-	dbname   = u.GetEnvOrFail("DB_NAME")
-)
-
-func NewConnection() *conn {
+func NewConnection(cfg *u.AppConfig) *conn {
 	psqlInfo := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname,
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSSLMode,
 	)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	connection := new(conn)
 	connection.db = db
+
 	return connection
 }
 

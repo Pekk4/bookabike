@@ -41,6 +41,7 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 			EndDate:   result.EndDate,
 			Status:    result.Status,
 			//CreatedAt: result.CreatedAt,
+			CreatedAt: result.CreatedAt,
 		}
 		bookings = append(bookings, booking)
 	}
@@ -89,6 +90,7 @@ func (s *AdminService) UpdateBookingStatus(bookingID, bookingStatus string) (*m.
 		EndDate:   updatedBooking.EndDate,
 		Status:    updatedBooking.Status,
 		//CreatedAt: updatedBooking.CreatedAt,
+		CreatedAt: updatedBooking.CreatedAt,
 	}
 
 	return &booking, nil

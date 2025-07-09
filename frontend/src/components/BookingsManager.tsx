@@ -42,6 +42,7 @@ const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps)
                 <TableCell>Käyttäjä</TableCell>
                 <TableCell>Aloitus</TableCell>
                 <TableCell>Palautus</TableCell>
+                <TableCell>Varaus tehty</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>Toimenpiteet</TableCell>
               </TableRow>
@@ -55,6 +56,15 @@ const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps)
                   </TableCell>
                   <TableCell>{new Date(booking.startDate).toLocaleDateString('fi-FI')}</TableCell>
                   <TableCell>{new Date(booking.endDate).toLocaleDateString('fi-FI')}</TableCell>
+                  <TableCell>
+                    {new Date(booking.createdAt).toLocaleDateString('fi-FI')}
+                    <br />
+                    klo{' '}
+                    {new Date(booking.createdAt).toLocaleTimeString('fi-FI', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </TableCell>
                   <TableCell>
                     <Chip label={booking.status} color={statusColor(booking.status)} />
                   </TableCell>

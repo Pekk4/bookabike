@@ -3,12 +3,13 @@ package models
 import "time"
 
 type Booking struct {
-	ID        int     `json:"id"`
-	StartDate string  `json:"startDate"`
-	EndDate   string  `json:"endDate"`
-	UserID    string  `json:"userId"`
-	Status    string  `json:"status"`
-	CreatedAt *string `json:"createdAt,omitempty"`
+	ID        int    `json:"id"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
+	UserID    string `json:"userId"`
+	Status    string `json:"status"`
+	//CreatedAt *string `json:"createdAt,omitempty"`
+	CreatedAt string `json:"createdAt"`
 }
 
 // PublicBooking hides sensitive information from regular users

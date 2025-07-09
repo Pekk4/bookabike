@@ -6,7 +6,7 @@ export interface BaseBooking {
 export interface Booking extends BaseBooking {
   id: number;
   status: BookingStatus;
-  userId?: string;
+  userId: string;
 }
 
 // Possibly unused? 18.6.25

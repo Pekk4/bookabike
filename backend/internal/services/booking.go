@@ -121,6 +121,7 @@ func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin
 	if err != nil {
 		// TODO: error handling and logging
 		return ErrBookingNotFound // AD HOC
+		// if err == db.ErrBookingNotFound { // use this or delete it from db/booking.go
 	}
 
 	if booking.UserID != userID {

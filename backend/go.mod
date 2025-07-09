@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
 	github.com/MicahParks/jwkset v0.8.0 // indirect
 	golang.org/x/time v0.9.0 // indirect
 )

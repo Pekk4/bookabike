@@ -7,11 +7,6 @@ import (
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
-//
-// Consider deploying GORM here
-// https://gorm.io/
-//
-
 type BookingRepository interface {
 	CreateBooking(b m.Booking) (m.Booking, error)
 	GetAllBookings() ([]m.Booking, error)
@@ -28,7 +23,7 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	query := `
 		INSERT INTO bookings (start_date, end_date, status, user_id)
 		VALUES ($1, $2, $3, $4)
-		RETURNING id, start_date, end_date, status, created_at
+		RETURNING id, start_date, end_date, status, user_id, created_at
 	`
 	var booking m.Booking
 
@@ -43,6 +38,7 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 		&booking.StartDate,
 		&booking.EndDate,
 		&booking.Status,
+		&booking.UserID,
 		&booking.CreatedAt,
 	); err != nil {
 		//if err != nil {
@@ -130,7 +126,11 @@ func (c *conn) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
 func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 	var count int
 
-	query := `SELECT COUNT(*) FROM bookings WHERE user_id = $1 AND status != 'wished'`
+	query := `
+		SELECT COUNT(*)
+		FROM bookings
+		WHERE user_id = $1 AND status != 'wished' AND status != 'cancelled'
+	`
 	if err := c.db.QueryRow(query, userID).Scan(&count); err != nil {
 		return 0, fmt.Errorf("GetUsersActiveBookingsCount: %w", err)
 	}
@@ -231,7 +231,6 @@ func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *in
 		}
 		return false, err
 	}
-
 	return true, nil // Overlap found
 }
 
@@ -244,7 +243,6 @@ func (c *conn) UpdateBookingByID(bookingID int, b m.Booking) (m.Booking, error) 
 	`
 	var updated m.Booking
 
-	// TODO: decide the representation of err/nil conditional, not sure which one is more clear
 	if err := c.db.QueryRow(
 		query,
 		b.StartDate,

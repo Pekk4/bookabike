@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
@@ -11,7 +12,7 @@ import (
 )
 
 type AdminHandler struct {
-	Service *s.AdminService
+	service *s.AdminService
 }
 
 type UpdateBookingPayload struct {
@@ -19,18 +20,18 @@ type UpdateBookingPayload struct {
 }
 
 func NewAdminHandler(service *s.AdminService) *AdminHandler {
-	return &AdminHandler{Service: service}
+	return &AdminHandler{service: service}
 }
 
 func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
-	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
-	if !isAdmin {
+	isAdmin, ok := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
+	if !ok || !isAdmin {
 		// TODO: error handling and logging
 		http.Error(w, "Unauthorized: Admin access required", http.StatusUnauthorized)
 		return
 	}
 
-	bookings, err := h.Service.GetAllBookings()
+	bookings, err := h.service.GetAllBookings()
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
@@ -43,27 +44,32 @@ func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Request) {
-	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
-	if !isAdmin {
+	isAdmin, ok := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
+	if !ok || !isAdmin {
 		// TODO: error handling and logging
 		http.Error(w, "Unauthorized: Admin access required", http.StatusUnauthorized)
 		return
 	}
 
-	vars := mux.Vars(r)
-	bookingID := vars["id"]
+	idStr := mux.Vars(r)["id"]
+	bookingID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Booking ID is required", http.StatusBadRequest)
+		return
+	}
 
 	var payload UpdateBookingPayload
+
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		// TODO: error handling and logging
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
-	updatedBooking, err := h.Service.UpdateBookingStatus(bookingID, payload.Status)
+	updatedBooking, err := h.service.UpdateBookingStatus(bookingID, payload.Status)
 	if err != nil {
 		// TODO: error handling and logging
-		log.Printf("Error confirming booking with ID %s: %v", bookingID, err)
+		log.Printf("Error confirming booking with ID %d: %v", bookingID, err)
 		if err == s.ErrBookingNotFound {
 			http.Error(w, "Booking not found", http.StatusNotFound)
 		} else {

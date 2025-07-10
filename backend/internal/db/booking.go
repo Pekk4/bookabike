@@ -12,7 +12,7 @@ type BookingRepository interface {
 	GetAllBookings() ([]m.Booking, error)
 	GetAllBookingsByUserID(userID string) ([]m.Booking, error)
 	CountActiveBookingsForUser(userID string) (int, error)
-	GetAllBookedDates() ([]m.PublicBooking, error)
+	GetAllBookedDates() ([]m.BookingDates, error)
 	DeleteBookingByID(bookingID int) error
 	GetBookingByID(bookingID int) (m.Booking, error)
 	HasBookingOverlap(startDate, endDate string, excludeBookingID *int) (bool, error)
@@ -138,7 +138,7 @@ func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 	return count, nil
 }
 
-func (c *conn) GetAllBookedDates() ([]m.PublicBooking, error) {
+func (c *conn) GetAllBookedDates() ([]m.BookingDates, error) {
 	query := `
 		SELECT id, start_date, end_date
 		FROM bookings
@@ -152,10 +152,10 @@ func (c *conn) GetAllBookedDates() ([]m.PublicBooking, error) {
 	}
 	defer rows.Close()
 
-	var bookings []m.PublicBooking
+	var bookings []m.BookingDates
 
 	for rows.Next() {
-		var booking m.PublicBooking
+		var booking m.BookingDates
 
 		if err := rows.Scan(
 			&booking.ID,

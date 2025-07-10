@@ -1,19 +1,17 @@
 package services
 
 import (
-	"strconv"
-
 	"github.com/pekk4/bookabike/backend/internal/db"
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
 type AdminService struct {
-	Repo     db.BookingRepository
-	KcClient *KeycloakClient
+	repo     db.BookingRepository
+	kcClient *KeycloakClient
 }
 
 func NewAdminService(bookingRepo db.BookingRepository, client *KeycloakClient) *AdminService {
-	return &AdminService{Repo: bookingRepo, KcClient: client}
+	return &AdminService{repo: bookingRepo, kcClient: client}
 }
 
 func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
@@ -21,14 +19,15 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 	var bookings []m.UserDataBooking
 	var err error
 
-	results, err = s.Repo.GetAllBookings()
+	results, err = s.repo.GetAllBookings()
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
 	}
 
 	for _, result := range results {
-		user, err := s.KcClient.GetUserFullNameByID(result.UserID)
+		// Could be cached, but only one active booking per user, so not necessary
+		user, err := s.kcClient.FetchUserProfileByID(result.UserID)
 		if err != nil {
 			// TODO: error handling and logging
 			return nil, err
@@ -40,7 +39,6 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 			StartDate: result.StartDate,
 			EndDate:   result.EndDate,
 			Status:    result.Status,
-			//CreatedAt: result.CreatedAt,
 			CreatedAt: result.CreatedAt,
 		}
 		bookings = append(bookings, booking)
@@ -49,14 +47,8 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 	return bookings, nil
 }
 
-func (s *AdminService) UpdateBookingStatus(bookingID, bookingStatus string) (*m.UserDataBooking, error) {
-	id, err := strconv.Atoi(bookingID)
-	if err != nil {
-		// TODO: error handling and logging
-		return nil, err
-	}
-
-	result, err := s.Repo.GetBookingByID(id)
+func (s *AdminService) UpdateBookingStatus(bookingID int, bookingStatus string) (*m.UserDataBooking, error) {
+	result, err := s.repo.GetBookingByID(bookingID)
 	if err != nil {
 		// TODO: error handling and logging
 		//if err == db.ErrBookingNotFound {
@@ -65,7 +57,7 @@ func (s *AdminService) UpdateBookingStatus(bookingID, bookingStatus string) (*m.
 		return nil, err
 	}
 
-	user, err := s.KcClient.GetUserFullNameByID(result.UserID)
+	user, err := s.kcClient.FetchUserProfileByID(result.UserID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -77,7 +69,7 @@ func (s *AdminService) UpdateBookingStatus(bookingID, bookingStatus string) (*m.
 	//}
 
 	result.Status = bookingStatus
-	updatedBooking, err := s.Repo.UpdateBookingByID(result.ID, result)
+	updatedBooking, err := s.repo.UpdateBookingByID(result.ID, result)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err

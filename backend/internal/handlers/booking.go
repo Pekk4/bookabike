@@ -14,11 +14,11 @@ import (
 )
 
 type BookingHandler struct {
-	Service *s.BookingService
+	service *s.BookingService
 }
 
 func NewBookingHandler(service *s.BookingService) *BookingHandler {
-	return &BookingHandler{Service: service}
+	return &BookingHandler{service: service}
 }
 
 func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +38,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdBooking, err := h.Service.CreateBooking(userID, booking)
+	createdBooking, err := h.service.CreateBooking(userID, booking)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)
@@ -59,7 +59,7 @@ func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	bookings, err := h.Service.GetAllBookingsByUserID(userID)
+	bookings, err := h.service.GetAllBookingsByUserID(userID)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
@@ -72,7 +72,7 @@ func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.R
 }
 
 func (h *BookingHandler) GetAllBookedDates(w http.ResponseWriter, r *http.Request) {
-	bookedDates, err := h.Service.GetAllBookedDates()
+	bookedDates, err := h.service.GetAllBookedDates()
 	if err != nil {
 		//TODO: error handling and logging
 		log.Printf("Error retrieving all booked dates: %v", err)
@@ -94,7 +94,7 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 
 	userID := r.Context().Value(mw.ContextKeyUserID).(string)
 
-	err = h.Service.DeleteBookingByID(bookingID, userID)
+	err = h.service.DeleteBookingByID(bookingID, userID)
 	if err != nil {
 		// TODO: error handling and logging
 		switch err {
@@ -136,7 +136,7 @@ func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updatedBooking, err := h.Service.UpdateBookingByID(bookingID, userID, booking)
+	updatedBooking, err := h.service.UpdateBookingByID(bookingID, userID, booking)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)

@@ -25,7 +25,7 @@ func NewKeycloakClient(cfg *u.AppConfig) *KeycloakClient {
 	return &KeycloakClient{cfg: cfg}
 }
 
-func (c *KeycloakClient) GetUserFullNameByID(userID string) (m.User, error) {
+func (c *KeycloakClient) FetchUserProfileByID(userID string) (m.User, error) {
 	// Fetch a fresh access token
 	accessToken, err := c.FetchAccessToken()
 	if err != nil {
@@ -58,6 +58,7 @@ func (c *KeycloakClient) GetUserFullNameByID(userID string) (m.User, error) {
 		Username  string `json:"username"`
 		Email     string `json:"email"`
 	}
+
 	if err := json.NewDecoder(resp.Body).Decode(&kcUser); err != nil {
 		return m.User{}, err
 	}
@@ -100,10 +101,8 @@ func (c *KeycloakClient) FetchAccessToken() (string, error) {
 
 	var tokenResp struct {
 		AccessToken string `json:"access_token"`
-		ExpiresIn   int    `json:"expires_in"`
-		TokenType   string `json:"token_type"`
-		Scope       string `json:"scope"`
 	}
+
 	if err := json.NewDecoder(resp.Body).Decode(&tokenResp); err != nil {
 		return "", err
 	}

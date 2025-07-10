@@ -12,17 +12,17 @@ var ErrUnauthorized = errors.New("unauthorized")
 var ErrBookingNotFound = errors.New("booking not found")
 
 type BookingService struct {
-	Repo db.BookingRepository
+	repo db.BookingRepository
 }
 
 func NewBookingService(repository db.BookingRepository) *BookingService {
-	return &BookingService{Repo: repository}
+	return &BookingService{repo: repository}
 }
 
 func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Booking, error) {
 	booking.UserID = userID
 
-	hasOverlaps, err := s.Repo.HasBookingOverlap(booking.StartDate, booking.EndDate, nil)
+	hasOverlaps, err := s.repo.HasBookingOverlap(booking.StartDate, booking.EndDate, nil)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -33,19 +33,20 @@ func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Boo
 		return nil, errors.New("booking overlaps with existing bookings")
 	}
 
-	countActiveBookings, err := s.Repo.CountActiveBookingsForUser(userID)
+	countActiveBookings, err := s.repo.CountActiveBookingsForUser(userID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
 	}
 
+	// User can have only one active booking at a time
 	if countActiveBookings > 0 {
 		booking.Status = "wished"
 	} else {
 		booking.Status = "pending"
 	}
 
-	createdBooking, err := s.Repo.CreateBooking(booking)
+	createdBooking, err := s.repo.CreateBooking(booking)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -53,16 +54,8 @@ func (s *BookingService) CreateBooking(userID string, booking m.Booking) (*m.Boo
 	return &createdBooking, nil
 }
 
-func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Booking, error) {
-	var bookings []m.Booking
-	var err error
-
-	if isAdmin {
-		bookings, err = s.Repo.GetAllBookings()
-	} else {
-		bookings, err = s.Repo.GetAllBookingsByUserID(userID)
-	}
-
+func (s *BookingService) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
+	bookings, err := s.repo.GetAllBookingsByUserID(userID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -70,18 +63,8 @@ func (s *BookingService) GetAllBookings(isAdmin bool, userID string) ([]m.Bookin
 	return bookings, nil
 }
 
-//func (s *BookingService) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
-//	bookings, err := s.Repo.GetAllBookingsByUserID(userID)
-//	if err != nil {
-//		// TODO: error handling and logging
-//		return nil, err
-//	}
-//	return bookings, nil
-//}
-
-// func (s *BookingService) GetAllBookedDates() ([]m.PublicBooking, error) {
 func (s *BookingService) GetAllBookedDates() ([]string, error) {
-	bookings, err := s.Repo.GetAllBookedDates()
+	bookings, err := s.repo.GetAllBookedDates()
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -102,22 +85,13 @@ func (s *BookingService) GetAllBookedDates() ([]string, error) {
 	for date := range datesMap {
 		bookedDates = append(bookedDates, date)
 	}
-	sort.Strings(bookedDates) // Sort the dates
+	sort.Strings(bookedDates)
 
 	return bookedDates, nil
 }
 
-func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin bool) error {
-	if isAdmin {
-		err := s.Repo.DeleteBookingByID(bookingID)
-		if err != nil {
-			// TODO: error handling and logging
-			return err
-		}
-		return nil
-	}
-
-	booking, err := s.Repo.GetBookingByID(bookingID)
+func (s *BookingService) DeleteBookingByID(bookingID int, userID string) error {
+	booking, err := s.repo.GetBookingByID(bookingID)
 	if err != nil {
 		// TODO: error handling and logging
 		return ErrBookingNotFound // AD HOC
@@ -129,7 +103,7 @@ func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin
 		return ErrUnauthorized
 	}
 
-	err = s.Repo.DeleteBookingByID(bookingID)
+	err = s.repo.DeleteBookingByID(bookingID)
 	if err != nil {
 		// TODO: error handling and logging
 		return err
@@ -138,7 +112,7 @@ func (s *BookingService) DeleteBookingByID(bookingID int, userID string, isAdmin
 }
 
 func (s *BookingService) UpdateBookingByID(bookingID int, userID string, booking m.Booking) (*m.Booking, error) {
-	refBooking, err := s.Repo.GetBookingByID(bookingID)
+	refBooking, err := s.repo.GetBookingByID(bookingID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, ErrBookingNotFound // AD HOC
@@ -149,7 +123,8 @@ func (s *BookingService) UpdateBookingByID(bookingID int, userID string, booking
 		return nil, ErrUnauthorized
 	}
 
-	hasOverlaps, err := s.Repo.HasBookingOverlap(booking.StartDate, booking.EndDate, &bookingID)
+	// Check if the booking overlaps with existing bookings
+	hasOverlaps, err := s.repo.HasBookingOverlap(booking.StartDate, booking.EndDate, &bookingID)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err
@@ -160,7 +135,7 @@ func (s *BookingService) UpdateBookingByID(bookingID int, userID string, booking
 		return nil, errors.New("booking overlaps with existing bookings")
 	}
 
-	updatedBooking, err := s.Repo.UpdateBookingByID(bookingID, booking)
+	updatedBooking, err := s.repo.UpdateBookingByID(bookingID, booking)
 	if err != nil {
 		// TODO: error handling and logging
 		return nil, err

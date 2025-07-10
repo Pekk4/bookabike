@@ -25,7 +25,7 @@ func RegisterRoutes(h *Handlers) *mux.Router {
 	r.HandleFunc("/api/calendar", h.BookingHandler.GetAllBookedDates).Methods("GET")
 
 	// User bookings
-	r.HandleFunc("/api/me", h.BookingHandler.GetAllBookings).Methods("GET")
+	r.HandleFunc("/api/me", h.BookingHandler.GetAllBookingsByUserID).Methods("GET")
 
 	// Admin bookings
 	r.HandleFunc("/api/admin/booking", h.AdminHandler.GetAllBookings).Methods("GET")

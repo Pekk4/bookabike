@@ -50,9 +50,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(createdBooking)
 }
 
-func (h *BookingHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
-	// TODO: should we need to check this as well?
-	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
+func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
 		// TODO: error handling and logging
@@ -61,7 +59,7 @@ func (h *BookingHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	bookings, err := h.Service.GetAllBookings(isAdmin, userID)
+	bookings, err := h.Service.GetAllBookingsByUserID(userID)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
@@ -94,10 +92,9 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	isAdmin := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
 	userID := r.Context().Value(mw.ContextKeyUserID).(string)
 
-	err = h.Service.DeleteBookingByID(bookingID, userID, isAdmin)
+	err = h.Service.DeleteBookingByID(bookingID, userID)
 	if err != nil {
 		// TODO: error handling and logging
 		switch err {
@@ -124,6 +121,7 @@ func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Reques
 	}
 
 	var booking m.Booking
+
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
 		// TODO: error handling and logging
 		http.Error(w, "Invalid request body", http.StatusBadRequest)

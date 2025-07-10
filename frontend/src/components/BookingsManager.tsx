@@ -1,5 +1,4 @@
 import {
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -9,13 +8,14 @@ import {
   Paper,
   Chip,
 } from '@mui/material';
+import { KeycloakProfile } from 'keycloak-js';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
 
 interface BookingsManagerProps {
   bookings: UserDataBooking[];
-  onAccept: (bookingId: number) => void;
-  onReject: (bookingId: number) => void;
+  renderActions: (booking: UserDataBooking) => React.ReactNode;
+  user?: KeycloakProfile;
 }
 
 const statusColor = (status: string) => {
@@ -31,72 +31,84 @@ const statusColor = (status: string) => {
   }
 };
 
-const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps) => {
+const statusTranslations: Record<string, string> = {
+  pending: 'Odottaa',
+  confirmed: 'Hyväksytty',
+  canceled: 'Hylätty',
+  wished: 'Toive',
+};
+
+//const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps) => {
+const BookingsManager = ({ bookings, renderActions, user }: BookingsManagerProps) => {
   return (
-    <div className="h-screen w-screen grid grid-rows-3 justify-center items-center text-center">
-      <div className="row-start-2">
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Käyttäjä</TableCell>
-                <TableCell>Aloitus</TableCell>
-                <TableCell>Palautus</TableCell>
-                <TableCell>Varaus tehty</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Toimenpiteet</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {bookings.map((booking) => (
-                <TableRow key={booking.id} className="hover:cursor-pointer">
+    <div className="h-screen w-screen flex justify-center items-center text-center pt-20">
+      <TableContainer
+        component={Paper}
+        style={{
+          overflow: 'auto',
+          maxHeight: '80vh',
+          minHeight: '80vh',
+          minWidth: '100vw',
+          margin: '0 auto',
+        }}
+      >
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              <TableCell>Käyttäjä</TableCell>
+              <TableCell align="center">Aloitus</TableCell>
+              <TableCell align="center">Palautus</TableCell>
+              <TableCell align="center">Noutopaikka</TableCell>
+              <TableCell align="center">Varaus tehty</TableCell>
+              <TableCell align="center">Status</TableCell>
+              <TableCell align="center">Toimenpiteet</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {bookings.map((booking) => (
+              <TableRow key={booking.id} className="hover:cursor-pointer hover:bg-gray-50">
+                {user && (
+                  <TableCell>
+                    {user?.firstName} {user?.lastName} <br />
+                    <small>{user?.email}</small>
+                  </TableCell>
+                )}
+                {!user && (
                   <TableCell>
                     {booking.user.firstName} {booking.user.lastName} <br />
                     <small>{booking.user.email}</small>
                   </TableCell>
-                  <TableCell>{new Date(booking.startDate).toLocaleDateString('fi-FI')}</TableCell>
-                  <TableCell>{new Date(booking.endDate).toLocaleDateString('fi-FI')}</TableCell>
-                  <TableCell>
-                    {new Date(booking.createdAt).toLocaleDateString('fi-FI')}
-                    <br />
+                )}
+                <TableCell align="center">
+                  {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+                </TableCell>
+                <TableCell align="center">
+                  {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                </TableCell>
+                <TableCell align="center">Vantaa</TableCell>
+                <TableCell align="center">
+                  {new Date(booking.createdAt).toLocaleDateString('fi-FI')}
+                  <br />
+                  <small>
                     klo{' '}
                     {new Date(booking.createdAt).toLocaleTimeString('fi-FI', {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={booking.status} color={statusColor(booking.status)} />
-                  </TableCell>
-                  <TableCell>
-                    {booking.status === 'pending' && (
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        style={{ marginRight: 8 }}
-                        onClick={() => onAccept(booking.id)}
-                      >
-                        Hyväksy
-                      </Button>
-                    )}
-                    {(booking.status === 'pending' || booking.status === 'confirmed') && (
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => onReject(booking.id)}
-                      >
-                        Hylkää
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
+                  </small>
+                </TableCell>
+                <TableCell align="center">
+                  <Chip
+                    label={statusTranslations[booking.status] || booking.status}
+                    color={statusColor(booking.status)}
+                  />
+                </TableCell>
+                <TableCell align="center">{renderActions(booking)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 };

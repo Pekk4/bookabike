@@ -5,6 +5,7 @@ interface KeycloakContextProps {
   keycloak: Keycloak | null;
   authenticated: boolean;
   // admin: boolean; // JUST FOR TESTING, TODO: REMOVE
+  profile?: Keycloak.KeycloakProfile;
 }
 
 interface KeycloakProviderProps {
@@ -18,6 +19,7 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
   const [keycloak, setKeycloak] = useState<Keycloak | null>(null);
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   //const [admin, setAdmin] = useState<boolean>(false); // JUST FOR TESTING, TODO: REMOVE
+  const [profile, setProfile] = useState<Keycloak.KeycloakProfile | undefined>(undefined);
 
   useEffect(() => {
     if (isRun.current) return;
@@ -46,6 +48,11 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
         .then((authenticated: boolean) => {
           setAuthenticated(authenticated);
           //console.log('login-objekti: ', keycloakInstance.tokenParsed);
+          if (authenticated) {
+            keycloakInstance.loadUserProfile().then((loadedProfile) => {
+              setProfile(loadedProfile);
+            });
+          }
         })
         .catch((error) => {
           console.error('Keycloak initialization failed:', error);
@@ -63,7 +70,7 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
 
   return (
     // <KeycloakContext.Provider value={{ keycloak, authenticated, admin }}>
-    <KeycloakContext.Provider value={{ keycloak, authenticated }}>
+    <KeycloakContext.Provider value={{ keycloak, authenticated, profile }}>
       {children}
     </KeycloakContext.Provider>
   );

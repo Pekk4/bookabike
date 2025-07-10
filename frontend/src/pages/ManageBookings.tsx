@@ -1,22 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Button, CircularProgress } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 
 import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
-
-import { UserDataBooking, BookingStatus as b } from '../types';
 import BookingsManager from '../components/BookingsManager';
 
+import { UserDataBooking, BookingStatus as b } from '../types';
+
+import useKeycloak from '../hooks/useKeycloak';
+
 const ManageBookings = () => {
+  const { profile } = useKeycloak();
   const { showModal, hideModal } = useModal();
   const location = useLocation();
   const { getAllBookings, updateBookingStatus } = useAdminService();
   const [bookings, setBookings] = useState<UserDataBooking[]>([]);
 
-  //
-  // To be changed to not include wished bookings
-  //
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -33,12 +35,6 @@ const ManageBookings = () => {
     fetchBookings();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
-
-  //useEffect(() => {
-  //  if (bookings.length > 0) {
-  //    console.log('Bookings:', Array.from(bookings));
-  //  }
-  //}, [bookings]);
 
   const handleConfirm = (bookingId: number) => {
     showModal(
@@ -60,7 +56,6 @@ const ManageBookings = () => {
 
   const handleUpdate = async (bookingId: number, status: b) => {
     showModal(<CircularProgress color="inherit" />);
-
     try {
       const { data: updatedBooking } = await updateBookingStatus(bookingId, status);
 
@@ -79,13 +74,53 @@ const ManageBookings = () => {
       // TODO: handle properly
       console.error('Error updating booking:', error);
     }
-
     hideModal();
   };
 
   return (
     <>
-      <BookingsManager bookings={bookings} onAccept={handleConfirm} onReject={handleReject} />
+      <BookingsManager
+        bookings={bookings}
+        renderActions={(booking) => (
+          <>
+            {booking.status === b.Pending && (
+              <>
+                <Button
+                  variant="contained"
+                  color="success"
+                  size="small"
+                  style={{ marginRight: 8 }}
+                  startIcon={<CheckIcon />}
+                  onClick={() => handleConfirm(booking.id)}
+                >
+                  Hyväksy
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  size="small"
+                  startIcon={<CloseIcon />}
+                  onClick={() => handleReject(booking.id)}
+                >
+                  Hylkää
+                </Button>
+              </>
+            )}
+            {booking.status === b.Confirmed && (
+              <Button
+                variant="contained"
+                color="error"
+                size="small"
+                startIcon={<CloseIcon />}
+                onClick={() => handleReject(booking.id)}
+              >
+                Peru
+              </Button>
+            )}
+          </>
+        )}
+        user={profile}
+      />
     </>
   );
 };

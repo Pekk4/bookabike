@@ -52,6 +52,15 @@ func (c *conn) GetAllBookings() ([]m.Booking, error) {
 	query := `
 		SELECT id, start_date, end_date, status, user_id, created_at
 		FROM bookings
+		WHERE status != 'wished'
+		ORDER BY
+			CASE status
+				WHEN 'pending' THEN 1
+				WHEN 'confirmed' THEN 2
+				WHEN 'canceled' THEN 3
+				ELSE 4
+			END,
+			start_date ASC
 	`
 	rows, err := c.db.Query(query)
 	if err != nil {

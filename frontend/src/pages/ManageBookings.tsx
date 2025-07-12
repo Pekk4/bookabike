@@ -47,8 +47,8 @@ const ManageBookings = () => {
   const confirmReject = (booking: UserDataBooking) =>
     confirmAction(booking, 'Haluatko varmasti hylätä varauksen?', 'reject');
 
-  const confirmCancel = (booking: UserDataBooking) =>
-    confirmAction(booking, 'Haluatko varmasti perua varauksen?', 'cancel');
+  const confirmRevoke = (booking: UserDataBooking) =>
+    confirmAction(booking, 'Haluatko varmasti perua varauksen?', 'revoke');
 
   const confirmAction = (booking: UserDataBooking, message: string, action: string) => {
     showModal(
@@ -73,8 +73,8 @@ const ManageBookings = () => {
         case 'reject':
           response = await updateBookingStatus(booking.id, b.Rejected);
           break;
-        case 'cancel':
-          response = await updateBookingStatus(booking.id, b.Canceled);
+        case 'revoke':
+          response = await updateBookingStatus(booking.id, b.Revoked);
           break;
         default:
           // TODO: handle properly
@@ -128,7 +128,7 @@ const ManageBookings = () => {
                 color="error"
                 size="small"
                 startIcon={<CloseIcon />}
-                onClick={() => confirmCancel(booking as UserDataBooking)}
+                onClick={() => confirmRevoke(booking as UserDataBooking)}
               >
                 Peru
               </Button>

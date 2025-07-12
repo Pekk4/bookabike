@@ -30,6 +30,8 @@ const statusColor = (status: string): React.CSSProperties | undefined => {
       return { backgroundColor: '#2e7d32', color: '#fff' }; // green
     case BookingStatus.Canceled:
       return { backgroundColor: '#888888', color: '#fff' }; // grey
+    case BookingStatus.Revoked:
+      return { backgroundColor: '#888888', color: '#fff' }; // grey
     case BookingStatus.Rejected:
       return { backgroundColor: '#d32f2f', color: '#fff' }; // red
     case BookingStatus.Wished:
@@ -42,9 +44,10 @@ const statusColor = (status: string): React.CSSProperties | undefined => {
 const statusTranslations: Record<string, string> = {
   pending: 'Odottaa',
   confirmed: 'Hyväksytty',
-  canceled: 'Peruttu',
+  canceled: 'Peruttu (käyttäjä)',
   wished: 'Toive',
-  rejected: 'Varaus hylätty',
+  rejected: 'Varaus evätty',
+  revoked: 'Peruttu (vastaava)',
 };
 
 //const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps) => {

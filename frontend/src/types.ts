@@ -42,4 +42,5 @@ export enum BookingStatus {
   Canceled = 'canceled',
   Wished = 'wished',
   Rejected = 'rejected',
+  Revoked = 'revoked',
 }

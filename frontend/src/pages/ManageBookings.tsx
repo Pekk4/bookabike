@@ -11,6 +11,7 @@ import BookingsManager from '../components/BookingsManager';
 import { UserDataBooking, BookingStatus as b } from '../types';
 
 import useKeycloak from '../hooks/useKeycloak';
+import { getBookingStatusOrder } from '../utils/statusOrder';
 
 const ManageBookings = () => {
   const { profile } = useKeycloak();
@@ -36,6 +37,13 @@ const ManageBookings = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  useEffect(() => {
+    if (bookings.length > 0) {
+      //console.log('Bookings:', Array.from(bookings));
+      console.log('Bookings length:', bookings.length);
+    }
+  }, [bookings]);
+
   const handleConfirm = (bookingId: number) => {
     showModal(
       'Haluatko varmasti vahvistaa varauksen?',
@@ -49,7 +57,7 @@ const ManageBookings = () => {
     showModal(
       'Haluatko varmasti hylätä varauksen?',
       'ask',
-      () => handleUpdate(bookingId, b.Canceled),
+      () => handleUpdate(bookingId, b.Rejected),
       () => hideModal()
     );
   };
@@ -59,11 +67,13 @@ const ManageBookings = () => {
     try {
       const { data: updatedBooking } = await updateBookingStatus(bookingId, status);
 
-      const statusOrder: Record<string, number> = {
-        [b.Pending]: 1,
-        [b.Confirmed]: 2,
-        [b.Canceled]: 3,
-      };
+      //const statusOrder: Record<string, number> = {
+      //  [b.Pending]: 1,
+      //  [b.Confirmed]: 2,
+      //  [b.Canceled]: 3,
+      //  [b.Rejected]: 4,
+      //};
+      const statusOrder = getBookingStatusOrder(true);
 
       setBookings((prev) =>
         prev
@@ -119,7 +129,7 @@ const ManageBookings = () => {
             )}
           </>
         )}
-        user={profile}
+        showUserColumn={true} // Show user column in the bookings manager
       />
     </>
   );

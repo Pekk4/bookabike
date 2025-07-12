@@ -7,6 +7,7 @@ export interface Booking extends BaseBooking {
   id: number;
   status: BookingStatus;
   userId: string;
+  createdAt: Date;
 }
 
 // Possibly unused? 18.6.25
@@ -40,4 +41,5 @@ export enum BookingStatus {
   Confirmed = 'confirmed',
   Canceled = 'canceled',
   Wished = 'wished',
+  Rejected = 'rejected',
 }

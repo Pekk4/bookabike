@@ -57,14 +57,16 @@ export const useBookingService = () => {
     //});
   };
 
-  const updateBooking = async (booking: BaseBooking & { bookingId: number }) => {
+  //const updateBooking = async (booking: BaseBooking & { bookingId: number; status?: string }) => {
+  const updateBooking = async (booking: Booking) => {
     const config = await buildHeader();
 
     const payload = {
       startDate: booking.startDate.toDateString(),
       endDate: booking.endDate.toDateString(),
+      status: booking.status,
     };
-    const id = booking.bookingId;
+    const id = booking.id;
 
     return await axios.put<Booking>(`${apiBaseUrl}/booking/${id}`, payload, config);
   };

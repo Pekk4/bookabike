@@ -58,7 +58,8 @@ func (c *conn) GetAllBookings() ([]m.Booking, error) {
 				WHEN 'pending' THEN 1
 				WHEN 'confirmed' THEN 2
 				WHEN 'canceled' THEN 3
-				ELSE 4
+				WHEN 'rejected' THEN 4
+				ELSE 5
 			END,
 			start_date ASC
 	`
@@ -99,6 +100,15 @@ func (c *conn) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
 		SELECT id, start_date, end_date, status, user_id, created_at
 		FROM bookings
 		WHERE user_id = $1
+		ORDER BY
+			CASE status
+				WHEN 'confirmed' THEN 1
+				WHEN 'pending' THEN 2
+				WHEN 'wished' THEN 3
+				WHEN 'canceled' THEN 4
+				ELSE 5
+			END,
+			start_date ASC
 	`
 	rows, err := c.db.Query(query, userID)
 	if err != nil {

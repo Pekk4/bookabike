@@ -47,7 +47,7 @@ const useBookingProcess = (resetCalendar: () => void) => {
       showModal(
         `Päivitetäänkö varaus: ${startFormatted} - ${endFormatted}?`,
         'ask',
-        () => handleUpdateConfirmDialog(booking.id),
+        () => handleUpdateConfirmDialog(booking),
         handleCancelDialog
       );
     } else {
@@ -97,19 +97,18 @@ const useBookingProcess = (resetCalendar: () => void) => {
     }
   };
 
-  const handleUpdateConfirmDialog = async (bookingId: number) => {
+  const handleUpdateConfirmDialog = async (booking: Booking) => {
     const startDate = startDateRef.current;
     const endDate = endDateRef.current;
 
     if (startDate && endDate) {
       showModal(<CircularProgress color="inherit" />);
 
+      booking.startDate = startDate;
+      booking.endDate = endDate;
+
       try {
-        await updateBooking({
-          bookingId,
-          startDate,
-          endDate,
-        });
+        await updateBooking(booking);
 
         showModal(
           'Varauksen päivittäminen onnistui!',

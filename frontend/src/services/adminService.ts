@@ -28,7 +28,7 @@ export const useAdminService = () => {
   const updateBookingStatus = async (bookingId: number, status: string) => {
     const config = await buildHeader();
 
-    return await axios.post(`${apiBaseUrl}/admin/booking/${bookingId}/edit`, { status }, config);
+    return await axios.post<UserDataBooking>(`${apiBaseUrl}/admin/booking/${bookingId}/edit`, { status }, config);
   };
 
   return {

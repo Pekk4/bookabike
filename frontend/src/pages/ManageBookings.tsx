@@ -7,16 +7,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
 import BookingsManager from '../components/BookingsManager';
+import { getBookingStatusOrder } from '../utils/statusOrder';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
 
-import useKeycloak from '../hooks/useKeycloak';
-import { getBookingStatusOrder } from '../utils/statusOrder';
-
 const ManageBookings = () => {
-  const { profile } = useKeycloak();
-  const { showModal, hideModal } = useModal();
   const location = useLocation();
+  const { showModal, hideModal } = useModal();
   const { getAllBookings, updateBookingStatus } = useAdminService();
   const [bookings, setBookings] = useState<UserDataBooking[]>([]);
 
@@ -37,51 +34,60 @@ const ManageBookings = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  useEffect(() => {
-    if (bookings.length > 0) {
-      //console.log('Bookings:', Array.from(bookings));
-      console.log('Bookings length:', bookings.length);
-    }
-  }, [bookings]);
+  //useEffect(() => {
+  //  if (bookings.length > 0) {
+  //    //console.log('Bookings:', Array.from(bookings));
+  //    console.log('Bookings length:', bookings.length);
+  //  }
+  //}, [bookings]);
 
-  const handleConfirm = (bookingId: number) => {
+  const confirmApprove = (booking: UserDataBooking) =>
+    confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'approve');
+
+  const confirmReject = (booking: UserDataBooking) =>
+    confirmAction(booking, 'Haluatko varmasti hylätä varauksen?', 'reject');
+
+  const confirmCancel = (booking: UserDataBooking) =>
+    confirmAction(booking, 'Haluatko varmasti perua varauksen?', 'cancel');
+
+  const confirmAction = (booking: UserDataBooking, message: string, action: string) => {
     showModal(
-      'Haluatko varmasti vahvistaa varauksen?',
+      message,
       'ask',
-      () => handleUpdate(bookingId, b.Confirmed),
+      () => handleAction(booking, action),
       () => hideModal()
     );
   };
 
-  const handleReject = (bookingId: number) => {
-    showModal(
-      'Haluatko varmasti hylätä varauksen?',
-      'ask',
-      () => handleUpdate(bookingId, b.Rejected),
-      () => hideModal()
-    );
-  };
-
-  const handleUpdate = async (bookingId: number, status: b) => {
+  const handleAction = async (booking: UserDataBooking, action: string) => {
     showModal(<CircularProgress color="inherit" />);
+    const statusOrder = getBookingStatusOrder(true);
+
     try {
-      const { data: updatedBooking } = await updateBookingStatus(bookingId, status);
+      let response;
 
-      //const statusOrder: Record<string, number> = {
-      //  [b.Pending]: 1,
-      //  [b.Confirmed]: 2,
-      //  [b.Canceled]: 3,
-      //  [b.Rejected]: 4,
-      //};
-      const statusOrder = getBookingStatusOrder(true);
+      switch (action) {
+        case 'approve':
+          response = await updateBookingStatus(booking.id, b.Confirmed);
+          break;
+        case 'reject':
+          response = await updateBookingStatus(booking.id, b.Rejected);
+          break;
+        case 'cancel':
+          response = await updateBookingStatus(booking.id, b.Canceled);
+          break;
+        default:
+          // TODO: handle properly
+          throw new Error('Unknown action');
+      }
 
+      const updatedBooking = response.data;
       setBookings((prev) =>
         prev
-          .map((booking) => (booking.id === bookingId ? updatedBooking : booking))
+          .map((b) => (b.id === booking.id ? updatedBooking : b))
           .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
       );
     } catch (error) {
-      // TODO: handle properly
       console.error('Error updating booking:', error);
     }
     hideModal();
@@ -101,7 +107,7 @@ const ManageBookings = () => {
                   size="small"
                   style={{ marginRight: 8 }}
                   startIcon={<CheckIcon />}
-                  onClick={() => handleConfirm(booking.id)}
+                  onClick={() => confirmApprove(booking as UserDataBooking)}
                 >
                   Hyväksy
                 </Button>
@@ -110,7 +116,7 @@ const ManageBookings = () => {
                   color="error"
                   size="small"
                   startIcon={<CloseIcon />}
-                  onClick={() => handleReject(booking.id)}
+                  onClick={() => confirmReject(booking as UserDataBooking)}
                 >
                   Hylkää
                 </Button>
@@ -122,7 +128,7 @@ const ManageBookings = () => {
                 color="error"
                 size="small"
                 startIcon={<CloseIcon />}
-                onClick={() => handleReject(booking.id)}
+                onClick={() => confirmCancel(booking as UserDataBooking)}
               >
                 Peru
               </Button>

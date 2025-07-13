@@ -20,6 +20,7 @@ export interface UserDataBooking extends BaseBooking {
   status: BookingStatus;
   user: User;
   createdAt: Date;
+  reason?: string;
 }
 
 export interface User {

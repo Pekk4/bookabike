@@ -47,7 +47,7 @@ const statusTranslations: Record<string, string> = {
   canceled: 'Peruttu (käyttäjä)',
   wished: 'Toive',
   rejected: 'Varaus evätty',
-  revoked: 'Peruttu (vastaava)',
+  revoked: 'Peruttu (admin)',
 };
 
 //const BookingsManager = ({ bookings, onAccept, onReject }: BookingsManagerProps) => {

@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
 import BookingsManager from '../components/BookingsManager';
+import ReasonForm from '../components/ReasonForm';
 import { getBookingStatusOrder } from '../utils/statusOrder';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
@@ -36,31 +37,47 @@ const ManageBookings = () => {
 
   //useEffect(() => {
   //  if (bookings.length > 0) {
-  //    //console.log('Bookings:', Array.from(bookings));
-  //    console.log('Bookings length:', bookings.length);
+  //    console.log('Bookings:', Array.from(bookings));
+  //    //console.log('Bookings length:', bookings.length);
   //  }
   //}, [bookings]);
 
   const confirmApprove = (booking: UserDataBooking) =>
     confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'approve');
 
-  const confirmReject = (booking: UserDataBooking) =>
-    confirmAction(booking, 'Haluatko varmasti hylätä varauksen?', 'reject');
-
   const confirmRevoke = (booking: UserDataBooking) =>
-    confirmAction(booking, 'Haluatko varmasti perua varauksen?', 'revoke');
+    buildReasonForm(booking, 'Haluatko varmasti perua varauksen?', 'revoke');
 
-  const confirmAction = (booking: UserDataBooking, message: string, action: string) => {
+  const confirmReject = (booking: UserDataBooking) =>
+    buildReasonForm(booking, 'Haluatko varmasti hylätä varauksen?', 'reject');
+
+  const buildReasonForm = (booking: UserDataBooking, message: string, action: string) => {
+    const form = (
+      <>
+        <p>{message}</p>
+        <br />
+        <ReasonForm
+          onSubmit={(reason: string) => handleAction(booking, action, reason)}
+          onCancel={() => hideModal()}
+          label="Lyhyt perustelu:"
+        />
+      </>
+    );
+    confirmAction(booking, form, action);
+  };
+
+  const confirmAction = (booking: UserDataBooking, message: React.ReactNode, action: string) => {
     showModal(
       message,
-      'ask',
+      action === 'approve' ? 'ask' : '',
       () => handleAction(booking, action),
       () => hideModal()
     );
   };
 
-  const handleAction = async (booking: UserDataBooking, action: string) => {
+  const handleAction = async (booking: UserDataBooking, action: string, reason?: string) => {
     showModal(<CircularProgress color="inherit" />);
+
     const statusOrder = getBookingStatusOrder(true);
 
     try {
@@ -71,10 +88,10 @@ const ManageBookings = () => {
           response = await updateBookingStatus(booking.id, b.Confirmed);
           break;
         case 'reject':
-          response = await updateBookingStatus(booking.id, b.Rejected);
+          response = await updateBookingStatus(booking.id, b.Rejected, reason);
           break;
         case 'revoke':
-          response = await updateBookingStatus(booking.id, b.Revoked);
+          response = await updateBookingStatus(booking.id, b.Revoked, reason);
           break;
         default:
           // TODO: handle properly
@@ -88,6 +105,7 @@ const ManageBookings = () => {
           .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
       );
     } catch (error) {
+      // TODO: handle properly
       console.error('Error updating booking:', error);
     }
     hideModal();
@@ -116,6 +134,7 @@ const ManageBookings = () => {
                   color="error"
                   size="small"
                   startIcon={<CloseIcon />}
+                  //onClick={() => confirmReject(booking as UserDataBooking)}
                   onClick={() => confirmReject(booking as UserDataBooking)}
                 >
                   Hylkää

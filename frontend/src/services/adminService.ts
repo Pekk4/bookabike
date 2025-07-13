@@ -25,10 +25,19 @@ export const useAdminService = () => {
     return await axios.get<UserDataBooking[]>(`${apiBaseUrl}/admin/booking`, config);
   };
 
-  const updateBookingStatus = async (bookingId: number, status: string) => {
+  const updateBookingStatus = async (bookingId: number, status: string, reason?: string) => {
     const config = await buildHeader();
 
-    return await axios.post<UserDataBooking>(`${apiBaseUrl}/admin/booking/${bookingId}/edit`, { status }, config);
+    const payload = {
+      status,
+      reason: reason || undefined,
+    };
+
+    return await axios.post<UserDataBooking>(
+      `${apiBaseUrl}/admin/booking/${bookingId}/edit`,
+      payload,
+      config
+    );
   };
 
   return {

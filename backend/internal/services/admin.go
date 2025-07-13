@@ -34,12 +34,13 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 		}
 
 		booking := m.UserDataBooking{
-			ID:        result.ID,
-			User:      user,
-			StartDate: result.StartDate,
-			EndDate:   result.EndDate,
-			Status:    result.Status,
-			CreatedAt: result.CreatedAt,
+			ID:           result.ID,
+			User:         user,
+			StartDate:    result.StartDate,
+			EndDate:      result.EndDate,
+			Status:       result.Status,
+			CreatedAt:    result.CreatedAt,
+			ActionReason: result.ActionReason,
 		}
 		bookings = append(bookings, booking)
 	}

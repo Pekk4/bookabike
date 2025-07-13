@@ -7,20 +7,24 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+
 	mw "github.com/pekk4/bookabike/backend/internal/middleware"
+	m "github.com/pekk4/bookabike/backend/internal/models"
 	s "github.com/pekk4/bookabike/backend/internal/services"
 )
 
 type AdminHandler struct {
-	service *s.AdminService
+	adminService  *s.AdminService
+	actionService *s.BookingActionService
 }
 
 type UpdateBookingPayload struct {
-	Status string `json:"status"`
+	Status string  `json:"status"`
+	Reason *string `json:"reason,omitempty"`
 }
 
-func NewAdminHandler(service *s.AdminService) *AdminHandler {
-	return &AdminHandler{service: service}
+func NewAdminHandler(adminService *s.AdminService, actionService *s.BookingActionService) *AdminHandler {
+	return &AdminHandler{adminService: adminService, actionService: actionService}
 }
 
 func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
@@ -31,7 +35,7 @@ func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bookings, err := h.service.GetAllBookings()
+	bookings, err := h.adminService.GetAllBookings()
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
@@ -66,7 +70,7 @@ func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	updatedBooking, err := h.service.UpdateBookingStatus(bookingID, payload.Status)
+	updatedBooking, err := h.adminService.UpdateBookingStatus(bookingID, payload.Status)
 	if err != nil {
 		// TODO: error handling and logging
 		log.Printf("Error confirming booking with ID %d: %v", bookingID, err)
@@ -76,6 +80,31 @@ func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Reques
 			http.Error(w, "Failed to confirm booking", http.StatusInternalServerError)
 		}
 		return
+	}
+
+	if payload.Status == "rejected" || payload.Status == "revoked" {
+		if payload.Reason == nil || *payload.Reason == "" {
+			// TODO: error handling and logging
+			// NOTE: Reason is compulsory for admins
+			http.Error(w, "Reason is required for this status", http.StatusBadRequest)
+			return
+		} else {
+			newAction := m.BookingAction{
+				BookingID:  bookingID,
+				ActionType: payload.Status,
+				Reason:     *payload.Reason,
+			}
+
+			bookingAction, err := h.actionService.CreateBookingAction(newAction)
+			if err != nil {
+				// TODO: error handling and logging
+				log.Printf("Error creating booking action: %v", err)
+				http.Error(w, "Failed to create booking action", http.StatusInternalServerError)
+				return
+			}
+
+			updatedBooking.ActionReason = &bookingAction.Reason
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

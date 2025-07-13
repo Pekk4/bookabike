@@ -92,7 +92,13 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	userID := r.Context().Value(mw.ContextKeyUserID).(string)
+	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
+	if !ok || userID == "" {
+		// TODO: error handling and logging
+		log.Println("User ID not found in context, interrupting...")
+		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
+		return
+	}
 
 	err = h.service.DeleteBookingByID(bookingID, userID)
 	if err != nil {

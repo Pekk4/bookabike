@@ -48,11 +48,14 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 	return booking, nil
 }
 
+// TODO: consider rename or handle `wished` bookings differently
 func (c *conn) GetAllBookings() ([]m.Booking, error) {
 	query := `
-		SELECT id, start_date, end_date, status, user_id, created_at
-		FROM bookings
-		WHERE status != 'wished'
+		SELECT b.id, b.start_date, b.end_date, b.status, b.user_id, b.created_at, a.reason
+		FROM bookings b
+		LEFT JOIN booking_actions a ON b.id = a.booking_id
+		AND b.status IN ('canceled', 'rejected', 'revoked')
+		WHERE status != 'wished' -- TODO: consider handling this differently
 		ORDER BY
 			CASE status
 				WHEN 'pending' THEN 1
@@ -82,6 +85,7 @@ func (c *conn) GetAllBookings() ([]m.Booking, error) {
 			&booking.Status,
 			&booking.UserID,
 			&booking.CreatedAt,
+			&booking.ActionReason,
 		); err != nil {
 			// TODO: error handling and logging
 			return nil, fmt.Errorf("GetBookings: %w", err)

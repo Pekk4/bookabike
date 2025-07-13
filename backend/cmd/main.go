@@ -35,6 +35,7 @@ func main() {
 
 	// Assign DB connection to the BookingRepository interface
 	var bookingRepo d.BookingRepository = c
+	var actionRepo d.BookingActionRepository = c
 
 	// Initialize Keycloak client
 	keycloakClient := s.NewKeycloakClient(cfg)
@@ -42,10 +43,11 @@ func main() {
 	// Initialize services
 	bookingService := s.NewBookingService(bookingRepo)
 	adminService := s.NewAdminService(bookingRepo, keycloakClient)
+	bookingActionService := s.NewBookingActionService(actionRepo)
 
 	// Initialize handlers
 	bookingHandler := h.NewBookingHandler(bookingService)
-	adminHandler := h.NewAdminHandler(adminService)
+	adminHandler := h.NewAdminHandler(adminService, bookingActionService)
 
 	handlers := &r.Handlers{
 		BookingHandler: bookingHandler,

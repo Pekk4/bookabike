@@ -140,6 +140,5 @@ func (s *BookingService) UpdateBookingByID(bookingID int, userID string, booking
 		// TODO: error handling and logging
 		return nil, err
 	}
-
 	return &updatedBooking, nil
 }

@@ -8,7 +8,7 @@ import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
 import BookingsManager from '../components/BookingsManager';
 import ReasonForm from '../components/ReasonForm';
-import { getBookingStatusOrder } from '../utils/statusOrder';
+import { getBookingStatusOrder } from '../utils/status';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
 

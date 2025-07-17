@@ -23,6 +23,8 @@ export interface UserDataBooking extends BaseBooking {
   reason?: string;
 }
 
+export type BookingEntry = UserDataBooking | Booking;
+
 export interface User {
   id: string;
   email: string;

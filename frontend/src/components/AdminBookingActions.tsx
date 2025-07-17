@@ -1,0 +1,66 @@
+import { Button } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+
+import { UserDataBooking, BookingStatus } from '../types';
+
+interface BookingActionsProps {
+  booking: UserDataBooking;
+  onApprove: (booking: UserDataBooking) => void;
+  onRevoke: (booking: UserDataBooking) => void;
+  onReject: (booking: UserDataBooking) => void;
+}
+
+const AdminBookingActions = ({ booking, onApprove, onRevoke, onReject }: BookingActionsProps) => {
+  switch (booking.status) {
+    case BookingStatus.Pending:
+      return (
+        <>
+          <Button
+            variant="contained"
+            color="success"
+            size="small"
+            style={{ marginRight: 8 }}
+            startIcon={<CheckIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onApprove(booking);
+            }}
+          >
+            Hyväksy
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            size="small"
+            startIcon={<CloseIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onReject(booking);
+            }}
+          >
+            Hylkää
+          </Button>
+        </>
+      );
+    case BookingStatus.Confirmed:
+      return (
+        <Button
+          variant="contained"
+          color="error"
+          size="small"
+          startIcon={<CloseIcon />}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRevoke(booking);
+          }}
+        >
+          Peru
+        </Button>
+      );
+    default:
+      return null;
+  }
+};
+
+export default AdminBookingActions;

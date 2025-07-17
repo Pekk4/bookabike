@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Button, CircularProgress } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
+import { CircularProgress } from '@mui/material';
 
 import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
 import BookingsManager from '../components/BookingsManager';
 import ReasonForm from '../components/ReasonForm';
+import AdminBookingActions from '../components/AdminBookingActions';
 import { getBookingStatusOrder } from '../utils/status';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
@@ -116,43 +115,12 @@ const ManageBookings = () => {
       <BookingsManager
         bookings={bookings}
         renderActions={(booking) => (
-          <>
-            {booking.status === b.Pending && (
-              <>
-                <Button
-                  variant="contained"
-                  color="success"
-                  size="small"
-                  style={{ marginRight: 8 }}
-                  startIcon={<CheckIcon />}
-                  onClick={() => confirmApprove(booking as UserDataBooking)}
-                >
-                  Hyväksy
-                </Button>
-                <Button
-                  variant="contained"
-                  color="error"
-                  size="small"
-                  startIcon={<CloseIcon />}
-                  //onClick={() => confirmReject(booking as UserDataBooking)}
-                  onClick={() => confirmReject(booking as UserDataBooking)}
-                >
-                  Hylkää
-                </Button>
-              </>
-            )}
-            {booking.status === b.Confirmed && (
-              <Button
-                variant="contained"
-                color="error"
-                size="small"
-                startIcon={<CloseIcon />}
-                onClick={() => confirmRevoke(booking as UserDataBooking)}
-              >
-                Peru
-              </Button>
-            )}
-          </>
+          <AdminBookingActions
+            booking={booking as UserDataBooking}
+            onApprove={confirmApprove}
+            onRevoke={confirmRevoke}
+            onReject={confirmReject}
+          />
         )}
         showUserColumn={true} // Show user column in the bookings manager
       />

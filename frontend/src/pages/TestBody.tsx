@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
+import BookingActions from '../components/UserBookingActions';
 import BookingCard from '../components/BookingCard';
-import { BookingStatus } from '../types';
+
+import { Booking, BookingStatus } from '../types';
 
 const testBooking = {
   id: 1,
@@ -22,7 +24,19 @@ const testBooking = {
 const CreateBookings = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <BookingCard booking={testBooking} />
+      <BookingCard
+        booking={testBooking}
+        renderActions={(booking) => (
+          <BookingActions
+            booking={booking as Booking}
+            hasActiveBookings={false}
+            onBookNow={() => {}}
+            onDelete={() => {}}
+            onCancel={() => {}}
+            onEdit={() => {}}
+          />
+        )}
+      />
     </div>
   );
 };

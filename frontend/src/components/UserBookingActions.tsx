@@ -1,6 +1,8 @@
 import { Button } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import EventIcon from '@mui/icons-material/Event';
+
 import { Booking, BookingStatus as b } from '../types';
 
 interface BookingActionsProps {
@@ -12,7 +14,7 @@ interface BookingActionsProps {
   onBookNow: (booking: Booking) => void;
 }
 
-const BookingActions = ({
+const UserBookingActions = ({
   booking,
   hasActiveBookings,
   onEdit,
@@ -30,7 +32,10 @@ const BookingActions = ({
             size="small"
             style={{ marginRight: 8 }}
             startIcon={<CheckIcon />}
-            onClick={() => onEdit(booking)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(booking);
+            }}
           >
             Muokkaa
           </Button>
@@ -39,7 +44,10 @@ const BookingActions = ({
             color="error"
             size="small"
             startIcon={<CloseIcon />}
-            onClick={() => onDelete(booking)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(booking);
+            }}
           >
             Poista
           </Button>
@@ -54,7 +62,10 @@ const BookingActions = ({
             size="small"
             style={{ marginRight: 8 }}
             startIcon={<CheckIcon />}
-            onClick={() => onEdit(booking)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(booking);
+            }}
           >
             Muokkaa
           </Button>
@@ -77,8 +88,11 @@ const BookingActions = ({
             color="success"
             size="small"
             style={{ marginRight: 8 }}
-            startIcon={<CheckIcon />}
-            onClick={() => onBookNow(booking)}
+            startIcon={<EventIcon />}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBookNow(booking);
+            }}
             disabled={hasActiveBookings}
           >
             Varaa
@@ -88,32 +102,28 @@ const BookingActions = ({
             color="error"
             size="small"
             startIcon={<CloseIcon />}
-            onClick={() => onDelete(booking)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(booking);
+            }}
           >
             Poista
           </Button>
         </>
       );
     case b.Canceled:
-      return (
-        <Button
-          variant="contained"
-          color="error"
-          size="small"
-          startIcon={<CloseIcon />}
-          onClick={() => onDelete(booking)}
-        >
-          Poista
-        </Button>
-      );
     case b.Rejected:
+    case b.Revoked:
       return (
         <Button
           variant="contained"
           color="error"
           size="small"
           startIcon={<CloseIcon />}
-          onClick={() => onDelete(booking)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(booking);
+          }}
         >
           Poista
         </Button>
@@ -123,4 +133,4 @@ const BookingActions = ({
   }
 };
 
-export default BookingActions;
+export default UserBookingActions;

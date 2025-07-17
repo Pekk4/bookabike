@@ -10,14 +10,14 @@ import {
 } from '@mui/material';
 
 import { getStatusTranslation, getStatusColor } from '../utils/status';
+import BookingCard from './BookingCard';
+import useModal from '../hooks/useModal';
 
-import { UserDataBooking, Booking } from '../types';
-
-type BookingRow = UserDataBooking | Booking;
+import { BookingEntry } from '../types';
 
 interface BookingsManagerProps {
-  bookings: BookingRow[];
-  renderActions: (booking: BookingRow) => React.ReactNode;
+  bookings: BookingEntry[];
+  renderActions: (booking: BookingEntry) => React.ReactNode;
   showUserColumn?: boolean;
 }
 
@@ -26,6 +26,16 @@ const BookingsManager = ({
   renderActions,
   showUserColumn = false,
 }: BookingsManagerProps) => {
+  const { showModal } = useModal();
+
+  const getBookingCard = (booking: BookingEntry) => (
+    <BookingCard booking={booking} renderActions={renderActions} showUserDetails={showUserColumn} />
+  );
+
+  const handleDialog = (booking: BookingEntry) => {
+    showModal(getBookingCard(booking));
+  };
+
   return (
     <div className="h-screen w-screen flex justify-center items-center text-center pt-20">
       <TableContainer
@@ -52,7 +62,11 @@ const BookingsManager = ({
           </TableHead>
           <TableBody>
             {bookings.map((booking) => (
-              <TableRow key={booking.id} className="hover:cursor-pointer hover:bg-gray-50">
+              <TableRow
+                key={booking.id}
+                className="hover:cursor-pointer hover:bg-gray-50"
+                onClick={() => handleDialog(booking)}
+              >
                 {showUserColumn && 'user' in booking && (
                   <TableCell>
                     {booking.user.firstName} {booking.user.lastName} <br />

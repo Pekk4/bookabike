@@ -22,7 +22,7 @@ const AppRoutes = () => {
         {/*<Route path="/my-bookings" element={<MyBookings />} />*/}
         <Route path="/my-bookings" element={<MyBookings />} />
         <Route path="/edit-booking" element={<EditBookings />} />
-        <Route path="/me" element={<MyBookingsComponent />} />
+        <Route path="/me" element={<TestBody />} />
         <Route path="/manage-bookings" element={<ManageBookings />} />
       </Routes>
     </div>

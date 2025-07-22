@@ -1,29 +1,15 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { useEffect } from 'react';
-import axios from 'axios';
-//import { useState } from 'react'
 import './App.css';
 import MenuBar from './components/MenuBar';
-
-//import { useState } from 'react';
-//import Calendar from 'react-calendar';
-//import 'react-calendar/dist/Calendar.css';
-import HomeDemo from './components/Home';
-
-import { KeycloakProvider } from './context/KeycloakContext';
 import ErrorBoundary from './context/ErrorBoundary';
 import AppRoutes from './AppRoutes';
-
-import { apiBaseUrl } from './constants';
 import Modal from './components/Modal';
 import { ModalProvider } from './context/ModalContext';
 import useModal from './hooks/useModal';
-
 import { useLocation } from 'react-router-dom';
-
-//type ValuePiece = Date | null;
-
-//type Value = ValuePiece | [ValuePiece, ValuePiece];
+import useKeycloak from './hooks/useKeycloak';
+import LoadingView from './components/LoadingView';
 
 const ModalRoot = () => {
   const { content, buttonMode, hideModal, confirmHandler, cancelHandler } = useModal();
@@ -50,7 +36,11 @@ const ModalAutoCloser = () => {
 };
 
 function App() {
-  //const [value, onChange] = useState<Value>(new Date());
+  const { authenticated, keycloakReady } = useKeycloak();
+
+  if (!keycloakReady) {
+    return <LoadingView />;
+  }
 
   //useEffect(() => {
   //  void axios.get<void>(`http://localhost:3000/api/ping`); // TO BE DELETED...
@@ -58,26 +48,20 @@ function App() {
 
   return (
     <>
-      <KeycloakProvider>
-        <ErrorBoundary>
-          <ModalProvider>
-            <ModalRoot />
-            <Router>
-              <ModalAutoCloser />
-              <AppRoutes />
-              {/* Modal wont cover menubar with router anymore // TODO: check out*/}
-              <MenuBar />
-              {/*<HomeDemo />*/}
-            </Router>
-          </ModalProvider>
-        </ErrorBoundary>
-      </KeycloakProvider>
+      <ErrorBoundary>
+        <ModalProvider>
+          <ModalRoot />
+          <Router>
+            <ModalAutoCloser />
+            <AppRoutes authenticated={authenticated} />
+            {/* Modal wont cover menubar with router anymore // TODO: check out*/}
+            <MenuBar />
+            {/*<HomeDemo />*/}
+          </Router>
+        </ModalProvider>
+      </ErrorBoundary>
     </>
   );
 }
 
 export default App;
-
-//<div>
-//  {/*<Calendar onChange={onChange} value={value} />*/}
-//</div>

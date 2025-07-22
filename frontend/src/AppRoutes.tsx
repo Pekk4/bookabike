@@ -1,29 +1,74 @@
 import { Routes, Route } from 'react-router-dom';
 
-import Home from './components/Home';
-import BookingCalendar from './components/BookingCalendar';
-import MyBookingsComponent from './components/MyBookings';
+import HomeDemo from './components/HomeDemo3';
+import ProtectedRoute from './components/ProtectedRoute';
 import MyBookings from './pages/MyBookings';
 import EditBookings from './pages/EditBookings';
-
 import CreateBookings from './pages/CreateBookings';
 import AdminBookings from './pages/AdminBookings';
 import TestBody from './pages/TestBody';
 import ManageBookings from './pages/ManageBookings';
 
-const AppRoutes = () => {
+interface AppRoutesProps {
+  authenticated: boolean;
+}
+
+const AppRoutes = ({ authenticated }: AppRoutesProps) => {
   return (
     <div>
       <Routes>
-        <Route path="/" element={<Home />} />
-        {/*<Route path="/calendar" element={<BookingCalendar />} />*/}
-        <Route path="/calendar" element={<CreateBookings />} />
-        {/*<Route path="/calendar" element={<AdminBookings />} />*/}
-        {/*<Route path="/my-bookings" element={<MyBookings />} />*/}
-        <Route path="/my-bookings" element={<MyBookings />} />
-        <Route path="/edit-booking" element={<EditBookings />} />
-        <Route path="/me" element={<TestBody />} />
-        <Route path="/manage-bookings" element={<ManageBookings />} />
+        {/* Root path for everyone */}
+        <Route path="/" element={<HomeDemo />} />
+
+        {/* Everything else only for logged in users */}
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <CreateBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-bookings"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/edit-booking"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <EditBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/me"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <TestBody />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/manage-bookings"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <ManageBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-bookings"
+          element={
+            <ProtectedRoute authenticated={authenticated}>
+              <AdminBookings />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   );

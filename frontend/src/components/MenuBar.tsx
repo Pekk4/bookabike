@@ -108,6 +108,11 @@ const MenuBar = () => {
                 Varaustenhallinta
               </div>
             </Link>
+            <Link to="/admin-bookings">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Admin varaukset
+              </div>
+            </Link>
           </div>
         </Drawer>
       </div>

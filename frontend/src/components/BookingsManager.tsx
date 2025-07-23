@@ -37,17 +37,8 @@ const BookingsManager = ({
   };
 
   return (
-    <div className="h-screen w-screen flex justify-center items-center text-center pt-20">
-      <TableContainer
-        component={Paper}
-        style={{
-          overflow: 'auto',
-          maxHeight: '80vh',
-          minHeight: '80vh',
-          minWidth: '100vw',
-          margin: '0 auto',
-        }}
-      >
+    <div className="max-h-full min-h-1 w-full flex justify-center text-center">
+      <TableContainer component={Paper} className="w-full max-h-full min-h-1 overflow-auto">
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -64,7 +55,7 @@ const BookingsManager = ({
             {bookings.map((booking) => (
               <TableRow
                 key={booking.id}
-                className="hover:cursor-pointer hover:bg-gray-50"
+                className="hover:cursor-pointer hover:bg-orange-400"
                 onClick={() => handleDialog(booking)}
               >
                 {showUserColumn && 'user' in booking && (

@@ -15,7 +15,7 @@ interface AppRoutesProps {
 
 const AppRoutes = ({ authenticated }: AppRoutesProps) => {
   return (
-    <div>
+    <div className="h-full w-full">
       <Routes>
         {/* Root path for everyone */}
         <Route path="/" element={<HomeDemo />} />

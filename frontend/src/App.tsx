@@ -10,6 +10,7 @@ import useModal from './hooks/useModal';
 import { useLocation } from 'react-router-dom';
 import useKeycloak from './hooks/useKeycloak';
 import LoadingView from './components/LoadingView';
+import BaseLayout from './components/BaseLayout';
 
 const ModalRoot = () => {
   const { content, buttonMode, hideModal, confirmHandler, cancelHandler } = useModal();
@@ -53,7 +54,9 @@ function App() {
           <ModalRoot />
           <Router>
             <ModalAutoCloser />
-            <AppRoutes authenticated={authenticated} />
+            <BaseLayout>
+              <AppRoutes authenticated={authenticated} />
+            </BaseLayout>
             {/* Modal wont cover menubar with router anymore // TODO: check out*/}
             <MenuBar />
             {/*<HomeDemo />*/}

@@ -29,7 +29,10 @@ const ModalAutoCloser = () => {
   const { hideModal } = useModal();
 
   useEffect(() => {
-    hideModal();
+    // Keep the modal open only if it's about "login required"
+    if (!location.state?.loginRequired) {
+      hideModal();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 

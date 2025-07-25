@@ -1,79 +1,91 @@
-.react-calendar {
-  width: 100%;
-  /*max-width: 100%;*/
+/*  BookingCalendar.css
+ *
+ *  These values override the default styles of react-calendar package.
+ *  The template is copied from node_modules/react-calendar/src/Calendar.css.
+ *
+ *  Not the way I like to do this, but with deps like this it is what it is.
+ */
+
+.booking-calendar .react-calendar {
+  width: 90% !important;
+  min-height: 50% !important;
   background: white;
   border: 1px solid #a0a096;
   font-family: 'Arial', 'Helvetica', sans-serif;
   line-height: 1.125em;
+  border-radius: 4px;
 }
 
-.react-calendar--doubleView {
+.booking-calendar .react-calendar--doubleView {
   width: 700px;
 }
 
-.react-calendar--doubleView .react-calendar__viewContainer {
+.booking-calendar .react-calendar--doubleView .react-calendar__viewContainer {
   display: flex;
   margin: -0.5em;
 }
 
-.react-calendar--doubleView .react-calendar__viewContainer > * {
+.booking-calendar .react-calendar--doubleView .react-calendar__viewContainer > * {
   width: 50%;
   margin: 0.5em;
 }
 
-.react-calendar,
-.react-calendar *,
-.react-calendar *:before,
-.react-calendar *:after {
+.booking-calendar .react-calendar,
+.booking-calendar .react-calendar *,
+.booking-calendar .react-calendar *:before,
+.booking-calendar .react-calendar *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
 
-.react-calendar button {
+.booking-calendar .react-calendar button {
   margin: 0;
   border: 0;
   outline: none;
 }
 
-.react-calendar button:enabled:hover {
+.booking-calendar .react-calendar button:enabled:hover {
   cursor: pointer;
-  background-color: #006edc;
 }
 
-.react-calendar__navigation {
+.booking-calendar .react-calendar__navigation {
   display: flex;
-  height: 44px;
+  height: 100px !important;
   margin-bottom: 1em;
 }
 
-.react-calendar__navigation button {
-  min-width: 44px;
+.booking-calendar .react-calendar__navigation button {
+  width: 100px;
   background: none;
 }
 
-.react-calendar__navigation button:disabled {
+.booking-calendar .react-calendar__navigation button:disabled {
   background-color: #f0f0f0;
 }
 
-.react-calendar__navigation button:enabled:hover,
-.react-calendar__navigation button:enabled:focus {
-  background-color: #e6e6e6;
+.booking-calendar .react-calendar__navigation button:enabled:hover {
+  background-color: #f97316 !important;
 }
 
-.react-calendar__month-view__weekdays {
+.booking-calendar .react-calendar__navigation button:enabled:focus {
+  background: none !important;
+}
+
+.booking-calendar .react-calendar__month-view__weekdays {
   text-align: center;
   text-transform: uppercase;
   font: inherit;
-  font-size: 0.75em;
+  font-size: 0.9em !important;
   font-weight: bold;
+  padding: 35px 0;
 }
 
-.react-calendar__month-view__weekdays__weekday {
+.booking-calendar .react-calendar__month-view__weekdays__weekday {
   padding: 0.5em;
 }
 
-.react-calendar__month-view__weekNumbers .react-calendar__tile {
+.booking-calendar .react-calendar__month-view__weekNumbers .react-calendar__tile {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,106 +94,104 @@
   font-weight: bold;
 }
 
-.react-calendar__month-view__days__day--weekend {
-  color: #d10000;
+.booking-calendar .react-calendar__month-view__days__day--weekend {
+  /* color: #d10000; */
+  color: #000;
 }
 
-.react-calendar__month-view__days__day--neighboringMonth,
-.react-calendar__decade-view__years__year--neighboringDecade,
-.react-calendar__century-view__decades__decade--neighboringCentury {
+.booking-calendar .react-calendar__month-view__days__day--neighboringMonth,
+.booking-calendar .react-calendar__decade-view__years__year--neighboringDecade,
+.booking-calendar .react-calendar__century-view__decades__decade--neighboringCentury {
   color: #757575;
 }
 
-.react-calendar__year-view .react-calendar__tile,
-.react-calendar__decade-view .react-calendar__tile,
-.react-calendar__century-view .react-calendar__tile {
+.booking-calendar .react-calendar__year-view .react-calendar__tile,
+.booking-calendar .react-calendar__decade-view .react-calendar__tile,
+.booking-calendar .react-calendar__century-view .react-calendar__tile {
   padding: 2em 0.5em;
 }
 
-.react-calendar__tile {
+.booking-calendar .react-calendar__tile {
   max-width: 100%;
+  height: 100px !important;
   padding: 30px 6.6667px;
   background: none;
   text-align: center;
   font: inherit;
   font-size: 0.833em;
+  font-weight: bold !important;
+  border-radius: 0 !important;
 }
 
-.react-calendar__tile:disabled {
-  background-color: #f0f0f0;
-  color: #ababab;
+.booking-calendar .react-calendar__tile:disabled {
+  background-color: #ff000057 !important;
+  opacity: 100 !important;
+  color: #000 !important;
+  border-radius: 0 !important;
+  font-weight: bold !important;
+  cursor: not-allowed;
 }
 
-.react-calendar__month-view__days__day--neighboringMonth:disabled,
-.react-calendar__decade-view__years__year--neighboringDecade:disabled,
-.react-calendar__century-view__decades__decade--neighboringCentury:disabled {
+.booking-calendar .react-calendar__month-view__days__day--neighboringMonth:disabled,
+.booking-calendar .react-calendar__decade-view__years__year--neighboringDecade:disabled,
+.booking-calendar .react-calendar__century-view__decades__decade--neighboringCentury:disabled {
   color: #cdcdcd;
 }
 
-.react-calendar__tile:enabled:hover,
-.react-calendar__tile:enabled:focus {
-  background-color: #e6e6e6;
+.booking-calendar .react-calendar__tile:enabled:hover {
+  background-color: #f97316 !important;
 }
 
-.react-calendar__tile--now {
-  background: #ffff76;
+.booking-calendar .react-calendar__tile:enabled:focus {
+  background-color: #006e2a !important;
+  color: white;
 }
 
-.react-calendar__tile--now:enabled:hover,
-.react-calendar__tile--now:enabled:focus {
-  background: #ffffa9;
+.booking-calendar .react-calendar__tile--now {
+  background: none !important;
+  border: 3px solid #817668 !important;
 }
 
-.react-calendar__tile--hasActive {
+.booking-calendar .react-calendar__tile--hasActive {
   background: #76baff;
 }
 
-.react-calendar__tile--hasActive:enabled:hover,
-.react-calendar__tile--hasActive:enabled:focus {
-  background: #a9d4ff;
+.booking-calendar .react-calendar__tile--hasActive:enabled:hover,
+.booking-calendar .react-calendar__tile--hasActive:enabled:focus {
+  background: #169645;
 }
 
-.react-calendar__tile--active {
-  background: #006edc;
+.booking-calendar .react-calendar__tile--active {
+  background: #006e2a !important;
   color: white;
 }
 
-.react-calendar__tile--active:enabled:hover,
-.react-calendar__tile--active:enabled:focus {
-  background: #1087ff;
+.booking-calendar .react-calendar__tile--active:enabled:hover,
+.booking-calendar .react-calendar__tile--active:enabled:focus {
+  background: #006e2a !important;
 }
 
-.react-calendar--selectRange .react-calendar__tile--hover {
+.booking-calendar .react-calendar--selectRange .react-calendar__tile--hover {
   background-color: #e6e6e6;
 }
 
-/* custom definitions */
-.start-date,
-.end-date {
-  background-color: #4285f4;
-  color: white;
-  /*border-radius: 50%;*/
-}
-.react-calendar__tile:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.react-calendar__tile--now {
-  background-color: #4caf50 !important;
+
+/* Custom styles */
+
+.booking-calendar .react-calendar__tile.start-date,
+.booking-calendar .react-calendar__tile.end-date {
+  background-color: #004219 !important;
   color: white !important;
-  /*border-radius: 50%;*/
 }
 
-
-
-
-.sunday-tile {
-  background: #ffe0e0;
-}
-.saturday-tile {
-  background: #e0e0ff;
+.booking-calendar .selectable-date-tile {
+  background-color: #27ad59;
+  color: white;
 }
 
-.react-calendar__navigation__label {
+.booking-calendar .react-calendar__navigation__label,
+.booking-calendar .react-calendar__year-view__months__month,
+.booking-calendar .react-calendar__decade-view__years__year,
+.booking-calendar .react-calendar__century-view__decades__decade {
   text-transform: capitalize;
 }

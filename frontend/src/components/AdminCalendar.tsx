@@ -8,9 +8,10 @@ import { UserDataBooking } from '../types';
 
 interface AdminCalendarProps {
   bookings: UserDataBooking[];
+  renderActions: (booking: UserDataBooking) => React.ReactNode;
 }
 
-const AdminCalendar = ({ bookings }: AdminCalendarProps) => {
+const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
   const { showModal } = useModal();
   const bookedDates = new Set<string>();
   const dateToBookingMap = new Map<string, UserDataBooking>();
@@ -31,7 +32,7 @@ const AdminCalendar = ({ bookings }: AdminCalendarProps) => {
     const booking = dateToBookingMap.get(date.toDateString());
 
     if (booking) {
-      showModal(<BookingCard booking={booking} />, 'ok');
+      showModal(<BookingCard booking={booking} renderActions={renderActions as (booking: UserDataBooking) => React.ReactNode} showUserDetails={true} />, 'ok');
       return;
     }
   };

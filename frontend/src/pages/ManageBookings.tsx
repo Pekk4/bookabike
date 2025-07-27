@@ -119,7 +119,17 @@ const ManageBookings = () => {
   if (isCalendarView) {
     return (
       <>
-        <AdminCalendar bookings={bookings} />
+        <AdminCalendar
+          bookings={bookings}
+          renderActions={(booking) => (
+            <AdminBookingActions
+              booking={booking as UserDataBooking}
+              onApprove={confirmApprove}
+              onRevoke={confirmRevoke}
+              onReject={confirmReject}
+            />
+          )}
+        />
         <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
       </>
     );

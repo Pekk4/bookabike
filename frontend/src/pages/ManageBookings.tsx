@@ -120,32 +120,26 @@ const ManageBookings = () => {
     return (
       <>
         <AdminCalendar bookings={bookings} />
-        <div className="flex flex-col relative">
-          <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
-        </div>
+        <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
       </>
     );
   }
 
   return (
     <>
-      <div className="h-full">
-        <BookingsManager
-          bookings={bookings}
-          renderActions={(booking) => (
-            <AdminBookingActions
-              booking={booking as UserDataBooking}
-              onApprove={confirmApprove}
-              onRevoke={confirmRevoke}
-              onReject={confirmReject}
-            />
-          )}
-          showUserColumn={true} // Show user column in the bookings manager
-        />
-      </div>
-      <div className="flex flex-col relative">
-        <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
-      </div>
+      <BookingsManager
+        bookings={bookings}
+        renderActions={(booking) => (
+          <AdminBookingActions
+            booking={booking as UserDataBooking}
+            onApprove={confirmApprove}
+            onRevoke={confirmRevoke}
+            onReject={confirmReject}
+          />
+        )}
+        showUserColumn={true} // Show user column in the bookings manager
+      />
+      <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
     </>
   );
 };

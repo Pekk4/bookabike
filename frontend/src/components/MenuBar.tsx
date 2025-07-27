@@ -17,7 +17,7 @@ const MenuBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="fixed top-0 left-0 right-0 mx-auto z-50">
+    <div className="fixed top-0 left-0 right-0 mx-auto z-10">
       <div className="relative w-full">
         <div className="bg-gradient-to-b from-org-gray to-black w-screen border-b-2 border-orange-500 h-20 relative">
           {/* TODO: adjust shadows etc */}

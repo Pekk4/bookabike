@@ -5,7 +5,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MyBookings from './pages/MyBookings';
 import EditBookings from './pages/EditBookings';
 import CreateBookings from './pages/CreateBookings';
-import AdminBookings from './pages/AdminBookings';
 import TestBody from './pages/TestBody';
 import ManageBookings from './pages/ManageBookings';
 
@@ -58,14 +57,6 @@ const AppRoutes = ({ authenticated }: AppRoutesProps) => {
           element={
             <ProtectedRoute authenticated={authenticated}>
               <ManageBookings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin-bookings"
-          element={
-            <ProtectedRoute authenticated={authenticated}>
-              <AdminBookings />
             </ProtectedRoute>
           }
         />

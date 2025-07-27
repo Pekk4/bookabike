@@ -1,4 +1,6 @@
 import Switch from '@mui/material/Switch';
+import TableRowsIcon from '@mui/icons-material/TableRows';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 interface AdminViewBarProps {
   isCalendarView: boolean;
@@ -7,11 +9,10 @@ interface AdminViewBarProps {
 
 const AdminViewSwitchBar = ({ isCalendarView, onToggleView }: AdminViewBarProps) => {
   return (
-    <div className="absolute bottom-0 right-0 px-10 h-12 bg-stone-50 border-t-1 border-l-1 rounded-tl-lg flex items-center">
-      <p>
-        Taulukkonäkymä <Switch color="default" checked={isCalendarView} onChange={onToggleView} />{' '}
-        Kalenterinäkymä
-      </p>
+    <div className="fixed top-1/2 -translate-y-1/2 right-0 py-12 my-auto w-14 bg-stone-100 border-l-1 border-y-1 rounded-l-md flex flex-col items-center z-10">
+      <TableRowsIcon fontSize="large" />
+      <Switch color="default" checked={isCalendarView} onChange={onToggleView} />
+      <CalendarMonthIcon fontSize="large" />
     </div>
   );
 };

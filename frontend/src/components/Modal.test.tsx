@@ -9,63 +9,76 @@ import Modal from './Modal';
 import { ModalButtonMode } from '../types';
 
 describe('Modal component', () => {
-  test('renders with the correct message', () => {
-    render(<Modal message="Test Message" />);
+  test('renders with the correct content', () => {
+    render(<Modal content="Test Message" />);
     expect(screen.getByText('Test Message')).toBeInTheDocument();
   });
 
-  test('does not render when message is null', () => {
-    render(<Modal message={null} />);
+  test('does not render when content is null', () => {
+    render(<Modal content={null} />);
     expect(screen.queryByText('Test Message')).toBeNull();
   });
 
   test('applies default props when none are provided (green styles)', () => {
-    render(<Modal message="Test Message" />);
+    render(<Modal content="Test Message" />);
     const modalElement = screen.getByText('Test Message');
-    expect(modalElement).toHaveClass('text-[#00b100]');
-    expect(modalElement).toHaveClass('border-[#2ee700]');
+    expect(modalElement).toHaveClass('text-orange-500');
   });
 
   test('applies red styles when isError is true', () => {
-    render(<Modal message="Error Message" errorMode={true} />);
+    render(<Modal content="Error Message" errorMode={true} />);
     const modalElement = screen.getByText('Error Message');
-    expect(modalElement).toHaveClass('text-[#ff0000]');
-    expect(modalElement).toHaveClass('border-[#c40000]');
+    expect(modalElement).toHaveClass('text-red-500');
   });
 
   test('renders with the wanted structure', () => {
-    render(<Modal message="Test Message" />);
+    render(<Modal content="Test Message" />);
     const modalElement = screen.getByText('Test Message');
     expect(modalElement).toBeInTheDocument();
     expect(modalElement.parentElement).toHaveClass(
-      'fixed inset-0 bg-black/60 z-50 flex items-center justify-center'
+      'fixed inset-0 bg-black/70 z-50 flex items-center justify-center'
     );
   });
 
-  test('renders with action buttons when mode is "YesNoButtons"', () => {
+  test('renders with action buttons when buttonMode is "YesNoButtons"', () => {
     render(
       <Modal
-        message="Test Message"
-        mode={ModalButtonMode.YesNoButtons}
+        content="Test Message"
+        buttonMode={ModalButtonMode.YesNoButtons}
         confirmHandler={() => {}}
-        cancelHandler={() => {}}
+        closingHandler={() => {}}
       />
     );
-    expect(screen.getByText('Yes')).toBeInTheDocument();
-    expect(screen.getByText('No')).toBeInTheDocument();
+    expect(screen.getByText('Kyllä')).toBeInTheDocument();
+    expect(screen.getByText('Ei')).toBeInTheDocument();
   });
 
-  test('renders with action button when mode is "OkButton"', () => {
+  test('renders with action button when buttonMode is "OkButton"', () => {
     render(
-      <Modal message="Test Message" mode={ModalButtonMode.OkButton} cancelHandler={() => {}} />
+      <Modal
+        content="Test Message"
+        buttonMode={ModalButtonMode.OkButton}
+        closingHandler={() => {}}
+      />
     );
     expect(screen.getByText('OK')).toBeInTheDocument();
   });
 
-  test('does not render action buttons when mode is "NoButtons"', () => {
-    render(<Modal message="Test Message" mode={ModalButtonMode.NoButtons} />);
-    expect(screen.queryByText('Yes')).toBeNull();
-    expect(screen.queryByText('No')).toBeNull();
+  test('renders with action button when buttonMode is "CloseButton"', () => {
+    render(
+      <Modal
+        content="Test Message"
+        buttonMode={ModalButtonMode.CloseButton}
+        closingHandler={() => {}}
+      />
+    );
+    expect(screen.getByText('Sulje')).toBeInTheDocument();
+  });
+
+  test('does not render action buttons when buttonMode is "NoButtons"', () => {
+    render(<Modal content="Test Message" buttonMode={ModalButtonMode.NoButtons} />);
+    expect(screen.queryByText('Kyllä')).toBeNull();
+    expect(screen.queryByText('Ei')).toBeNull();
     expect(screen.queryByText('OK')).toBeNull();
   });
 
@@ -75,50 +88,50 @@ describe('Modal component', () => {
 
     render(
       <Modal
-        message="Test Message"
+        content="Test Message"
         confirmHandler={mockConfirmHandler}
-        cancelHandler={mockCancelHandler}
-        mode={ModalButtonMode.YesNoButtons}
+        closingHandler={mockCancelHandler}
+        buttonMode={ModalButtonMode.YesNoButtons}
       />
     );
 
     const user = userEvent.setup();
-    const yesButton = screen.getByText('Yes');
+    const yesButton = screen.getByText('Kyllä');
     await user.click(yesButton);
 
     expect(mockConfirmHandler).toHaveBeenCalledTimes(1);
     expect(mockCancelHandler).not.toHaveBeenCalled();
   });
 
-  test('calls cancelHandler when No button is clicked', async () => {
+  test('calls closingHandler when No button is clicked', async () => {
     const mockConfirmHandler = vi.fn();
     const mockCancelHandler = vi.fn();
 
     render(
       <Modal
-        message="Test Message"
+        content="Test Message"
         confirmHandler={mockConfirmHandler}
-        cancelHandler={mockCancelHandler}
-        mode={ModalButtonMode.YesNoButtons}
+        closingHandler={mockCancelHandler}
+        buttonMode={ModalButtonMode.YesNoButtons}
       />
     );
 
     const user = userEvent.setup();
-    const noButton = screen.getByText('No');
+    const noButton = screen.getByText('Ei');
     await user.click(noButton);
 
     expect(mockCancelHandler).toHaveBeenCalledTimes(1);
     expect(mockConfirmHandler).not.toHaveBeenCalled();
   });
 
-  test('calls cancelHandler when OK button is clicked', async () => {
+  test('calls closingHandler when OK button is clicked', async () => {
     const mockCancelHandler = vi.fn();
 
     render(
       <Modal
-        message="Test Message"
-        cancelHandler={mockCancelHandler}
-        mode={ModalButtonMode.OkButton}
+        content="Test Message"
+        closingHandler={mockCancelHandler}
+        buttonMode={ModalButtonMode.OkButton}
       />
     );
 
@@ -129,14 +142,14 @@ describe('Modal component', () => {
     expect(mockCancelHandler).toHaveBeenCalledTimes(1);
   });
 
-  test('calls cancelHandler when modal is clicked outside for closing', async () => {
+  test('calls closingHandler when modal is clicked outside for closing', async () => {
     const mockCancelHandler = vi.fn();
 
     render(
       <Modal
-        message="Test Message"
-        cancelHandler={mockCancelHandler}
-        mode={ModalButtonMode.NoButtons}
+        content="Test Message"
+        closingHandler={mockCancelHandler}
+        buttonMode={ModalButtonMode.NoButtons}
       />
     );
 
@@ -152,12 +165,12 @@ describe('Modal component', () => {
 
   test('closes when clicking outside of the modal content', async () => {
     const ModalTestWrapper = () => {
-      const [message, setMessage] = useState<React.ReactNode>('Test Message');
+      const [content, setContent] = useState<React.ReactNode>('Test Message');
       return (
         <Modal
-          message={message}
-          cancelHandler={() => setMessage(null)}
-          mode={ModalButtonMode.NoButtons}
+          content={content}
+          closingHandler={() => setContent(null)}
+          buttonMode={ModalButtonMode.NoButtons}
         />
       );
     };
@@ -178,12 +191,12 @@ describe('Modal component', () => {
 
   test('does not close when clicking inside the modal content', async () => {
     const ModalTestWrapper = () => {
-      const [message, setMessage] = useState<React.ReactNode>('Test Message');
+      const [content, setContent] = useState<React.ReactNode>('Test Message');
       return (
         <Modal
-          message={message}
-          cancelHandler={() => setMessage(null)}
-          mode={ModalButtonMode.NoButtons}
+          content={content}
+          closingHandler={() => setContent(null)}
+          buttonMode={ModalButtonMode.NoButtons}
         />
       );
     };

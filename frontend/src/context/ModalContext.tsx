@@ -9,11 +9,13 @@ interface ModalContextProps {
     modalContent: React.ReactNode,
     buttons?: string,
     confirmHandler?: () => void,
-    cancelHandler?: () => void
+    cancelHandler?: () => void,
+    errorMode?: boolean
   ) => void;
   hideModal: () => void;
   confirmHandler?: () => void;
   cancelHandler?: () => void;
+  errorMode?: boolean;
 }
 
 interface ModalProviderProps {
@@ -25,6 +27,7 @@ const ModalContext = createContext<ModalContextProps | undefined>(undefined);
 const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
   const [content, setContent] = useState<React.ReactNode>(null);
   const [buttonMode, setButtonMode] = useState<ModalButtonMode>(ModalButtonMode.NoButtons);
+  const [errorMode, setErrorMode] = useState<boolean>(false);
   const [confirmHandler, setConfirmHandler] = useState<(() => void) | undefined>(undefined);
   const [cancelHandler, setCancelHandler] = useState<(() => void) | undefined>(undefined);
 
@@ -32,7 +35,8 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     modalContent: React.ReactNode,
     buttons?: string,
     onConfirm?: () => void,
-    onCancel?: () => void
+    onCancel?: () => void,
+    errorMode?: boolean
   ) => {
     switch (buttons) {
       // ad hoc stuff, TODO: clean up
@@ -42,6 +46,9 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
       case 'ask':
         setButtonMode(ModalButtonMode.YesNoButtons);
         break;
+      case 'close':
+        setButtonMode(ModalButtonMode.CloseButton);
+        break;
       default:
         setButtonMode(ModalButtonMode.NoButtons);
         break;
@@ -49,6 +56,7 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     setContent(modalContent);
     setConfirmHandler(() => onConfirm); // store the handler
     setCancelHandler(() => onCancel);
+    setErrorMode(errorMode ?? false);
   };
 
   const hideModal = () => {
@@ -67,6 +75,7 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
         hideModal,
         confirmHandler,
         cancelHandler,
+        errorMode,
       }}
     >
       {children}

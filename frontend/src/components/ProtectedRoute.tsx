@@ -13,7 +13,7 @@ const ProtectedRoute = ({ authenticated, children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (!authenticated) {
-      showModal('Kirjaudu sisään nähdäksesi tämän sivun.', 'ok');
+      showModal('Kirjaudu sisään nähdäksesi tämän sivun.', 'ok', undefined, undefined, true);
     }
   }, [authenticated, showModal]);
 

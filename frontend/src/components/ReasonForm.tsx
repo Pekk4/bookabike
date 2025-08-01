@@ -18,11 +18,7 @@ const ReasonForm = ({ onSubmit, onCancel, label = 'Perustelu' }: ReasonFormProps
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-    >
+    <Box component="form" onSubmit={handleSubmit} className="flex flex-col gap-4 pt-10">
       <TextField
         label={label}
         value={reason}
@@ -32,7 +28,7 @@ const ReasonForm = ({ onSubmit, onCancel, label = 'Perustelu' }: ReasonFormProps
         minRows={2}
         autoFocus
       />
-      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+      <Box className="flex justify-center gap-4 pt-4">
         <Button variant="contained" type="submit" disabled={!reason.trim()}>
           Lähetä
         </Button>

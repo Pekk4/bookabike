@@ -4,11 +4,11 @@ import './AdminCalendar.css';
 import BookingCard from './BookingCard';
 import useModal from '../hooks/useModal';
 
-import { UserDataBooking } from '../types';
+import { BookingEntry, UserDataBooking } from '../types';
 
 interface AdminCalendarProps {
   bookings: UserDataBooking[];
-  renderActions: (booking: UserDataBooking) => React.ReactNode;
+  renderActions: (booking: BookingEntry) => React.ReactNode;
 }
 
 const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
@@ -32,7 +32,10 @@ const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
     const booking = dateToBookingMap.get(date.toDateString());
 
     if (booking) {
-      showModal(<BookingCard booking={booking} renderActions={renderActions as (booking: UserDataBooking) => React.ReactNode} showUserDetails={true} />, 'ok');
+      showModal(
+        <BookingCard booking={booking} renderActions={renderActions} showUserDetails={true} />,
+        'close'
+      );
       return;
     }
   };
@@ -43,7 +46,7 @@ const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
         locale="fi-FI"
         onClickDay={handleDateClick}
         tileClassName={({ date, view }) => {
-          // Highlight bookings only in day view
+          // Highlight bookings only in a day view, not in other views
           if (view !== 'month') return null;
           // Highlight booked dates
           if (bookedDates.has(date.toDateString())) return 'booked-tile';

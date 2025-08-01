@@ -33,7 +33,7 @@ const BookingsManager = ({
   );
 
   const handleDialog = (booking: BookingEntry) => {
-    showModal(getBookingCard(booking));
+    showModal(getBookingCard(booking), 'close');
   };
 
   return (

@@ -60,7 +60,7 @@ const Modal = ({
                 variant="contained"
                 size="medium"
                 onClick={confirmHandler}
-                className={modalButtonClass}
+                //className={modalButtonClass}
               >
                 Kyllä
               </Button>
@@ -70,7 +70,7 @@ const Modal = ({
                 variant="contained"
                 size="medium"
                 onClick={closingHandler}
-                className={modalButtonClass}
+                //className={modalButtonClass}
               >
                 Ei
               </Button>
@@ -83,7 +83,7 @@ const Modal = ({
               variant="contained"
               size="medium"
               onClick={closingHandler}
-              className={modalButtonClass}
+              //className={modalButtonClass}
             >
               OK
             </Button>
@@ -95,7 +95,7 @@ const Modal = ({
               variant="contained"
               size="medium"
               onClick={closingHandler}
-              className={modalButtonClass}
+              //className={modalButtonClass}
             >
               Sulje
             </Button>

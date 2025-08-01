@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
 
 import AppRoutes from './AppRoutes';
 import ErrorBoundary from './context/ErrorBoundary';
@@ -10,6 +11,7 @@ import MenuBar from './components/MenuBar';
 import Modal from './components/Modal';
 import LoadingView from './components/LoadingView';
 import BaseLayout from './components/BaseLayout';
+import theme from './theme';
 
 const ModalRoot = () => {
   const { content, buttonMode, hideModal, confirmHandler, cancelHandler, errorMode } = useModal();
@@ -56,16 +58,18 @@ function App() {
   return (
     <>
       <ErrorBoundary>
-        <ModalProvider>
-          <ModalRoot />
-          <Router>
-            <ModalAutoCloser />
-            <BaseLayout>
-              <AppRoutes authenticated={authenticated} />
-            </BaseLayout>
-            <MenuBar />
-          </Router>
-        </ModalProvider>
+        <ThemeProvider theme={theme}>
+          <ModalProvider>
+            <ModalRoot />
+            <Router>
+              <ModalAutoCloser />
+              <BaseLayout>
+                <AppRoutes authenticated={authenticated} />
+              </BaseLayout>
+              <MenuBar />
+            </Router>
+          </ModalProvider>
+        </ThemeProvider>
       </ErrorBoundary>
     </>
   );

@@ -13,7 +13,7 @@ const BANNER_HEIGHT = 80; // TODO
 // !!
 
 const MenuBar = () => {
-  const { keycloak, authenticated } = useKeycloak();
+  const { keycloak, authenticated, isAdmin } = useKeycloak();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
@@ -69,6 +69,7 @@ const MenuBar = () => {
                   }}
                   fontSize="large"
                   className="text-white hover:text-orange-500"
+                  data-testid="login-button"
                 />
               )}
             </div>
@@ -106,7 +107,7 @@ const MenuBar = () => {
                 Varauskalenteri
               </div>
             </Link>
-            {authenticated && (
+            {isAdmin && (
               <Link to="/manage-bookings">
                 <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
                   Varaustenhallinta

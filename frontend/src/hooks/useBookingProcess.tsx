@@ -16,8 +16,8 @@ const useBookingProcess = (resetCalendar: () => void) => {
   const endDateRef = useRef<Date | null>(null);
 
   const handleNewBooking = (start: Date | null, end: Date | null) => {
-    const startFormatted = start?.toLocaleDateString();
-    const endFormatted = end?.toLocaleDateString();
+    const startFormatted = start?.toLocaleDateString('fi-FI');
+    const endFormatted = end?.toLocaleDateString('fi-FI');
 
     // TODO
     console.log('Booking dates before confirming modal:', startFormatted, endFormatted);

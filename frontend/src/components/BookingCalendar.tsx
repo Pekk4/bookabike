@@ -2,7 +2,6 @@ import { useState } from 'react';
 import Calendar from 'react-calendar';
 
 import './BookingCalendar.css';
-
 import { maxBookingLength } from '../constants';
 import useBookingProcess from '../hooks/useBookingProcess';
 
@@ -17,12 +16,12 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const resetCalendar = () => {
+  const resetSelections = () => {
     setStartDate(null);
     setEndDate(null);
   };
 
-  const { handleNewBooking, handleUpdateBooking } = useBookingProcess(resetCalendar);
+  const { handleNewBooking, handleUpdateBooking } = useBookingProcess(resetSelections);
 
   const isDateClickable = (date: Date): boolean => {
     // All free dates are clickable until the start date is selected
@@ -37,10 +36,11 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
   };
 
   const handleDateClick = (date: Date) => {
+    // First click - set a start date
     if (!startDate) {
       setStartDate(date);
     } else if (isDateClickable(date)) {
-      // Second click - set end date if it's within the valid range
+      // Second click - set an end date, if it's within the valid range
       if (date.getTime() !== startDate.getTime()) {
         setEndDate(date);
 
@@ -51,52 +51,61 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
         }
       } else {
         // Clicked on the same date again, reset selection
-        // TODO: not very smooth atm
-        resetCalendar();
+        //
+        // TODO: implement one day bookings
+        //
+        resetSelections();
       }
     }
   };
 
   return (
-    <div>
-      <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
-        <div className="border-2 border-black"></div>
-        <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">
-          <div className="top-0 absolute">
-            {/* TODO: improve this */}
-            {startDate && !endDate && <p>Now select an end date (up to 3 days after start date)</p>}
-          </div>
-          <Calendar
-            locale="fi-FI"
-            onClickDay={handleDateClick}
-            //tileDisabled={({ date }) => startDate !== null && !isDateClickable(date)}
-            tileDisabled={({ date }) => {
-              // Disable if date is in bookedDates set
-              if (bookedDates.has(date.toDateString())) return true;
-              // Also disable if not in allowed range, as before
-              return startDate !== null && !isDateClickable(date);
-            }}
-            // Set date outside the range to be unclickable
-            tileClassName={({ date }) => {
-              // Set classnames for CSS styling to highlight the allowed range of dates
-              if (startDate && date.toDateString() === startDate.toDateString()) {
-                return 'start-date';
-              }
-              if (endDate && date.toDateString() === endDate.toDateString()) {
-                return 'end-date';
-              }
-              // Example of coloring tiles
-              if (date.getDay() === 0) return 'sunday-tile';
-              if (date.getDay() === 6) return 'saturday-tile';
-              return null;
-            }}
-            //value={startDate} // TODO check this
-          />
-        </div>
-        <div className="row-start-6 flex justify-center items-start border-2 border-orange-500">
-          <p>Click a date to select it</p>
-        </div>
+    <div className="booking-calendar flex flex-col h-full justify-center items-center m-auto">
+      <div className="mb-6 bg-white p-10 rounded-sm shadow-slate-500 shadow-sm border-1 border-slate-500">
+        {!startDate && !endDate && (
+          <p>Aloita varauksen tekeminen valitsemalla kalenterista vapaa aloituspäivä</p>
+        )}
+        {startDate && !endDate && (
+          <p>Valitse seuraavaksi varauksen lopetuspäivä (varauksen maksimipituus neljä päivää)</p>
+        )}
+        {startDate && endDate && <p>Hyväksy tai hylkää varaus</p>}
       </div>
+      <Calendar
+        locale="fi-FI"
+        onClickDay={handleDateClick}
+        tileDisabled={({ date, view }) => {
+          // Only disable tiles in a day view
+          if (view !== 'month') return false;
+          // Disable if date is in bookedDates set (i.e. already booked)
+          if (bookedDates.has(date.toDateString())) return true;
+          // Also disable if not in allowed range (max booking length)
+          return startDate !== null && !isDateClickable(date);
+        }}
+        tileClassName={({ date }) => {
+          // Set classnames for CSS styling to highlight dates
+          if (bookedDates.has(date.toDateString())) {
+            //
+            // TODO: check if necessary anymore, idea was to separate from disabled dates
+            //
+            return 'booked-date-tile';
+          }
+          if (startDate && isDateClickable(date)) {
+            // Highlight selectable dates when dates outside the range are disabled
+            return 'selectable-date-tile';
+          }
+          if (startDate && date.toDateString() === startDate.toDateString()) {
+            // Highlight start date
+            return 'start-date';
+          }
+          if (endDate && date.toDateString() === endDate.toDateString()) {
+            // Highlight end date
+            return 'end-date';
+          }
+          return null;
+        }}
+        value={startDate && endDate ? [startDate, endDate] : startDate}
+        className={'shadow-slate-500 shadow-sm'}
+      />
     </div>
   );
 };

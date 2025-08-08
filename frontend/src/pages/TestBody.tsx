@@ -36,6 +36,7 @@ const CreateBookings = () => {
             onEdit={() => {}}
           />
         )}
+        showUserDetails={true}
       />
     </div>
   );

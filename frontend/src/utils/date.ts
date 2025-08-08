@@ -1,3 +1,7 @@
+//
+// Likely unused function, consider removing if not needed
+//
+
 export const getCapitalizedMonth = (date: Date, locale: string = 'fi-FI'): string => {
   const month = date.toLocaleDateString(locale, { month: 'long' });
 

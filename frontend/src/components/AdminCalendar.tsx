@@ -1,28 +1,20 @@
-import { useEffect, useState } from 'react';
-import Calendar, { CalendarProps } from 'react-calendar';
+import Calendar from 'react-calendar';
 
 import './AdminCalendar.css';
-
 import BookingCard from './BookingCard';
 import useModal from '../hooks/useModal';
-import { getCapitalizedMonth } from '../utils/date';
 
-import { UserDataBooking } from '../types';
+import { BookingEntry, UserDataBooking } from '../types';
 
 interface AdminCalendarProps {
   bookings: UserDataBooking[];
+  renderActions: (booking: BookingEntry) => React.ReactNode;
 }
 
-const AdminCalendar = ({ bookings }: AdminCalendarProps) => {
+const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
   const { showModal } = useModal();
-  const [monthHeader, setMonthHeader] = useState<string>('');
   const bookedDates = new Set<string>();
   const dateToBookingMap = new Map<string, UserDataBooking>();
-
-  useEffect(() => {
-    const now = new Date();
-    setMonthHeader(getCapitalizedMonth(now, 'fi-FI'));
-  }, []);
 
   bookings.forEach((booking) => {
     const start = new Date(booking.startDate);
@@ -40,46 +32,28 @@ const AdminCalendar = ({ bookings }: AdminCalendarProps) => {
     const booking = dateToBookingMap.get(date.toDateString());
 
     if (booking) {
-      showModal(<BookingCard booking={booking} />, 'ok');
+      showModal(
+        <BookingCard booking={booking} renderActions={renderActions} showUserDetails={true} />,
+        'close'
+      );
       return;
     }
   };
 
-  const handleStartDateChange: CalendarProps['onActiveStartDateChange'] = ({
-    activeStartDate,
-    view,
-  }) => {
-    if (view === 'month' && activeStartDate) {
-      setMonthHeader(getCapitalizedMonth(activeStartDate, 'fi-FI'));
-    } else if (view === 'year') {
-      // Show just the current month in the header, if we go further views
-      const now = new Date();
-      setMonthHeader(getCapitalizedMonth(now, 'fi-FI'));
-    }
-  };
-
   return (
-    <div>
-      <div className="w-screen h-screen bg-gray-100 grid grid-rows-6 ">
-        <div className="border-2 border-black"></div>
-        <div className="border-2 border-blue-700 row-span-4 row-start-2 flex justify-center items-center m-auto w-1/2 h-full relative">
-          <div className="top-0 absolute">
-            <h2 className="text-2xl font-bold text-center mb-4">{monthHeader}</h2>
-          </div>
-          <Calendar
-            locale="fi-FI"
-            onClickDay={handleDateClick}
-            onActiveStartDateChange={handleStartDateChange}
-            tileClassName={({ date }) => {
-              if (bookedDates.has(date.toDateString())) return 'booked-tile';
-              return null;
-            }}
-          />
-        </div>
-        <div className="row-start-6 flex justify-center items-start border-2 border-orange-500">
-          <p>Click a date to select it</p>
-        </div>
-      </div>
+    <div className="admin-calendar flex h-full justify-center items-center m-auto">
+      <Calendar
+        locale="fi-FI"
+        onClickDay={handleDateClick}
+        tileClassName={({ date, view }) => {
+          // Highlight bookings only in a day view, not in other views
+          if (view !== 'month') return null;
+          // Highlight booked dates
+          if (bookedDates.has(date.toDateString())) return 'booked-tile';
+          return null;
+        }}
+        className={'shadow-slate-500 shadow-sm'}
+      />
     </div>
   );
 };

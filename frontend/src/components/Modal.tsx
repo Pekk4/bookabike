@@ -4,70 +4,102 @@ import Button from '@mui/material/Button';
 import { ModalButtonMode } from '../types';
 
 interface ModalProps {
-  message: React.ReactNode; // To be renamed to content for the sake of clarity
-  mode?: ModalButtonMode;
+  content: React.ReactNode;
+  buttonMode?: ModalButtonMode;
   confirmHandler?: () => void;
-  cancelHandler?: () => void;
-  //closeHandler?: () => void;
+  closingHandler?: () => void;
   errorMode?: boolean;
 }
 
 const Modal = ({
-  message,
-  mode = ModalButtonMode.NoButtons,
+  content,
+  buttonMode = ModalButtonMode.NoButtons, // What kind of buttons to show (none/"ok"/"yes|no"/"close")
   confirmHandler, // Handler for "Yes" button
-  cancelHandler, // Handler for "No" button
-  //closeHandler, // Handler for "OK" button or modal close, maybe merged to cancelHandler later
-  errorMode = false,
+  closingHandler, // Handler for closing the modal
+  errorMode = false, // If modal is about errors, use red scheme
 }: ModalProps) => {
-  if (message === null) return null;
+  if (content === null) return null;
 
   // Base class for modal styles
   const baseClass = clsx(
-    'p-20',
+    'px-20',
+    'py-14',
     'bg-white',
-    'rounded-xl',
-    'border-2',
+    'rounded-lg',
     'font-bold',
     'text-center',
-    'shadow-2xl',
     'flex',
     'flex-col',
     'items-center',
     'justify-center'
   );
 
+  // Extend base class with colors depending on errorMode
   const modalClass = clsx(baseClass, {
-    'text-[#00b100] border-[#2ee700]': !errorMode, // Add green by default
-    'text-[#ff0000] border-[#c40000]': errorMode, // Otherwise add red
-    // TODO: most likely there will be more colours than just two etc
+    'text-orange-500 black shadow-[0_0_24px_0_rgba(255,255,255,0.9)]': !errorMode,
+    'text-red-500 shadow-[0_0_24px_0_rgba(255,0,0,0.9)]': errorMode,
+  });
+
+  // Same for button colors
+  const modalButtonClass = clsx({
+    '!bg-orange-500 hover:!bg-orange-600': !errorMode,
+    '!bg-red-500 hover:!bg-red-600': errorMode,
   });
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center"
-      onClick={cancelHandler}
+      className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center"
+      onClick={closingHandler}
     >
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
-        {message}
-        {mode === 'yesNoButtons' && confirmHandler && cancelHandler && (
+        {content}
+        {buttonMode === ModalButtonMode.YesNoButtons && confirmHandler && closingHandler && (
           <div className="flex flex-row items-center justify-center">
-            <div className="m-4">
-              <Button variant="contained" size="medium" onClick={confirmHandler}>
-                Yes
+            <div className="mt-14 mx-6">
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={confirmHandler}
+                //className={modalButtonClass}
+              >
+                Kyllä
               </Button>
             </div>
-            <div className="m-4">
-              <Button variant="contained" size="medium" onClick={cancelHandler}>
-                No
+            <div className="mt-14 mx-6">
+              <Button
+                variant="contained"
+                size="medium"
+                onClick={closingHandler}
+                //className={modalButtonClass}
+              >
+                Ei
               </Button>
             </div>
           </div>
         )}
-        {mode === 'okButton' && cancelHandler && (
-          <Button variant="contained" size="medium" onClick={cancelHandler}>
-            OK
-          </Button>
+        {buttonMode === ModalButtonMode.OkButton && closingHandler && (
+          <div className="mt-14">
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={closingHandler}
+              //className={modalButtonClass}
+            >
+              OK
+            </Button>
+          </div>
+        )}
+        {buttonMode === ModalButtonMode.CloseButton && closingHandler && (
+          <div className="mt-14">
+            <Button
+              variant="contained"
+              size="medium"
+              onClick={closingHandler}
+              //className={modalButtonClass}
+            >
+              Sulje
+            </Button>
+          </div>
         )}
       </div>
     </div>

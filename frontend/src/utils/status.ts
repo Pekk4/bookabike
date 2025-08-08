@@ -26,7 +26,8 @@ export const getBookingStatusOrder = (isAdmin: boolean = false): Record<string, 
 export const getStatusColor = (status: string): React.CSSProperties | undefined => {
   switch (status) {
     case BookingStatus.Pending:
-      return { backgroundColor: '#ed6c02', color: '#fff' }; // orange
+      //return { backgroundColor: '#ed6c02', color: '#fff' }; // orange
+      return { backgroundColor: '#ff8904', color: '#fff' }; // orange
     case BookingStatus.Confirmed:
       return { backgroundColor: '#2e7d32', color: '#fff' }; // green
     case BookingStatus.Canceled:

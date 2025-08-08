@@ -37,6 +37,7 @@ export enum ModalButtonMode {
   NoButtons = 'noButtons',
   OkButton = 'okButton',
   YesNoButtons = 'yesNoButtons',
+  CloseButton = 'closeButton',
 }
 
 export enum BookingStatus {

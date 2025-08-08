@@ -1,4 +1,4 @@
-import { Card, CardContent, Chip, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableRow, TableContainer, Paper, Chip } from '@mui/material';
 
 import { getStatusColor, getStatusTranslation } from '../utils/status';
 
@@ -18,51 +18,71 @@ const BookingCard = ({ booking, renderActions, showUserDetails = false }: Bookin
   const hasUser = showUserDetails && 'user' in booking && booking.user;
   const startDate = new Date(booking.startDate).toLocaleDateString('fi-FI');
   const endDate = new Date(booking.endDate).toLocaleDateString('fi-FI');
+  const createdAt = new Date(booking.createdAt).toLocaleDateString('fi-FI');
 
   if (hasUser) {
-    // Keycloak allows lowercased names
+    // Keycloak allows lowercased names, which is not very aesthetic
     firstName = capitalize(booking.user.firstName);
     lastName = capitalize(booking.user.lastName);
   }
 
   return (
     <>
-      <Card>
-        <CardContent>
-          {hasUser && (
-            <Typography className="p-1.5" variant="h6" component="div">
-              {firstName} {lastName} ({booking.user.username})
-            </Typography>
-          )}
-          {!hasUser && (
-            <Typography className="p-1.5" variant="h6" component="div">
-              {startDate} - {endDate}
-            </Typography>
-          )}
-          {/*<Typography className="p-1.5" variant="body2">
-            Status:{' '}*/}
-          <Chip
-            label={getStatusTranslation(booking.status)}
-            style={getStatusColor(booking.status)}
-            className="p-1.5"
-          />
-          {/*</Typography>*/}
-          <Typography className="p-1.5" variant="body2">
-            Aloitus: {startDate}
-          </Typography>
-          {/*<Typography variant="body2" color="text.secondary">*/}
-          <Typography className="p-1.5" variant="body2">
-            Palautus: {endDate}
-          </Typography>
-          <Typography className="p-1.5" variant="body2">
-            Noutopaikka: To be implemented
-          </Typography>
-          <Typography className="p-1.5" variant="body2">
-            Varaus tehty: {new Date(booking.createdAt).toLocaleDateString('fi-FI')}
-          </Typography>
-          {renderActions(booking)}
-        </CardContent>
-      </Card>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableBody>
+            {hasUser && (
+              <>
+                <TableRow>
+                  <TableCell>Käyttäjä</TableCell>
+                  <TableCell>
+                    {firstName} {lastName}
+                    <br />({booking.user.username})
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Yhteystiedot</TableCell>
+                  <TableCell>
+                    {booking.user.email}
+                    <br />
+                    {/* to be implemented: phone number */}
+                    +358401234567
+                  </TableCell>
+                </TableRow>
+              </>
+            )}
+            <TableRow>
+              <TableCell>Status</TableCell>
+              <TableCell>
+                <Chip
+                  label={getStatusTranslation(booking.status)}
+                  style={getStatusColor(booking.status)}
+                />
+              </TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Nouto</TableCell>
+              <TableCell>{startDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Palautus</TableCell>
+              <TableCell>{endDate}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Noutopaikka</TableCell>
+              <TableCell>Vantaa</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Varaus tehty</TableCell>
+              <TableCell>{createdAt}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Toimenpiteet</TableCell>
+              <TableCell align="center">{renderActions(booking)}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };

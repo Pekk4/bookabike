@@ -17,7 +17,7 @@ const MenuBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   return (
-    <div className="fixed top-0 left-0 right-0 mx-auto z-50">
+    <div className="fixed top-0 left-0 right-0 mx-auto z-10">
       <div className="relative w-full">
         <div className="bg-gradient-to-b from-org-gray to-black w-screen border-b-2 border-orange-500 h-20 relative">
           {/* TODO: adjust shadows etc */}
@@ -28,9 +28,17 @@ const MenuBar = () => {
                 w-[179px] h-[71px]
                 -translate-x-1/2 translate-y-1/2
                 bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
-                #pointer-events-none # TODO: delete?
-                drop-shadow-sm
-                drop-shadow-white
+                drop-shadow-[30px_0_15px_rgba(255,255,255,0.75)]
+              "
+            />
+            {/* stupid shit, but to have a symmetrical shadow around the logo, this is the way*/}
+            <div
+              className="
+                absolute left-1/2 bottom-0
+                w-[179px] h-[71px]
+                -translate-x-1/2 translate-y-1/2
+                bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
+                drop-shadow-[-30px_0_15px_rgba(255,255,255,0.75)]
               "
             />
           </Link>
@@ -88,29 +96,26 @@ const MenuBar = () => {
                 Etusivu
               </div>
             </Link>
-            <Link to="/calendar">
-              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-                Varauskalenteri
-              </div>
-            </Link>
             <Link to="/my-bookings">
               <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
                 Omat varaukseni
               </div>
             </Link>
+            <Link to="/calendar">
+              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                Varauskalenteri
+              </div>
+            </Link>
+            {authenticated && (
+              <Link to="/manage-bookings">
+                <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
+                  Varaustenhallinta
+                </div>
+              </Link>
+            )}
             <Link to="/me">
               <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-                Omat tiedot
-              </div>
-            </Link>
-            <Link to="/manage-bookings">
-              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-                Varaustenhallinta
-              </div>
-            </Link>
-            <Link to="/admin-bookings">
-              <div className="w-full text-left p-4 hover:bg-orange-500 hover:cursor-pointer hover:text-white transition">
-                Admin varaukset
+                Demo
               </div>
             </Link>
           </div>

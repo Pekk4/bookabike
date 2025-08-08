@@ -10,12 +10,15 @@ import AdminBookingActions from '../components/AdminBookingActions';
 import { getBookingStatusOrder } from '../utils/status';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
+import AdminViewSwitchBar from '../components/AdminViewSwitchBar';
+import AdminCalendar from '../components/AdminCalendar';
 
 const ManageBookings = () => {
   const location = useLocation();
   const { showModal, hideModal } = useModal();
   const { getAllBookings, updateBookingStatus } = useAdminService();
   const [bookings, setBookings] = useState<UserDataBooking[]>([]);
+  const [isCalendarView, setIsCalendarView] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -31,8 +34,11 @@ const ManageBookings = () => {
       }
     };
     fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, getAllBookings]);
+
+  const toggleView = () => {
+    setIsCalendarView((prev) => !prev);
+  };
 
   //useEffect(() => {
   //  if (bookings.length > 0) {
@@ -110,6 +116,25 @@ const ManageBookings = () => {
     hideModal();
   };
 
+  if (isCalendarView) {
+    return (
+      <>
+        <AdminCalendar
+          bookings={bookings}
+          renderActions={(booking) => (
+            <AdminBookingActions
+              booking={booking as UserDataBooking}
+              onApprove={confirmApprove}
+              onRevoke={confirmRevoke}
+              onReject={confirmReject}
+            />
+          )}
+        />
+        <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
+      </>
+    );
+  }
+
   return (
     <>
       <BookingsManager
@@ -124,6 +149,7 @@ const ManageBookings = () => {
         )}
         showUserColumn={true} // Show user column in the bookings manager
       />
+      <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
     </>
   );
 };

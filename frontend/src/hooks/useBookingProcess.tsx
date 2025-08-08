@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { useBookingService } from '../services/bookingService';
 import useModal from './useModal';
+import { dateLocale } from '../constants';
 
 import { Booking } from '../types';
 
@@ -16,8 +17,8 @@ const useBookingProcess = (resetCalendar: () => void) => {
   const endDateRef = useRef<Date | null>(null);
 
   const handleNewBooking = (start: Date | null, end: Date | null) => {
-    const startFormatted = start?.toLocaleDateString();
-    const endFormatted = end?.toLocaleDateString();
+    const startFormatted = start?.toLocaleDateString(dateLocale);
+    const endFormatted = end?.toLocaleDateString(dateLocale);
 
     // TODO
     console.log('Booking dates before confirming modal:', startFormatted, endFormatted);

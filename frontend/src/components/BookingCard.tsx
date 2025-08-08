@@ -1,6 +1,7 @@
 import { Table, TableBody, TableCell, TableRow, TableContainer, Paper, Chip } from '@mui/material';
 
 import { getStatusColor, getStatusTranslation } from '../utils/status';
+import { dateLocale } from '../constants';
 
 import { BookingEntry } from '../types';
 
@@ -16,9 +17,9 @@ const BookingCard = ({ booking, renderActions, showUserDetails = false }: Bookin
   let firstName = '';
   let lastName = '';
   const hasUser = showUserDetails && 'user' in booking && booking.user;
-  const startDate = new Date(booking.startDate).toLocaleDateString('fi-FI');
-  const endDate = new Date(booking.endDate).toLocaleDateString('fi-FI');
-  const createdAt = new Date(booking.createdAt).toLocaleDateString('fi-FI');
+  const startDate = new Date(booking.startDate).toLocaleDateString(dateLocale);
+  const endDate = new Date(booking.endDate).toLocaleDateString(dateLocale);
+  const createdAt = new Date(booking.createdAt).toLocaleDateString(dateLocale);
 
   if (hasUser) {
     // Keycloak allows lowercased names, which is not very aesthetic

@@ -12,6 +12,7 @@ import {
 import { getStatusTranslation, getStatusColor } from '../utils/status';
 import BookingCard from './BookingCard';
 import useModal from '../hooks/useModal';
+import { dateLocale } from '../constants';
 
 import { BookingEntry } from '../types';
 
@@ -65,18 +66,18 @@ const BookingsManager = ({
                   </TableCell>
                 )}
                 <TableCell align="center">
-                  {new Date(booking.startDate).toLocaleDateString('fi-FI')}
+                  {new Date(booking.startDate).toLocaleDateString(dateLocale)}
                 </TableCell>
                 <TableCell align="center">
-                  {new Date(booking.endDate).toLocaleDateString('fi-FI')}
+                  {new Date(booking.endDate).toLocaleDateString(dateLocale)}
                 </TableCell>
                 <TableCell align="center">Vantaa</TableCell>
                 <TableCell align="center">
-                  {new Date(booking.createdAt).toLocaleDateString('fi-FI')}
+                  {new Date(booking.createdAt).toLocaleDateString(dateLocale)}
                   <br />
                   <small>
                     klo{' '}
-                    {new Date(booking.createdAt).toLocaleTimeString('fi-FI', {
+                    {new Date(booking.createdAt).toLocaleTimeString(dateLocale, {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}

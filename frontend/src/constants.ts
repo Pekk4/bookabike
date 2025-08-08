@@ -2,6 +2,8 @@ export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost
 
 export const maxBookingLength = 3; // Maximum number of days for a booking, starting from 0
 
+export const dateLocale = 'fi-FI'; // Finnish locale for date formatting
+
 export const statusTranslations: Record<string, string> = {
   pending: 'Odottaa',
   confirmed: 'Hyväksytty',

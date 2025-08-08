@@ -4,14 +4,14 @@ import { CircularProgress } from '@mui/material';
 
 import { useAdminService } from '../services/adminService';
 import useModal from '../hooks/useModal';
-import BookingsManager from '../components/BookingsManager';
-import ReasonForm from '../components/ReasonForm';
-import AdminBookingActions from '../components/AdminBookingActions';
+import BookingsManager from '../components/common/BookingsManager';
+import ReasonForm from '../components/admin/ReasonForm';
+import BookingActions from '../components/admin/BookingActions';
 import { getBookingStatusOrder } from '../utils/status';
 
 import { UserDataBooking, BookingStatus as b } from '../types';
-import AdminViewSwitchBar from '../components/AdminViewSwitchBar';
-import AdminCalendar from '../components/AdminCalendar';
+import ViewSwitchBar from '../components/admin/ViewSwitchBar';
+import BookingsCalendar from '../components/admin/BookingsCalendar';
 
 const ManageBookings = () => {
   const location = useLocation();
@@ -119,10 +119,10 @@ const ManageBookings = () => {
   if (isCalendarView) {
     return (
       <>
-        <AdminCalendar
+        <BookingsCalendar
           bookings={bookings}
           renderActions={(booking) => (
-            <AdminBookingActions
+            <BookingActions
               booking={booking as UserDataBooking}
               onApprove={confirmApprove}
               onRevoke={confirmRevoke}
@@ -130,7 +130,7 @@ const ManageBookings = () => {
             />
           )}
         />
-        <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
+        <ViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
       </>
     );
   }
@@ -140,7 +140,7 @@ const ManageBookings = () => {
       <BookingsManager
         bookings={bookings}
         renderActions={(booking) => (
-          <AdminBookingActions
+          <BookingActions
             booking={booking as UserDataBooking}
             onApprove={confirmApprove}
             onRevoke={confirmRevoke}
@@ -149,7 +149,7 @@ const ManageBookings = () => {
         )}
         showUserColumn={true} // Show user column in the bookings manager
       />
-      <AdminViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
+      <ViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
     </>
   );
 };

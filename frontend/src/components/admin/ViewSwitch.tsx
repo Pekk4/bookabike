@@ -1,8 +1,8 @@
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 
-// AdminViewSwitch is a quite special case, so we style it separately and not in theme.ts
-const AdminViewSwitch = styled(Switch)(() => ({
+// ViewSwitch is a quite special case, so we style it separately and not in theme.ts
+const ViewSwitch = styled(Switch)(() => ({
   '& .MuiSwitch-track': {
     backgroundColor: '#999999',
     opacity: 1,
@@ -22,4 +22,4 @@ const AdminViewSwitch = styled(Switch)(() => ({
   },
 }));
 
-export default AdminViewSwitch;
+export default ViewSwitch;

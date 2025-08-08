@@ -1,14 +1,14 @@
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-import AdminSwitch from './AdminViewSwitch';
+import ViewSwitch from './ViewSwitch';
 
 interface AdminViewBarProps {
   isCalendarView: boolean;
   onToggleView: () => void;
 }
 
-const AdminViewSwitchBar = ({ isCalendarView, onToggleView }: AdminViewBarProps) => {
+const ViewSwitchBar = ({ isCalendarView, onToggleView }: AdminViewBarProps) => {
   return (
     <div
       className="
@@ -18,10 +18,10 @@ const AdminViewSwitchBar = ({ isCalendarView, onToggleView }: AdminViewBarProps)
       "
     >
       <TableRowsIcon className="!w-7.5 !h-7.5 mx-2" />
-      <AdminSwitch checked={isCalendarView} onChange={onToggleView} />
+      <ViewSwitch checked={isCalendarView} onChange={onToggleView} />
       <CalendarMonthIcon className="!w-7.5 !h-7.5 mx-2" />
     </div>
   );
 };
 
-export default AdminViewSwitchBar;
+export default ViewSwitchBar;

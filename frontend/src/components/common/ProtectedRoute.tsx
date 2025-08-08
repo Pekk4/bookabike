@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import useModal from '../hooks/useModal';
+import useModal from '../../hooks/useModal';
 
 interface ProtectedRouteProps {
   authenticated: boolean;

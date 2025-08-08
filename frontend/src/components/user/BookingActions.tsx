@@ -3,7 +3,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import EventIcon from '@mui/icons-material/Event';
 
-import { Booking, BookingStatus as b } from '../types';
+import { Booking, BookingStatus as b } from '../../types';
 
 interface BookingActionsProps {
   booking: Booking;
@@ -14,7 +14,7 @@ interface BookingActionsProps {
   onBookNow: (booking: Booking) => void;
 }
 
-const UserBookingActions = ({
+const BookingActions = ({
   booking,
   hasActiveBookings,
   onEdit,
@@ -133,4 +133,4 @@ const UserBookingActions = ({
   }
 };
 
-export default UserBookingActions;
+export default BookingActions;

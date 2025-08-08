@@ -3,14 +3,14 @@ import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 
 import AppRoutes from './AppRoutes';
-import ErrorBoundary from './context/ErrorBoundary';
-import { ModalProvider } from './context/ModalContext';
+import ErrorBoundary from './components/common/ErrorBoundary';
+import { ModalProvider } from './contexts/ModalContext';
 import useModal from './hooks/useModal';
 import useKeycloak from './hooks/useKeycloak';
-import MenuBar from './components/MenuBar';
-import Modal from './components/Modal';
-import LoadingView from './components/LoadingView';
-import BaseLayout from './components/BaseLayout';
+import MenuBar from './components/common/MenuBar';
+import Modal from './components/common/Modal';
+import LoadingView from './components/common/LoadingView';
+import BaseLayout from './components/common/BaseLayout';
 import theme from './theme';
 
 const ModalRoot = () => {

@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { useState } from 'react';
 
-import Modal from './Modal';
+import Modal from './shared/Modal';
 
 import { ModalButtonMode } from '../types';
 

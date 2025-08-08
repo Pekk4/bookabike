@@ -1,12 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
 
-import HomeDemo from './components/HomeDemo3';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import MyBookings from './pages/MyBookings';
 import EditBookings from './pages/EditBookings';
 import CreateBookings from './pages/CreateBookings';
-import TestBody from './pages/TestBody';
 import ManageBookings from './pages/ManageBookings';
+import FrontPage from './pages/FrontPage';
 
 interface AppRoutesProps {
   authenticated: boolean;
@@ -17,7 +16,7 @@ const AppRoutes = ({ authenticated }: AppRoutesProps) => {
     <div className="h-full w-full">
       <Routes>
         {/* Root path for everyone */}
-        <Route path="/" element={<HomeDemo />} />
+        <Route path="/" element={<FrontPage />} />
 
         {/* Everything else only for logged in users */}
         <Route
@@ -48,7 +47,7 @@ const AppRoutes = ({ authenticated }: AppRoutesProps) => {
           path="/me"
           element={
             <ProtectedRoute authenticated={authenticated}>
-              <TestBody />
+              <FrontPage />
             </ProtectedRoute>
           }
         />

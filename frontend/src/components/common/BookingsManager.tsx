@@ -9,12 +9,12 @@ import {
   Chip,
 } from '@mui/material';
 
-import { getStatusTranslation, getStatusColor } from '../utils/status';
+import { getStatusTranslation, getStatusColor } from '../../utils/status';
 import BookingCard from './BookingCard';
-import useModal from '../hooks/useModal';
-import { dateLocale } from '../constants';
+import useModal from '../../hooks/useModal';
+import { dateLocale } from '../../constants';
 
-import { BookingEntry } from '../types';
+import { BookingEntry } from '../../types';
 
 interface BookingsManagerProps {
   bookings: BookingEntry[];

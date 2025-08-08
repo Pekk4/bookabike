@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { useBookingService } from '../services/bookingService';
-import BookingCalendar from '../components/BookingCalendar';
+import BookingCalendar from '../components/user/BookingCalendar';
 
 const getDatesInRange = (start: string, end: string): string[] => {
   const dates: string[] = [];

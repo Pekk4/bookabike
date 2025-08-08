@@ -4,8 +4,8 @@ import { CircularProgress } from '@mui/material';
 
 import { useBookingService } from '../services/bookingService';
 import useModal from '../hooks/useModal';
-import BookingsManager from '../components/BookingsManager';
-import BookingActions from '../components/UserBookingActions';
+import BookingsManager from '../components/common/BookingsManager';
+import BookingActions from '../components/user/BookingActions';
 import { getBookingStatusOrder } from '../utils/status';
 
 import { Booking, BookingStatus as b } from '../types';

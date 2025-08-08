@@ -2,7 +2,7 @@ import { Button } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 
-import { UserDataBooking, BookingStatus } from '../types';
+import { UserDataBooking, BookingStatus } from '../../types';
 
 interface BookingActionsProps {
   booking: UserDataBooking;
@@ -11,7 +11,7 @@ interface BookingActionsProps {
   onReject: (booking: UserDataBooking) => void;
 }
 
-const AdminBookingActions = ({ booking, onApprove, onRevoke, onReject }: BookingActionsProps) => {
+const BookingActions = ({ booking, onApprove, onRevoke, onReject }: BookingActionsProps) => {
   switch (booking.status) {
     case BookingStatus.Pending:
       return (
@@ -63,4 +63,4 @@ const AdminBookingActions = ({ booking, onApprove, onRevoke, onReject }: Booking
   }
 };
 
-export default AdminBookingActions;
+export default BookingActions;

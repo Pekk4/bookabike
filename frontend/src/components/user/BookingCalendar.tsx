@@ -2,10 +2,10 @@ import { useState } from 'react';
 import Calendar from 'react-calendar';
 
 import './BookingCalendar.css';
-import { maxBookingLength } from '../constants';
-import useBookingProcess from '../hooks/useBookingProcess';
+import { maxBookingLength } from '../../constants';
+import useBookingProcess from '../../hooks/useBookingProcess';
 
-import { Booking } from '../types';
+import { Booking } from '../../types';
 
 interface BookingCalendarProps {
   bookedDates: Set<string>;
@@ -83,23 +83,20 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
         }}
         tileClassName={({ date }) => {
           // Set classnames for CSS styling to highlight dates
-          if (bookedDates.has(date.toDateString())) {
-            //
-            // TODO: check if necessary anymore, idea was to separate from disabled dates
-            //
-            return 'booked-date-tile';
-          }
+          //if (bookedDates.has(date.toDateString())) {
+          //  //
+          //  // TODO: check if necessary anymore, idea was to separate from disabled dates
+          //  //
+          //  return 'booked-date-tile';
+          //}
           if (startDate && isDateClickable(date)) {
             // Highlight selectable dates when dates outside the range are disabled
-            return 'selectable-date-tile';
-          }
-          if (startDate && date.toDateString() === startDate.toDateString()) {
-            // Highlight start date
-            return 'start-date';
-          }
-          if (endDate && date.toDateString() === endDate.toDateString()) {
-            // Highlight end date
-            return 'end-date';
+            if (startDate && date.toDateString() === startDate.toDateString()) {
+              return 'start-date selectable-date-tile';
+            }
+            if (endDate && date.toDateString() === endDate.toDateString()) {
+              return 'end-date selectable-date-tile';
+            }
           }
           return null;
         }}

@@ -1,9 +1,9 @@
 import { Table, TableBody, TableCell, TableRow, TableContainer, Paper, Chip } from '@mui/material';
 
-import { getStatusColor, getStatusTranslation } from '../utils/status';
-import { dateLocale } from '../constants';
+import { getStatusColor, getStatusTranslation } from '../../utils/status';
+import { dateLocale } from '../../constants';
 
-import { BookingEntry } from '../types';
+import { BookingEntry } from '../../types';
 
 interface BookingCardProps {
   booking: BookingEntry;

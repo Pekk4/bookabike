@@ -1,17 +1,17 @@
 import Calendar from 'react-calendar';
 
-import './AdminCalendar.css';
-import BookingCard from './BookingCard';
-import useModal from '../hooks/useModal';
+import './BookingsCalendar.css';
+import BookingCard from '../common/BookingCard';
+import useModal from '../../hooks/useModal';
 
-import { BookingEntry, UserDataBooking } from '../types';
+import { BookingEntry, UserDataBooking } from '../../types';
 
-interface AdminCalendarProps {
+interface BookingsCalendarProps {
   bookings: UserDataBooking[];
   renderActions: (booking: BookingEntry) => React.ReactNode;
 }
 
-const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
+const BookingsCalendar = ({ bookings, renderActions }: BookingsCalendarProps) => {
   const { showModal } = useModal();
   const bookedDates = new Set<string>();
   const dateToBookingMap = new Map<string, UserDataBooking>();
@@ -58,4 +58,4 @@ const AdminCalendar = ({ bookings, renderActions }: AdminCalendarProps) => {
   );
 };
 
-export default AdminCalendar;
+export default BookingsCalendar;

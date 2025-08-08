@@ -6,7 +6,7 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import { Link } from 'react-router-dom';
 
-import useKeycloak from '../hooks/useKeycloak';
+import useKeycloak from '../../hooks/useKeycloak';
 
 // !!
 const BANNER_HEIGHT = 80; // TODO

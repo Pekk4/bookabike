@@ -2,10 +2,9 @@ import { useState } from 'react';
 import Calendar from 'react-calendar';
 
 import './BookingCalendar.css';
-import { maxBookingLength } from '../../constants';
-import useBookingProcess from '../../hooks/useBookingProcess';
-
-import { Booking } from '../../types';
+import { maxBookingLength } from '@constants';
+import useBookingProcess from '@hooks/useBookingProcess';
+import { Booking } from '@types';
 
 interface BookingCalendarProps {
   bookedDates: Set<string>;

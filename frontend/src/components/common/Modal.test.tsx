@@ -4,9 +4,8 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { useState } from 'react';
 
-import Modal from './shared/Modal';
-
-import { ModalButtonMode } from '../types';
+import Modal from '@components/common/Modal';
+import { ModalButtonMode } from '@types';
 
 describe('Modal component', () => {
   test('renders with the correct content', () => {

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { KeycloakContext } from '../contexts/KeycloakContext';
+import { KeycloakContext } from '@contexts/KeycloakContext';
 
 const useKeycloak = () => {
   const context = useContext(KeycloakContext);

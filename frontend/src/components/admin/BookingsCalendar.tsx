@@ -1,10 +1,9 @@
 import Calendar from 'react-calendar';
 
-import './BookingsCalendar.css';
-import BookingCard from '../common/BookingCard';
-import useModal from '../../hooks/useModal';
-
-import { BookingEntry, UserDataBooking } from '../../types';
+import '@components/admin/BookingsCalendar.css';
+import BookingCard from '@components/common/BookingCard';
+import useModal from '@hooks/useModal';
+import { BookingEntry, UserDataBooking } from '@types';
 
 interface BookingsCalendarProps {
   bookings: UserDataBooking[];

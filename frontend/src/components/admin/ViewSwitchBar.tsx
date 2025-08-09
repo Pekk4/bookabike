@@ -1,7 +1,7 @@
 import TableRowsIcon from '@mui/icons-material/TableRows';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-import ViewSwitch from './ViewSwitch';
+import ViewSwitch from '@components/admin/ViewSwitch';
 
 interface AdminViewBarProps {
   isCalendarView: boolean;

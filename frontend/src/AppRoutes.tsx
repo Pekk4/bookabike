@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
 
-import ProtectedRoute from './components/common/ProtectedRoute';
-import MyBookings from './pages/MyBookings';
-import EditBookings from './pages/EditBookings';
-import CreateBookings from './pages/CreateBookings';
-import ManageBookings from './pages/ManageBookings';
-import FrontPage from './pages/FrontPage';
+import ProtectedRoute from '@components/common/ProtectedRoute';
+import MyBookings from '@pages/MyBookings';
+import EditBookings from '@pages/EditBookings';
+import CreateBookings from '@pages/CreateBookings';
+import ManageBookings from '@pages/ManageBookings';
+import FrontPage from '@pages/FrontPage';
 
 interface AppRoutesProps {
   authenticated: boolean;

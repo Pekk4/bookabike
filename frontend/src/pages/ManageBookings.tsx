@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CircularProgress } from '@mui/material';
 
-import { useAdminService } from '../services/adminService';
-import useModal from '../hooks/useModal';
-import BookingsManager from '../components/common/BookingsManager';
-import ReasonForm from '../components/admin/ReasonForm';
-import BookingActions from '../components/admin/BookingActions';
-import { getBookingStatusOrder } from '../utils/status';
-
-import { UserDataBooking, BookingStatus as b } from '../types';
-import ViewSwitchBar from '../components/admin/ViewSwitchBar';
-import BookingsCalendar from '../components/admin/BookingsCalendar';
+import { useAdminService } from '@services/adminService';
+import useModal from '@hooks/useModal';
+import BookingsManager from '@components/common/BookingsManager';
+import ReasonForm from '@components/admin/ReasonForm';
+import BookingActions from '@components/admin/BookingActions';
+import ViewSwitchBar from '@components/admin/ViewSwitchBar';
+import BookingsCalendar from '@components/admin/BookingsCalendar';
+import { getBookingStatusOrder } from '@utils/status';
+// TODO: fix status as b
+import { UserDataBooking, BookingStatus as b } from '@types';
 
 const ManageBookings = () => {
   const location = useLocation();

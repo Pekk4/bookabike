@@ -1,6 +1,6 @@
 import React, { createContext, useState } from 'react';
 
-import { ModalButtonMode } from '../types';
+import { ModalButtonMode } from '@types';
 
 interface ModalContextProps {
   content: React.ReactNode;

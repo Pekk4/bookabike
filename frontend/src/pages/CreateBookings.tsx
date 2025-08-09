@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { useBookingService } from '../services/bookingService';
-import BookingCalendar from '../components/user/BookingCalendar';
+import { useBookingService } from '@services/bookingService';
+import BookingCalendar from '@components/user/BookingCalendar';
 
 const CreateBookings = () => {
   const location = useLocation();

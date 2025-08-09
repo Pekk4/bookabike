@@ -2,11 +2,10 @@ import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { useBookingService } from '../services/bookingService';
-import useModal from './useModal';
-import { dateLocale } from '../constants';
-
-import { Booking } from '../types';
+import { useBookingService } from '@services/bookingService';
+import useModal from '@hooks/useModal';
+import { dateLocale } from '@constants';
+import { Booking } from '@types';
 
 const useBookingProcess = (resetCalendar: () => void) => {
   const { createBooking, updateBooking } = useBookingService();

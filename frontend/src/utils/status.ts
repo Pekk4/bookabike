@@ -1,6 +1,5 @@
-import { statusTranslations } from '../constants';
-
-import { BookingStatus } from '../types';
+import { statusTranslations } from '@constants';
+import { BookingStatus } from '@types';
 
 export const getBookingStatusOrder = (isAdmin: boolean = false): Record<string, number> => {
   if (isAdmin) {

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Button from '@mui/material/Button';
 
-import { ModalButtonMode } from '../../types';
+import { ModalButtonMode } from '@types';
 
 interface ModalProps {
   content: React.ReactNode;

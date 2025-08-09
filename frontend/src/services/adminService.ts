@@ -1,9 +1,8 @@
 import axios from 'axios';
 
-import { apiBaseUrl } from '../constants';
-import useKeycloak from '../hooks/useKeycloak';
-
-import { UserDataBooking } from '../types';
+import { apiBaseUrl } from '@constants';
+import useKeycloak from '@hooks/useKeycloak';
+import { UserDataBooking } from '@types';
 
 export const useAdminService = () => {
   const { keycloak } = useKeycloak();

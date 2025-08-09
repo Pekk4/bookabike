@@ -1,4 +1,4 @@
-import { mockNews } from '../utils/mockNews';
+import { mockNews } from '@utils/mockNews';
 
 const FrontPage = () => {
   return (

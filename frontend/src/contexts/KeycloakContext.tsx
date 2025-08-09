@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState, useRef } from 'react';
 import Keycloak from 'keycloak-js';
 
-import { keycloackConfig, appRolesClaimName, appAdminRoleName } from '../constants';
+import { keycloackConfig, appRolesClaimName, appAdminRoleName } from '@constants';
 
 interface KeycloakContextProps {
   keycloak: Keycloak | null;

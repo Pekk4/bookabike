@@ -11,6 +11,14 @@ interface BookingCalendarProps {
   bookingToUpdate?: Booking;
 }
 
+/**
+ * Renders a calendar for users to make bookings.
+ * In update mode the booking under update is removed from the view and user can select new dates.
+ * useBookingProcess hook handles the booking logic and dialogs.
+ *
+ * @param bookedDates - Set of dates that are already booked.
+ * @param bookingToUpdate - If set, update mode is enabled.
+ */
 const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);

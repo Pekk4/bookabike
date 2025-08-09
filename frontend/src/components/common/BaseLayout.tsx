@@ -1,5 +1,12 @@
 import React from 'react';
 
+/**
+ * BaseLayout component that provides a base layout for the application.
+ * It includes a background image and a centered content area, where the children
+ * components are rendered.
+ *
+ * @param children - The content to be displayed within the layout.
+ */
 const BaseLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="flex relative h-screen w-screen items-center justify-center text-center bg-[url('/bike4.png')] bg-cover bg-no-repeat">
     {/* top-[7.5rem] is to account for the top bar height (5rem/80px) */}

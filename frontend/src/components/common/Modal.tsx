@@ -11,6 +11,17 @@ interface ModalProps {
   errorMode?: boolean;
 }
 
+/**
+ * Modal component that displays a message with optional action buttons.
+ * Can be used e.g. for confirmations, errors, or other dialog messages.
+ * Content can be any React node.
+ *
+ * @param content - The content to display in the modal.
+ * @param buttonMode - What kind of buttons to show (none/"ok"/"yes|no"/"close").
+ * @param confirmHandler - Handler for "Yes" button.
+ * @param closingHandler - Handler for closing the modal.
+ * @param errorMode - If modal is about errors, red scheme used.
+ */
 const Modal = ({
   content,
   buttonMode = ModalButtonMode.NoButtons, // What kind of buttons to show (none/"ok"/"yes|no"/"close")

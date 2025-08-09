@@ -1,6 +1,12 @@
 import { statusTranslations } from '@constants';
 import { BookingStatus } from '@types';
 
+/**
+ * This file contains utility functions related to booking statuses.
+ * It provides functions to get the order of booking statuses, their colors,
+ * and translations based on the user's role (admin or regular user).
+ */
+
 export const getBookingStatusOrder = (isAdmin: boolean = false): Record<string, number> => {
   if (isAdmin) {
     return {

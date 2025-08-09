@@ -10,6 +10,12 @@ interface BookingsCalendarProps {
   renderActions: (booking: BookingEntry) => React.ReactNode;
 }
 
+/**
+ * Renders a calendar for admin to inspect & manage bookings.
+ *
+ * @param bookings - Array of bookings to display on the calendar.
+ * @param renderActions - Function to render booking actions for each booking.
+ */
 const BookingsCalendar = ({ bookings, renderActions }: BookingsCalendarProps) => {
   const { showModal } = useModal();
   const bookedDates = new Set<string>();

@@ -4,6 +4,13 @@ import { apiBaseUrl } from '@constants';
 import useKeycloak from '@hooks/useKeycloak';
 import { UserDataBooking } from '@types';
 
+/**
+ * AdminService provides methods to interact with the admin API endpoints.
+ * It requires Keycloak session to access the endpoints with an access token.
+ * Token is checked and refreshed automatically before each request.
+ *
+ * @returns A custom hook to get all bookings and update booking statuses.
+ */
 export const useAdminService = () => {
   const { keycloak } = useKeycloak();
 

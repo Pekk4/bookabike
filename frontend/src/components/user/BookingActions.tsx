@@ -14,6 +14,20 @@ interface BookingActionsProps {
   onBookNow: (booking: Booking) => void;
 }
 
+/**
+ * Renders action buttons based on the booking status.
+ * - Pending: Edit or Delete
+ * - Confirmed: Cancel or Edit
+ * - Wished: Book Now or Delete
+ * - Canceled/Rejected/Revoked: Delete
+ *
+ * @param booking - The booking data object
+ * @param hasActiveBookings - Boolean indicating if the user has active bookings
+ * @param onEdit - Handler for editing a booking
+ * @param onDelete - Handler for deleting a booking
+ * @param onCancel - Handler for canceling a booking
+ * @param onBookNow - Handler for booking immediately from a wish list
+ */
 const BookingActions = ({
   booking,
   hasActiveBookings,

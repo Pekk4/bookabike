@@ -4,6 +4,13 @@ import { useLocation } from 'react-router-dom';
 import { useBookingService } from '@services/bookingService';
 import BookingCalendar from '@components/user/BookingCalendar';
 
+/**
+ * CreateBookings page is a wrapper component, that renders a booking calendar
+ * for users to make bookings.
+ *
+ * It fetches all booked dates and passes them to the BookingCalendar component.
+ * The booked dates are fetched via the booking service.
+ */
 const CreateBookings = () => {
   const location = useLocation();
   const { getAllBookedDates } = useBookingService();

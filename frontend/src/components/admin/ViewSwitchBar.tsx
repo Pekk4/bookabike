@@ -8,6 +8,12 @@ interface AdminViewBarProps {
   onToggleView: () => void;
 }
 
+/**
+ * Renders a view switch bar for admin to toggle between calendar and table views.
+ *
+ * @param isCalendarView - Boolean indicating if the current view is calendar view.
+ * @param onToggleView - Function to toggle between calendar and table views.
+ */
 const ViewSwitchBar = ({ isCalendarView, onToggleView }: AdminViewBarProps) => {
   return (
     <div

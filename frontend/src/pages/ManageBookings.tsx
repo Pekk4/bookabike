@@ -13,6 +13,13 @@ import { getBookingStatusOrder } from '@utils/status';
 // TODO: fix status as b
 import { UserDataBooking, BookingStatus as b } from '@types';
 
+/**
+ * ManageBookings page is a wrapper component that allows admins to manage bookings.
+ *
+ * It fetches all bookings and displays them in a table or calendar view,
+ * allowing admins to approve, reject, or revoke bookings.
+ * The bookings are fetched via the admin service.
+ */
 const ManageBookings = () => {
   const location = useLocation();
   const { showModal, hideModal } = useModal();

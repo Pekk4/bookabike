@@ -21,6 +21,15 @@ interface BookingsManagerProps {
   showUserColumn?: boolean;
 }
 
+/**
+ * Renders a table of bookings with details and actions to manage.
+ * Each booking can be clicked to show a detailed view in a modal.
+ * User column flag is for admin views, as users tends to know their names usually.
+ *
+ * @param bookings - Array of bookings to display in the table.
+ * @param renderActions - Function to render action buttons for each booking.
+ * @param showUserColumn - Boolean to determine if user details column should be shown.
+ */
 const BookingsManager = ({
   bookings,
   renderActions,

@@ -7,6 +7,14 @@ interface ReasonFormProps {
   label?: string;
 }
 
+/**
+ * Renders a form for submitting a reason to reject/revoke a booking.
+ * Only admins are required to provide a reason.
+ *
+ * @param onSubmit - Callback function to handle form submission with the reason.
+ * @param onCancel - Callback function to handle form cancellation.
+ * @param label - Optional label for the reason input field, defaults to 'Perustelu'.
+ */
 const ReasonForm = ({ onSubmit, onCancel, label = 'Perustelu' }: ReasonFormProps) => {
   const [reason, setReason] = useState('');
 

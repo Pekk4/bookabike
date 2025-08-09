@@ -9,6 +9,13 @@ import BookingActions from '@components/user/BookingActions';
 import { getBookingStatusOrder } from '@utils/status';
 import { Booking, BookingStatus as b } from '@types';
 
+/**
+ * MyBookings page is a wrapper component that allows users to view and manage their bookings.
+ *
+ * It fetches all user bookings and displays them in a list,
+ * allowing users to book new dates, cancel, or delete existing bookings.
+ * The bookings are fetched via the booking service.
+ */
 const MyBookings = () => {
   const { showModal, hideModal } = useModal();
   const location = useLocation();

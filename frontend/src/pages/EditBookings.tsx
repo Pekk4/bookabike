@@ -16,6 +16,13 @@ const getDatesInRange = (start: string, end: string): string[] => {
   return dates;
 };
 
+/**
+ * EditBookings page is a wrapper component that allows users to edit an existing booking.
+ *
+ * It fetches all booked dates and excludes the dates of the booking being edited,
+ * allowing users to select new dates for the booking.
+ * The booked dates are fetched via the booking service.
+ */
 const EditBookings = () => {
   const location = useLocation();
   const navigate = useNavigate();

@@ -4,6 +4,13 @@ import { apiBaseUrl } from '@constants';
 import useKeycloak from '@hooks/useKeycloak';
 import { BaseBooking, Booking } from '@types';
 
+/**
+ * BookingService provides methods to interact with the booking API endpoints.
+ * It requires Keycloak session to access the endpoints with an access token.
+ * Token is checked and refreshed automatically before each request.
+ *
+ * @returns A custom hook to get all booked dates, create, update, and delete bookings.
+ */
 export const useBookingService = () => {
   const { keycloak } = useKeycloak();
 

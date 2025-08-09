@@ -1,5 +1,11 @@
 import { mockNews } from '@utils/mockNews';
 
+/**
+ * Current front page component that displays news and a brief introduction
+ * about the MotOrgBike.
+ *
+ * News are mocked for now, as the backend does not support them yet.
+ */
 const FrontPage = () => {
   return (
     <div className="flex flex-row h-full">

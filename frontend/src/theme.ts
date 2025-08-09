@@ -1,5 +1,9 @@
 import { createTheme } from '@mui/material/styles';
 
+/**
+ * A centralized theme configuration for the applications MUI components.
+ */
+
 const theme = createTheme({
   palette: {
     primary: {

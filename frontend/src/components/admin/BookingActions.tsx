@@ -11,6 +11,16 @@ interface BookingActionsProps {
   onReject: (booking: UserDataBooking) => void;
 }
 
+/**
+ * Renders action buttons based on the booking status.
+ * - Pending: Approve or Reject
+ * - Confirmed: Revoke
+ *
+ * @param booking - The booking data object
+ * @param onApprove - Handler for approving a pending booking
+ * @param onRevoke - Handler for revoking a confirmed booking
+ * @param onReject - Handler for rejecting a pending booking
+ */
 const BookingActions = ({ booking, onApprove, onRevoke, onReject }: BookingActionsProps) => {
   switch (booking.status) {
     case BookingStatus.Pending:
@@ -23,7 +33,7 @@ const BookingActions = ({ booking, onApprove, onRevoke, onReject }: BookingActio
             style={{ marginRight: 8 }}
             startIcon={<CheckIcon />}
             onClick={(e) => {
-              e.stopPropagation();
+              e.stopPropagation(); // Prevent event bubbling to parent elements
               onApprove(booking);
             }}
           >

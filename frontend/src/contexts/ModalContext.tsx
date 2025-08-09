@@ -22,6 +22,13 @@ interface ModalProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * ModalContext provides methods to show and hide modals in the centralized context
+ * instead of initializing and configuring modals in each component.
+ *
+ * ModalContext wraps the application and thus is always on top of everything,
+ * when it is set visible.
+ */
 const ModalContext = createContext<ModalContextProps | undefined>(undefined);
 
 const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {

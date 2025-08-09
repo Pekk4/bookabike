@@ -1,7 +1,11 @@
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 
-// ViewSwitch is a quite special case, so we style it separately and not in theme.ts
+/**
+ * Renders a styled MUI switch component for toggling between views.
+ *
+ * ViewSwitch is quite a special case, so we style it separately and not in theme.ts
+ */
 const ViewSwitch = styled(Switch)(() => ({
   '& .MuiSwitch-track': {
     backgroundColor: '#999999',

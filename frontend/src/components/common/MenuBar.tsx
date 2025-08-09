@@ -12,6 +12,16 @@ import useKeycloak from '@hooks/useKeycloak';
 const BANNER_HEIGHT = 80; // TODO
 // !!
 
+//
+//
+// TODO: CLEAN AND SPLIT UP!
+//
+//
+
+/**
+ * MenuBar component that displays the top navigation bar with a logo, login/logout button,
+ * and a drawer for navigation links.
+ */
 const MenuBar = () => {
   const { keycloak, authenticated, isAdmin } = useKeycloak();
   const [drawerOpen, setDrawerOpen] = useState(false);

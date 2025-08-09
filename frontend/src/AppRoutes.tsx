@@ -11,6 +11,9 @@ interface AppRoutesProps {
   authenticated: boolean;
 }
 
+/**
+ * React Router component that defines the application's routes.
+ */
 const AppRoutes = ({ authenticated }: AppRoutesProps) => {
   return (
     <div className="h-full w-full">

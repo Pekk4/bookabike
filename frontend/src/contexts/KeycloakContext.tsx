@@ -15,6 +15,11 @@ interface KeycloakProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * KeycloakContext provides access to Keycloak instance and authentication state.
+ * It includes the Keycloak instance, authentication status, user profile, readiness state,
+ * and whether the user has admin privileges.
+ */
 const KeycloakContext = createContext<KeycloakContextProps | undefined>(undefined);
 
 const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
@@ -50,6 +55,7 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
           }
         })
         .catch((error) => {
+          // TODO
           console.error('Keycloak initialization failed:', error);
           setAuthenticated(false);
           setKeycloakReady(false);

@@ -10,8 +10,18 @@ interface BookingCardProps {
   showUserDetails?: boolean;
 }
 
+// Helper function to capitalize the first letter of a string
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
+/**
+ * Renders a detailed view of a booking with details and actions.
+ * Displays booking information such as user, status, dates, and actions.
+ * User details flag is for admin views, as users tends to know their names usually.
+ *
+ * @param booking - The booking data object to display.
+ * @param renderActions - Function to render action buttons for the booking.
+ * @param showUserDetails - Boolean to determine if user details should be shown.
+ */
 const BookingCard = ({ booking, renderActions, showUserDetails = false }: BookingCardProps) => {
   let firstName = '';
   let lastName = '';

@@ -8,6 +8,12 @@ interface ErrorBoundaryState {
   hasError: boolean;
 }
 
+/**
+ * ErrorBoundary component that catches JavaScript errors in its child component tree,
+ * logs those errors, and displays a fallback UI instead of crashing the entire app.
+ *
+ * @param children - The content to be displayed within the error boundary.
+ */
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -28,6 +34,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       // fallback UI
+      //
+      // TODO: This is unfinished!!!
+      //
       return <div>Something went wrong!</div>;
     }
 

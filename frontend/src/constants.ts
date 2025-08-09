@@ -1,3 +1,14 @@
+/**
+ * Constants for the Bookabike frontend application.
+ *
+ * This file contains all the configuration constants used in the application,
+ * such as API base URL, maximum booking length, date locale, status translations,
+ * Keycloak configuration, and JWT claim names.
+ *
+ * These constants are used throughout the application to ensure consistency
+ * and ease of configuration.
+ */
+
 export const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
 
 export const maxBookingLength = 3; // Maximum number of days for a booking, starting from 0

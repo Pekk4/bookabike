@@ -10,8 +10,7 @@ import BookingActions from '@components/admin/BookingActions';
 import ViewSwitchBar from '@components/admin/ViewSwitchBar';
 import BookingsCalendar from '@components/admin/BookingsCalendar';
 import { getBookingStatusOrder } from '@utils/status';
-// TODO: fix status as b
-import { UserDataBooking, BookingStatus as b } from '@types';
+import { UserDataBooking, BookingStatus } from '@types';
 
 /**
  * ManageBookings page is a wrapper component that allows admins to manage bookings.
@@ -36,7 +35,6 @@ const ManageBookings = () => {
           setBookings(data);
         }
       } catch (error) {
-        // TODO: handle properly
         console.log('Error with fetching bookings: ', error);
       }
     };
@@ -46,13 +44,6 @@ const ManageBookings = () => {
   const toggleView = () => {
     setIsCalendarView((prev) => !prev);
   };
-
-  //useEffect(() => {
-  //  if (bookings.length > 0) {
-  //    console.log('Bookings:', Array.from(bookings));
-  //    //console.log('Bookings length:', bookings.length);
-  //  }
-  //}, [bookings]);
 
   const confirmApprove = (booking: UserDataBooking) =>
     confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'approve');
@@ -97,16 +88,15 @@ const ManageBookings = () => {
 
       switch (action) {
         case 'approve':
-          response = await updateBookingStatus(booking.id, b.Confirmed);
+          response = await updateBookingStatus(booking.id, BookingStatus.Confirmed);
           break;
         case 'reject':
-          response = await updateBookingStatus(booking.id, b.Rejected, reason);
+          response = await updateBookingStatus(booking.id, BookingStatus.Rejected, reason);
           break;
         case 'revoke':
-          response = await updateBookingStatus(booking.id, b.Revoked, reason);
+          response = await updateBookingStatus(booking.id, BookingStatus.Revoked, reason);
           break;
         default:
-          // TODO: handle properly
           throw new Error('Unknown action');
       }
 
@@ -117,7 +107,6 @@ const ManageBookings = () => {
           .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
       );
     } catch (error) {
-      // TODO: handle properly
       console.error('Error updating booking:', error);
     }
     hideModal();

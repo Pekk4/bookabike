@@ -36,13 +36,11 @@ const MyBookings = () => {
           );
         }
       } catch (error) {
-        // TODO: handle properly
         console.log('Error with fetching bookings: ', error);
       }
     };
     fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, getUserBookings]);
 
   const confirmBookNow = (booking: Booking) =>
     confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'book');
@@ -93,7 +91,6 @@ const MyBookings = () => {
         );
       }
     } catch (error) {
-      // Todo: handle properly
       console.error('Error deleting booking:', error);
     }
     hideModal();

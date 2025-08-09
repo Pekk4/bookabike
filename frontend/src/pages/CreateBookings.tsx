@@ -26,13 +26,11 @@ const CreateBookings = () => {
           setBookedDates(datesSet);
         }
       } catch (error) {
-        // TODO: handle properly
         console.log('Error with fetching bookings: ', error);
       }
     };
     fetchBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, getAllBookedDates]);
 
   return (
     <>

@@ -58,9 +58,7 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
         }
       } else {
         // Clicked on the same date again, reset selection
-        //
-        // TODO: implement one day bookings
-        //
+        // (One day bookings will be implemented later...)
         resetSelections();
       }
     }
@@ -68,7 +66,12 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
 
   return (
     <div className="booking-calendar flex flex-col h-full justify-center items-center m-auto">
-      <div className="mb-6 bg-white p-10 rounded-sm shadow-slate-500 shadow-sm border-1 border-slate-500">
+      <div
+        className="
+          mb-6 bg-white p-10 rounded-sm shadow-slate-500
+          shadow-sm border-1 border-slate-500
+        "
+      >
         {!startDate && !endDate && (
           <p>Aloita varauksen tekeminen valitsemalla kalenterista vapaa aloituspäivä</p>
         )}
@@ -89,13 +92,6 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
           return startDate !== null && !isDateClickable(date);
         }}
         tileClassName={({ date }) => {
-          // Set classnames for CSS styling to highlight dates
-          //if (bookedDates.has(date.toDateString())) {
-          //  //
-          //  // TODO: check if necessary anymore, idea was to separate from disabled dates
-          //  //
-          //  return 'booked-date-tile';
-          //}
           if (startDate && isDateClickable(date)) {
             // Highlight selectable dates when dates outside the range are disabled
             if (startDate && date.toDateString() === startDate.toDateString()) {

@@ -45,8 +45,8 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
     onCancel?: () => void,
     errorMode?: boolean
   ) => {
+    // Check whether the modal has buttons or not, default to not
     switch (buttons) {
-      // ad hoc stuff, TODO: clean up
       case 'ok':
         setButtonMode(ModalButtonMode.OkButton);
         break;
@@ -61,8 +61,10 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
         break;
     }
     setContent(modalContent);
-    setConfirmHandler(() => onConfirm); // store the handler
+    // Set handlers for confirm and cancel actions
+    setConfirmHandler(() => onConfirm);
     setCancelHandler(() => onCancel);
+    // Set error mode if specified, default to false, error modal has red styling
     setErrorMode(errorMode ?? false);
   };
 

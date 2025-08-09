@@ -31,8 +31,8 @@ const DrawerMenu = ({ open, onClose, isAdmin }: DrawerMenuProps) => (
   >
     <div className="w-[250px]" role="presentation" onClick={onClose} onKeyDown={onClose}>
       <DrawerItem to="/" label="Etusivu" />
-      <DrawerItem to="/my-bookings" label="Omat varaukseni" />
       <DrawerItem to="/calendar" label="Varauskalenteri" />
+      <DrawerItem to="/my-bookings" label="Omat varaukseni" />
       {isAdmin && <DrawerItem to="/manage-bookings" label="Varaustenhallinta" />}
     </div>
   </Drawer>

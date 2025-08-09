@@ -32,18 +32,10 @@ const Modal = ({
   if (content === null) return null;
 
   // Base class for modal styles
-  const baseClass = clsx(
-    'px-20',
-    'py-14',
-    'bg-white',
-    'rounded-lg',
-    'font-bold',
-    'text-center',
-    'flex',
-    'flex-col',
-    'items-center',
-    'justify-center'
-  );
+  const baseClass = `
+    px-20 py-14 bg-white rounded-lg font-bold text-center
+    flex flex-col items-center justify-center
+  `;
 
   // Extend base class with colors depending on errorMode
   const modalClass = clsx(baseClass, {
@@ -51,7 +43,7 @@ const Modal = ({
     'text-red-500 shadow-[0_0_24px_0_rgba(255,0,0,0.9)]': errorMode,
   });
 
-  // Same for button colors
+  // Same for button colors (this could be improved later by using the theme...)
   const modalButtonClass = clsx({
     '!bg-orange-500 hover:!bg-orange-600': !errorMode,
     '!bg-red-500 hover:!bg-red-600': errorMode,
@@ -71,7 +63,7 @@ const Modal = ({
                 variant="contained"
                 size="medium"
                 onClick={confirmHandler}
-                //className={modalButtonClass}
+                className={modalButtonClass}
               >
                 Kyllä
               </Button>
@@ -81,7 +73,7 @@ const Modal = ({
                 variant="contained"
                 size="medium"
                 onClick={closingHandler}
-                //className={modalButtonClass}
+                className={modalButtonClass}
               >
                 Ei
               </Button>
@@ -94,7 +86,7 @@ const Modal = ({
               variant="contained"
               size="medium"
               onClick={closingHandler}
-              //className={modalButtonClass}
+              className={modalButtonClass}
             >
               OK
             </Button>
@@ -106,7 +98,7 @@ const Modal = ({
               variant="contained"
               size="medium"
               onClick={closingHandler}
-              //className={modalButtonClass}
+              className={modalButtonClass}
             >
               Sulje
             </Button>

@@ -21,7 +21,7 @@ const AppRoutes = ({ authenticated }: AppRoutesProps) => {
         {/* Root path for everyone */}
         <Route path="/" element={<FrontPage />} />
 
-        {/* Everything else only for logged in users */}
+        {/* Everything else for only users logged in */}
         <Route
           path="/calendar"
           element={
@@ -43,14 +43,6 @@ const AppRoutes = ({ authenticated }: AppRoutesProps) => {
           element={
             <ProtectedRoute authenticated={authenticated}>
               <EditBookings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/me"
-          element={
-            <ProtectedRoute authenticated={authenticated}>
-              <FrontPage />
             </ProtectedRoute>
           }
         />

@@ -55,7 +55,7 @@ const BookingCard = ({ booking, renderActions, showUserDetails = false }: Bookin
                   <TableCell>
                     {booking.user.email}
                     <br />
-                    {/* to be implemented: phone number */}
+                    {/* placeholder, to be implemented later */}
                     +358401234567
                   </TableCell>
                 </TableRow>

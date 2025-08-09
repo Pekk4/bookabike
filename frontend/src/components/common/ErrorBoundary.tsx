@@ -34,10 +34,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       // fallback UI
-      //
-      // TODO: This is unfinished!!!
-      //
-      return <div>Something went wrong!</div>;
+      return <div>Jotain meni pahasti pieleen, yritä myöhemmin uudelleen!</div>;
     }
 
     return this.props.children;

@@ -28,7 +28,6 @@ export const useBookingService = () => {
   const getAllBookedDates = async () => {
     const config = await buildHeader();
 
-    //return await axios.get<PublicBooking[]>(`${apiBaseUrl}/calendar`, config);
     return await axios.get<string[]>(`${apiBaseUrl}/calendar`, config);
   };
 
@@ -38,10 +37,6 @@ export const useBookingService = () => {
       startDate: booking.startDate.toDateString(),
       endDate: booking.endDate.toDateString(),
     };
-
-    //throw new Error('This is a placeholder error for testing purposes');
-    // TODO: delete
-    //await new Promise((resolve) => setTimeout(resolve, 2000));
 
     return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
   };
@@ -56,14 +51,8 @@ export const useBookingService = () => {
     const config = await buildHeader();
 
     return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
-
-    //return Promise.resolve({
-    //  status: 200,
-    //  data: { message: 'Booking deleted successfully', bookingId },
-    //});
   };
 
-  //const updateBooking = async (booking: BaseBooking & { bookingId: number; status?: string }) => {
   const updateBooking = async (booking: Booking) => {
     const config = await buildHeader();
 

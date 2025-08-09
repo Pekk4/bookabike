@@ -55,7 +55,6 @@ const KeycloakProvider: React.FC<KeycloakProviderProps> = ({ children }) => {
           }
         })
         .catch((error) => {
-          // TODO
           console.error('Keycloak initialization failed:', error);
           setAuthenticated(false);
           setKeycloakReady(false);

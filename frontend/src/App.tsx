@@ -37,6 +37,7 @@ const ModalAutoCloser = () => {
     if (!location.state?.loginRequired) {
       hideModal();
     }
+    // We can't put hideModal as a dependency here, because it causes an infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
@@ -50,10 +51,6 @@ function App() {
   if (!keycloakReady) {
     return <LoadingView />;
   }
-
-  //useEffect(() => {
-  //  void axios.get<void>(`http://localhost:3000/api/ping`); // TODO
-  //}, []);
 
   return (
     <>

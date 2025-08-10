@@ -26,7 +26,9 @@ const ProtectedRoute = ({ authenticated, children }: ProtectedRouteProps) => {
     if (!authenticated) {
       showModal(getPleaseLoginMessage(), ModalButtonMode.OkButton, undefined, undefined, true);
     }
-  }, [authenticated, showModal]);
+    // We can't put showModal as a dependency here, because it causes an infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authenticated]);
 
   if (!authenticated) {
     return <Navigate to="/" replace state={{ loginRequired: true }} />;

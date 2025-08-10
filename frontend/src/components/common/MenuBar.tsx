@@ -60,7 +60,7 @@ const MenuBar = () => {
             {authenticated ? (
               <LogoutIcon
                 onClick={() => {
-                  keycloak?.logout();
+                  keycloak?.logout({ redirectUri: window.location.origin + '/' });
                 }}
                 fontSize="large"
                 className="text-white hover:text-orange-500"

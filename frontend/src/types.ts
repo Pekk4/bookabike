@@ -10,11 +10,6 @@ export interface Booking extends BaseBooking {
   createdAt: Date;
 }
 
-// Possibly unused? 18.6.25
-export interface PublicBooking extends BaseBooking {
-  id: number;
-}
-
 export interface UserDataBooking extends BaseBooking {
   id: number;
   status: BookingStatus;

@@ -13,7 +13,7 @@ import { getStatusTranslation, getStatusColor } from '@utils/status';
 import BookingCard from '@components/common/BookingCard';
 import useModal from '@hooks/useModal';
 import { dateLocale } from '@constants';
-import { BookingEntry } from '@types';
+import { BookingEntry, ModalButtonMode } from '@types';
 
 interface BookingsManagerProps {
   bookings: BookingEntry[];
@@ -42,7 +42,7 @@ const BookingsManager = ({
   );
 
   const handleDialog = (booking: BookingEntry) => {
-    showModal(getBookingCard(booking), 'close');
+    showModal(getBookingCard(booking), ModalButtonMode.CloseButton);
   };
 
   return (

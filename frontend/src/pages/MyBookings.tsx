@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CircularProgress } from '@mui/material';
 
 import { useBookingService } from '@services/bookingService';
 import useModal from '@hooks/useModal';
 import BookingsManager from '@components/common/BookingsManager';
 import BookingActions from '@components/user/BookingActions';
 import { getBookingStatusOrder } from '@utils/status';
-import { Booking, BookingStatus as b } from '@types';
+import { getLoadingSpinner } from '@utils/modalMessages';
+import { Booking, BookingStatus, ModalButtonMode } from '@types';
 
 /**
  * MyBookings page is a wrapper component that allows users to view and manage their bookings.
@@ -32,7 +32,11 @@ const MyBookings = () => {
         if (data) {
           setBookings(data);
           setHasActiveBookings(
-            data.some((booking) => booking.status === b.Pending || booking.status === b.Confirmed)
+            data.some(
+              (booking) =>
+                booking.status === BookingStatus.Pending ||
+                booking.status === BookingStatus.Confirmed
+            )
           );
         }
       } catch (error) {
@@ -54,14 +58,14 @@ const MyBookings = () => {
   const confirmAction = (booking: Booking, message: string, action: string) => {
     showModal(
       message,
-      'ask',
+      ModalButtonMode.YesNoButtons,
       () => handleAction(booking, action),
       () => hideModal()
     );
   };
 
   const handleAction = async (booking: Booking, action: string) => {
-    showModal(<CircularProgress color="inherit" />);
+    showModal(getLoadingSpinner(), ModalButtonMode.NoButtons);
 
     const statusOrder = getBookingStatusOrder();
 
@@ -74,9 +78,9 @@ const MyBookings = () => {
         booking.endDate = new Date(booking.endDate);
 
         if (action === 'cancel') {
-          booking.status = b.Canceled;
+          booking.status = BookingStatus.Canceled;
         } else if (action === 'book') {
-          booking.status = b.Pending;
+          booking.status = BookingStatus.Pending;
         }
 
         const { data: updatedBooking } = await updateBooking(booking);
@@ -87,7 +91,10 @@ const MyBookings = () => {
             .sort((a, b) => statusOrder[a.status] - statusOrder[b.status])
         );
         setHasActiveBookings(
-          bookings.some((booking) => booking.status === b.Pending || booking.status === b.Confirmed)
+          bookings.some(
+            (booking) =>
+              booking.status === BookingStatus.Pending || booking.status === BookingStatus.Confirmed
+          )
         );
       }
     } catch (error) {

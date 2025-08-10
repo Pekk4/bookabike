@@ -11,7 +11,7 @@ import {
   getLoadingSpinner,
   getBookingErrorMessage,
 } from '@utils/modalMessages';
-import { Booking } from '@types';
+import { Booking, ModalButtonMode } from '@types';
 
 const getDatesInRange = (start: string, end: string): string[] => {
   const dates: string[] = [];
@@ -75,14 +75,14 @@ const EditBookings = () => {
 
     showModal(
       getBookingUpdateConfirmationMessage(startFormatted, endFormatted),
-      'ask',
+      ModalButtonMode.YesNoButtons,
       () => onConfirm(start, end, booking),
       onCancel
     );
   };
 
   const onConfirm = async (start: Date, end: Date, booking: Booking) => {
-    showModal(getLoadingSpinner());
+    showModal(getLoadingSpinner(), ModalButtonMode.NoButtons);
 
     booking.startDate = start;
     booking.endDate = end;
@@ -91,11 +91,11 @@ const EditBookings = () => {
       const { data } = await updateBooking(booking);
 
       if (data) {
-        showModal(getBookingUpdateSuccessMessage(), 'ok', undefined, onSuccess);
+        showModal(getBookingUpdateSuccessMessage(), ModalButtonMode.OkButton, undefined, onSuccess);
       }
     } catch (error) {
       console.error('Error creating booking:', error);
-      showModal(getBookingErrorMessage(), 'ok', undefined, undefined, true);
+      showModal(getBookingErrorMessage(), ModalButtonMode.OkButton, undefined, undefined, true);
     }
   };
 

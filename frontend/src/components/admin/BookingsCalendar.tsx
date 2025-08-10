@@ -3,7 +3,7 @@ import Calendar from 'react-calendar';
 import '@components/admin/BookingsCalendar.css';
 import BookingCard from '@components/common/BookingCard';
 import useModal from '@hooks/useModal';
-import { BookingEntry, UserDataBooking } from '@types';
+import { BookingEntry, UserDataBooking, ModalButtonMode } from '@types';
 
 interface BookingsCalendarProps {
   bookings: UserDataBooking[];
@@ -39,7 +39,7 @@ const BookingsCalendar = ({ bookings, renderActions }: BookingsCalendarProps) =>
     if (booking) {
       showModal(
         <BookingCard booking={booking} renderActions={renderActions} showUserDetails={true} />,
-        'close'
+        ModalButtonMode.CloseButton
       );
       return;
     }

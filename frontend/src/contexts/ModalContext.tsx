@@ -7,7 +7,7 @@ interface ModalContextProps {
   buttonMode: ModalButtonMode;
   showModal: (
     modalContent: React.ReactNode,
-    buttons?: string,
+    buttonMode: ModalButtonMode,
     confirmHandler?: () => void,
     cancelHandler?: () => void,
     errorMode?: boolean
@@ -40,27 +40,13 @@ const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
 
   const showModal = (
     modalContent: React.ReactNode,
-    buttons?: string,
+    buttonMode: ModalButtonMode,
     onConfirm?: () => void,
     onCancel?: () => void,
     errorMode?: boolean
   ) => {
-    // Check whether the modal has buttons or not, default to not
-    switch (buttons) {
-      case 'ok':
-        setButtonMode(ModalButtonMode.OkButton);
-        break;
-      case 'ask':
-        setButtonMode(ModalButtonMode.YesNoButtons);
-        break;
-      case 'close':
-        setButtonMode(ModalButtonMode.CloseButton);
-        break;
-      default:
-        setButtonMode(ModalButtonMode.NoButtons);
-        break;
-    }
     setContent(modalContent);
+    setButtonMode(buttonMode);
     // Set handlers for confirm and cancel actions
     setConfirmHandler(() => onConfirm);
     setCancelHandler(() => onCancel);

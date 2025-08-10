@@ -11,6 +11,7 @@ import {
   getLoadingSpinner,
   getBookingErrorMessage,
 } from '@utils/modalMessages';
+import { ModalButtonMode } from '@types';
 
 /**
  * CreateBookings page is a wrapper component, that renders a booking calendar
@@ -50,14 +51,14 @@ const CreateBookings = () => {
 
     showModal(
       getBookingConfirmationMessage(startFormatted, endFormatted),
-      'ask',
+      ModalButtonMode.YesNoButtons,
       () => onConfirm(start, end),
       onCancel
     );
   };
 
   const onConfirm = async (start: Date, end: Date) => {
-    showModal(getLoadingSpinner());
+    showModal(getLoadingSpinner(), ModalButtonMode.NoButtons);
 
     try {
       const { data } = await createBooking({
@@ -68,14 +69,14 @@ const CreateBookings = () => {
       if (data) {
         showModal(
           getBookingSuccessMessage(String(data.startDate), String(data.endDate)),
-          'ok',
+          ModalButtonMode.OkButton,
           undefined,
           onBookingSuccess
         );
       }
     } catch (error) {
       console.error('Error creating booking:', error);
-      showModal(getBookingErrorMessage(), 'ok', undefined, undefined, true);
+      showModal(getBookingErrorMessage(), ModalButtonMode.OkButton, undefined, undefined, true);
     }
   };
 

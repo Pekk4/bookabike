@@ -47,3 +47,9 @@ export const getBookingUpdateErrorMessage = () => (
     <p>Varauksen päivittäminen epäonnistui. Yritä uudelleen.</p>
   </div>
 );
+
+export const getPleaseLoginMessage = () => (
+  <div>
+    <p>Kirjaudu sisään nähdäksesi tämän sivun.</p>
+  </div>
+);

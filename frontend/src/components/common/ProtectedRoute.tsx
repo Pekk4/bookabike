@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import useModal from '@hooks/useModal';
+import { getPleaseLoginMessage } from '@utils/modalMessages';
+import { ModalButtonMode } from '@types';
 
 interface ProtectedRouteProps {
   authenticated: boolean;
@@ -22,7 +24,7 @@ const ProtectedRoute = ({ authenticated, children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (!authenticated) {
-      showModal('Kirjaudu sisään nähdäksesi tämän sivun.', 'ok', undefined, undefined, true);
+      showModal(getPleaseLoginMessage(), ModalButtonMode.OkButton, undefined, undefined, true);
     }
   }, [authenticated, showModal]);
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CircularProgress } from '@mui/material';
 
 import { useAdminService } from '@services/adminService';
 import useModal from '@hooks/useModal';
@@ -10,7 +9,8 @@ import BookingActions from '@components/admin/BookingActions';
 import ViewSwitchBar from '@components/admin/ViewSwitchBar';
 import BookingsCalendar from '@components/admin/BookingsCalendar';
 import { getBookingStatusOrder } from '@utils/status';
-import { UserDataBooking, BookingStatus } from '@types';
+import { getLoadingSpinner } from '@utils/modalMessages';
+import { UserDataBooking, BookingStatus, ModalButtonMode } from '@types';
 
 /**
  * ManageBookings page is a wrapper component that allows admins to manage bookings.
@@ -72,14 +72,14 @@ const ManageBookings = () => {
   const confirmAction = (booking: UserDataBooking, message: React.ReactNode, action: string) => {
     showModal(
       message,
-      action === 'approve' ? 'ask' : '',
+      action === 'approve' ? ModalButtonMode.YesNoButtons : ModalButtonMode.NoButtons,
       () => handleAction(booking, action),
       () => hideModal()
     );
   };
 
   const handleAction = async (booking: UserDataBooking, action: string, reason?: string) => {
-    showModal(<CircularProgress color="inherit" />);
+    showModal(getLoadingSpinner(), ModalButtonMode.NoButtons);
 
     const statusOrder = getBookingStatusOrder(true);
 

@@ -1,14 +1,36 @@
-import { useState } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import Calendar from 'react-calendar';
 
-import './BookingCalendar.css';
+import '@components/user/BookingCalendar.css';
 import { maxBookingLength } from '@constants';
-import useBookingProcess from '@hooks/useBookingProcess';
 import { Booking } from '@types';
 
-interface BookingCalendarProps {
+// Base props for both use cases (new booking and update booking)
+type BookingCalendarBaseProps = {
   bookedDates: Set<string>;
   bookingToUpdate?: Booking;
+};
+
+// Props for new booking use case
+type BookingCalendarNewProps = BookingCalendarBaseProps & {
+  // bookingHandler is required, updateHandler should not be provided
+  bookingHandler: (start: Date, end: Date) => void;
+  updateHandler?: never;
+};
+
+// Props for booking update use case
+type BookingCalendarUpdateProps = BookingCalendarBaseProps & {
+  // updateHandler is required, bookingHandler should not be provided
+  updateHandler: (start: Date, end: Date, booking: Booking) => void;
+  bookingHandler?: never;
+};
+
+// Union type for both use cases
+type BookingCalendarProps = BookingCalendarNewProps | BookingCalendarUpdateProps;
+
+// Exposes resetSelections() to parent components (to be called from modal handlers)
+export interface BookingCalendarHandle {
+  resetSelections: () => void;
 }
 
 /**
@@ -18,17 +40,20 @@ interface BookingCalendarProps {
  *
  * @param bookedDates - Set of dates that are already booked.
  * @param bookingToUpdate - If set, update mode is enabled.
+ * @param bookingHandler - Callback for new booking creation.
+ * @param updateHandler - Callback for booking update.
  */
-const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps) => {
+const BookingCalendar = forwardRef<BookingCalendarHandle, BookingCalendarProps>((props, ref) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
-  const resetSelections = () => {
-    setStartDate(null);
-    setEndDate(null);
-  };
-
-  const { handleNewBooking, handleUpdateBooking } = useBookingProcess(resetSelections);
+  // To reset selections from a parent component
+  useImperativeHandle(ref, () => ({
+    resetSelections() {
+      setStartDate(null);
+      setEndDate(null);
+    },
+  }));
 
   const isDateClickable = (date: Date): boolean => {
     // All free dates are clickable until the start date is selected
@@ -51,15 +76,17 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
       if (date.getTime() !== startDate.getTime()) {
         setEndDate(date);
 
-        if (bookingToUpdate) {
-          handleUpdateBooking(startDate, date, bookingToUpdate);
+        // When the both dates are set, call the appropriate handler depending on the case
+        if (props.bookingToUpdate) {
+          props.updateHandler?.(startDate, date, props.bookingToUpdate);
         } else {
-          handleNewBooking(startDate, date);
+          props.bookingHandler?.(startDate, date);
         }
       } else {
         // Clicked on the same date again, reset selection
         // (One day bookings will be implemented later...)
-        resetSelections();
+        setStartDate(null);
+        setEndDate(null);
       }
     }
   };
@@ -87,7 +114,7 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
           // Only disable tiles in a day view
           if (view !== 'month') return false;
           // Disable if date is in bookedDates set (i.e. already booked)
-          if (bookedDates.has(date.toDateString())) return true;
+          if (props.bookedDates.has(date.toDateString())) return true;
           // Also disable if not in allowed range (max booking length)
           return startDate !== null && !isDateClickable(date);
         }}
@@ -108,6 +135,6 @@ const BookingCalendar = ({ bookedDates, bookingToUpdate }: BookingCalendarProps)
       />
     </div>
   );
-};
+});
 
 export default BookingCalendar;

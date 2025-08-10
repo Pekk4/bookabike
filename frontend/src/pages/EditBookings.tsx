@@ -1,8 +1,17 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { useBookingService } from '@services/bookingService';
-import BookingCalendar from '@components/user/BookingCalendar';
+import BookingCalendar, { BookingCalendarHandle } from '@components/user/BookingCalendar';
+import useModal from '@hooks/useModal';
+import { dateLocale } from '@constants';
+import {
+  getBookingUpdateConfirmationMessage,
+  getBookingUpdateSuccessMessage,
+  getLoadingSpinner,
+  getBookingErrorMessage,
+} from '@utils/modalMessages';
+import { Booking } from '@types';
 
 const getDatesInRange = (start: string, end: string): string[] => {
   const dates: string[] = [];
@@ -22,13 +31,16 @@ const getDatesInRange = (start: string, end: string): string[] => {
  * It fetches all booked dates and excludes the dates of the booking being edited,
  * allowing users to select new dates for the booking.
  * The booked dates are fetched via the booking service.
+ * It also handles the booking update process and all necessary dialogs.
  */
 const EditBookings = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { getAllBookedDates } = useBookingService();
+  const { getAllBookedDates, updateBooking } = useBookingService();
   const [bookedDates, setBookedDates] = useState<Set<string>>(new Set());
+  const { showModal, hideModal } = useModal();
   const bookingToEdit = location.state?.booking;
+  const calendarRef = useRef<BookingCalendarHandle>(null);
 
   useEffect(() => {
     if (!bookingToEdit) {
@@ -57,9 +69,53 @@ const EditBookings = () => {
 
   if (!bookingToEdit) return null;
 
+  const handleUpdateBooking = (start: Date, end: Date, booking: Booking) => {
+    const startFormatted = start.toLocaleDateString(dateLocale);
+    const endFormatted = end.toLocaleDateString(dateLocale);
+
+    showModal(
+      getBookingUpdateConfirmationMessage(startFormatted, endFormatted),
+      'ask',
+      () => onConfirm(start, end, booking),
+      onCancel
+    );
+  };
+
+  const onConfirm = async (start: Date, end: Date, booking: Booking) => {
+    showModal(getLoadingSpinner());
+
+    booking.startDate = start;
+    booking.endDate = end;
+
+    try {
+      const { data } = await updateBooking(booking);
+
+      if (data) {
+        showModal(getBookingUpdateSuccessMessage(), 'ok', undefined, onSuccess);
+      }
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      showModal(getBookingErrorMessage(), 'ok', undefined, undefined, true);
+    }
+  };
+
+  const onCancel = () => {
+    calendarRef.current?.resetSelections();
+    hideModal();
+  };
+
+  const onSuccess = () => {
+    navigate('/my-bookings');
+  };
+
   return (
     <>
-      <BookingCalendar bookedDates={bookedDates} bookingToUpdate={bookingToEdit} />
+      <BookingCalendar
+        ref={calendarRef}
+        bookedDates={bookedDates}
+        updateHandler={handleUpdateBooking}
+        bookingToUpdate={bookingToEdit}
+      />
     </>
   );
 };

@@ -21,6 +21,7 @@ const BookingsCalendar = ({ bookings, renderActions }: BookingsCalendarProps) =>
   const bookedDates = new Set<string>();
   const dateToBookingMap = new Map<string, UserDataBooking>();
 
+  // Group bookings, so when clicking any date of a booking, we get the correct booking details
   bookings.forEach((booking) => {
     const start = new Date(booking.startDate);
     const end = new Date(booking.endDate);

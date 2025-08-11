@@ -34,7 +34,7 @@ const MenuBar = () => {
               drop-shadow-[20px_-4px_10px_rgba(255,255,255,0.75)]
             "
           />
-          {/* stupid shit, but to have a symmetrical shadow around the logo, this is the way*/}
+          {/* stupid shit, but to have a symmetrical shadow around the logo, this is the way */}
           <div
             className="
               absolute left-1/2 bottom-0

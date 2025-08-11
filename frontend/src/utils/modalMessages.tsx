@@ -53,3 +53,39 @@ export const getPleaseLoginMessage = () => (
     <p>Kirjaudu sisään nähdäksesi tämän sivun.</p>
   </div>
 );
+
+export const getConfirmApproveBookingMessage = () => (
+  <div>
+    <p>Haluatko varmasti vahvistaa varauksen?</p>
+  </div>
+);
+
+export const getConfirmRevokeBookingMessage = () => (
+  <div>
+    <p>Haluatko varmasti perua varauksen?</p>
+  </div>
+);
+
+export const getConfirmRejectBookingMessage = () => (
+  <div>
+    <p>Haluatko varmasti hylätä varauksen?</p>
+  </div>
+);
+
+export const getConfirmDeleteBookingMessage = () => (
+  <div>
+    <p>Haluatko varmasti poistaa varauksen?</p>
+  </div>
+);
+
+export const getConfirmCancelBookingMessage = () => (
+  <div>
+    <p>Haluatko varmasti perua varauksen?</p>
+  </div>
+);
+
+export const getConfirmBookNowMessage = () => (
+  <div>
+    <p>Haluatko varmasti vahvistaa varauksen?</p>
+  </div>
+);

@@ -9,7 +9,12 @@ import BookingActions from '@components/admin/BookingActions';
 import ViewSwitchBar from '@components/admin/ViewSwitchBar';
 import BookingsCalendar from '@components/admin/BookingsCalendar';
 import { getBookingStatusOrder } from '@utils/status';
-import { getLoadingSpinner } from '@utils/modalMessages';
+import {
+  getLoadingSpinner,
+  getConfirmApproveBookingMessage,
+  getConfirmRevokeBookingMessage,
+  getConfirmRejectBookingMessage,
+} from '@utils/modalMessages';
 import { UserDataBooking, BookingStatus, ModalButtonMode } from '@types';
 
 /**
@@ -46,18 +51,18 @@ const ManageBookings = () => {
   };
 
   const confirmApprove = (booking: UserDataBooking) =>
-    confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'approve');
+    confirmAction(booking, getConfirmApproveBookingMessage(), 'approve');
 
   const confirmRevoke = (booking: UserDataBooking) =>
-    buildReasonForm(booking, 'Haluatko varmasti perua varauksen?', 'revoke');
+    buildReasonForm(booking, getConfirmRevokeBookingMessage(), 'revoke');
 
   const confirmReject = (booking: UserDataBooking) =>
-    buildReasonForm(booking, 'Haluatko varmasti hylätä varauksen?', 'reject');
+    buildReasonForm(booking, getConfirmRejectBookingMessage(), 'reject');
 
-  const buildReasonForm = (booking: UserDataBooking, message: string, action: string) => {
+  const buildReasonForm = (booking: UserDataBooking, message: React.ReactNode, action: string) => {
     const form = (
       <>
-        <p>{message}</p>
+        {message}
         <br />
         <ReasonForm
           onSubmit={(reason: string) => handleAction(booking, action, reason)}
@@ -143,7 +148,8 @@ const ManageBookings = () => {
             onReject={confirmReject}
           />
         )}
-        showUserColumn={true} // Show user column in the bookings manager
+        // Show user column in the bookings manager
+        showUserColumn={true}
       />
       <ViewSwitchBar isCalendarView={isCalendarView} onToggleView={toggleView} />
     </>

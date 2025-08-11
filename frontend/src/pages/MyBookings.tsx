@@ -6,7 +6,12 @@ import useModal from '@hooks/useModal';
 import BookingsManager from '@components/common/BookingsManager';
 import BookingActions from '@components/user/BookingActions';
 import { getBookingStatusOrder } from '@utils/status';
-import { getLoadingSpinner } from '@utils/modalMessages';
+import {
+  getLoadingSpinner,
+  getConfirmBookNowMessage,
+  getConfirmDeleteBookingMessage,
+  getConfirmCancelBookingMessage,
+} from '@utils/modalMessages';
 import { Booking, BookingStatus, ModalButtonMode } from '@types';
 
 /**
@@ -47,15 +52,15 @@ const MyBookings = () => {
   }, [location.pathname, getUserBookings]);
 
   const confirmBookNow = (booking: Booking) =>
-    confirmAction(booking, 'Haluatko varmasti vahvistaa varauksen?', 'book');
+    confirmAction(booking, getConfirmBookNowMessage(), 'book');
 
   const confirmDelete = (booking: Booking) =>
-    confirmAction(booking, 'Haluatko varmasti poistaa varauksen?', 'delete');
+    confirmAction(booking, getConfirmDeleteBookingMessage(), 'delete');
 
   const confirmCancel = (booking: Booking) =>
-    confirmAction(booking, 'Haluatko varmasti perua varauksen?', 'cancel');
+    confirmAction(booking, getConfirmCancelBookingMessage(), 'cancel');
 
-  const confirmAction = (booking: Booking, message: string, action: string) => {
+  const confirmAction = (booking: Booking, message: React.ReactNode, action: string) => {
     showModal(
       message,
       ModalButtonMode.YesNoButtons,
@@ -74,7 +79,8 @@ const MyBookings = () => {
         await deleteBooking(booking.id);
         setBookings((prev) => prev.filter((b) => b.id !== booking.id));
       } else {
-        booking.startDate = new Date(booking.startDate); // Ensure startDate is a Date object
+        // Ensure dates are Date objects
+        booking.startDate = new Date(booking.startDate);
         booking.endDate = new Date(booking.endDate);
 
         if (action === 'cancel') {

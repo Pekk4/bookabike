@@ -17,6 +17,8 @@ import (
 	u "github.com/pekk4/bookabike/backend/internal/utils"
 )
 
+// KeycloakClient is basically a Keycloak service, which is responsible for
+// handling Keycloak related operations such as fetching user profiles handling tokens.
 type KeycloakClient struct {
 	cfg *u.AppConfig
 }
@@ -117,20 +119,17 @@ func (c *KeycloakClient) ValidateAccessToken(tokenStr string) (jwt.MapClaims, er
 
 	jwks, err := keyfunc.NewDefault([]string{jwksURL})
 	if err != nil {
-		// TODO: error handling & logging
 		log.Printf("Failed to create JWK Set.\nError: %s", err)
 		return nil, err
 	}
 
 	token, err := jwt.Parse(tokenStr, jwks.Keyfunc)
 	if err != nil || !token.Valid {
-		// TODO: error handling & logging
 		return nil, fmt.Errorf("invalid or malformed token: %w", err)
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		// TODO: error handling & logging
 		return nil, fmt.Errorf("could not extract claims")
 	}
 

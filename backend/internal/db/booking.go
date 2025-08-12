@@ -7,6 +7,7 @@ import (
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
+// BookingRepository handles bookings related database operations.
 type BookingRepository interface {
 	CreateBooking(b m.Booking) (m.Booking, error)
 	GetAllBookings() ([]m.Booking, error)
@@ -41,21 +42,19 @@ func (c *conn) CreateBooking(b m.Booking) (m.Booking, error) {
 		&booking.UserID,
 		&booking.CreatedAt,
 	); err != nil {
-		//if err != nil {
-		// TODO: error handling and logging
 		return m.Booking{}, fmt.Errorf("CreateBooking: %w", err)
 	}
 	return booking, nil
 }
 
-// TODO: consider rename or handle `wished` bookings differently
 func (c *conn) GetAllBookings() ([]m.Booking, error) {
+	// Wished bookings are not included in the results. This could be improved later.
 	query := `
 		SELECT b.id, b.start_date, b.end_date, b.status, b.user_id, b.created_at, a.reason
 		FROM bookings b
 		LEFT JOIN booking_actions a ON b.id = a.booking_id
 		AND b.status IN ('canceled', 'rejected', 'revoked')
-		WHERE status != 'wished' -- TODO: consider handling this differently
+		WHERE status != 'wished' -- Consider handling this differently
 		ORDER BY
 			CASE status
 				WHEN 'pending' THEN 1
@@ -69,7 +68,6 @@ func (c *conn) GetAllBookings() ([]m.Booking, error) {
 	`
 	rows, err := c.db.Query(query)
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetBookings: %w", err)
 	}
 	defer rows.Close()
@@ -88,13 +86,11 @@ func (c *conn) GetAllBookings() ([]m.Booking, error) {
 			&booking.CreatedAt,
 			&booking.ActionReason,
 		); err != nil {
-			// TODO: error handling and logging
 			return nil, fmt.Errorf("GetBookings: %w", err)
 		}
 		bookings = append(bookings, booking)
 	}
 	if err := rows.Err(); err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetBookings: %w", err)
 	}
 	return bookings, nil
@@ -117,7 +113,6 @@ func (c *conn) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
 	`
 	rows, err := c.db.Query(query, userID)
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetBookings: %w", err)
 	}
 	defer rows.Close()
@@ -135,13 +130,11 @@ func (c *conn) GetAllBookingsByUserID(userID string) ([]m.Booking, error) {
 			&booking.UserID,
 			&booking.CreatedAt,
 		); err != nil {
-			// TODO: error handling and logging
 			return nil, fmt.Errorf("GetBookings: %w", err)
 		}
 		bookings = append(bookings, booking)
 	}
 	if err := rows.Err(); err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetBookings: %w", err)
 	}
 	return bookings, nil
@@ -166,12 +159,10 @@ func (c *conn) GetAllBookedDates() ([]m.BookingDates, error) {
 	query := `
 		SELECT id, start_date, end_date
 		FROM bookings
+		WHERE status = 'confirmed' OR status = 'pending'
 	`
-	//	WHERE status = 'confirmed'
-	//`
 	rows, err := c.db.Query(query)
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetAllBookingDates: %w", err)
 	}
 	defer rows.Close()
@@ -186,13 +177,11 @@ func (c *conn) GetAllBookedDates() ([]m.BookingDates, error) {
 			&booking.StartDate,
 			&booking.EndDate,
 		); err != nil {
-			// TODO: error handling and logging
 			return nil, fmt.Errorf("GetAllBookingDates: %w", err)
 		}
 		bookings = append(bookings, booking)
 	}
 	if err := rows.Err(); err != nil {
-		// TODO: error handling and logging
 		return nil, fmt.Errorf("GetAllBookingDates: %w", err)
 	}
 	return bookings, nil
@@ -202,7 +191,6 @@ func (c *conn) DeleteBookingByID(bookingID int) error {
 	query := `DELETE FROM bookings WHERE id = $1`
 	_, err := c.db.Exec(query, bookingID)
 	if err != nil {
-		// TODO: error handling and logging
 		return fmt.Errorf("DeleteBookingByID: %w", err)
 	}
 	return nil

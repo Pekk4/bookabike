@@ -11,10 +11,9 @@ type Handlers struct {
 	AdminHandler   *h.AdminHandler
 }
 
+// Backend endpoint configuration
 func RegisterRoutes(h *Handlers) *mux.Router {
 	r := mux.NewRouter()
-
-	//r.HandleFunc("/api/ping", h.Healthcheck).Methods("GET")
 
 	// Manage bookings
 	r.HandleFunc("/api/booking", h.BookingHandler.CreateBooking).Methods("POST")

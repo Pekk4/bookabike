@@ -21,6 +21,7 @@ const (
 	ContextKeyUserID   = contextKey("userID")
 )
 
+// A helper function to extract roles from JWT claims
 func pickRoles(cfg *u.AppConfig, claims jwt.MapClaims) []string {
 	if roles, ok := claims[cfg.AppRolesClaimName].([]any); ok {
 		var result []string
@@ -34,6 +35,7 @@ func pickRoles(cfg *u.AppConfig, claims jwt.MapClaims) []string {
 	return nil
 }
 
+// A helper function to extract user ID from JWT claims
 func pickUserID(claims jwt.MapClaims) (string, error) {
 	if userID, ok := claims["sub"].(string); ok {
 		return userID, nil
@@ -47,12 +49,13 @@ func AuthMiddleware(cfg *u.AppConfig, kcClient *s.KeycloakClient) func(http.Hand
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-				// TODO: error handling & logging
 				http.Error(w, "Unauthorized: Missing token", http.StatusUnauthorized)
 				return
 			}
 			tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 
+			// Save the roles and user ID in the context
+			// This way they are easily accessible in handlers
 			ctx := r.Context()
 			ctx = context.WithValue(ctx, ContextKeyIsAdmin, false)
 			ctx = context.WithValue(ctx, ContextKeyIsVendor, false)
@@ -60,14 +63,12 @@ func AuthMiddleware(cfg *u.AppConfig, kcClient *s.KeycloakClient) func(http.Hand
 
 			claims, err := kcClient.ValidateAccessToken(tokenStr)
 			if err != nil {
-				// TODO: error handling & logging
 				http.Error(w, err.Error(), http.StatusUnauthorized)
 				return
 			}
 
 			userID, err := pickUserID(claims)
 			if err != nil {
-				// TODO: error handling & logging
 				log.Printf("Error parsing claims: %s", err)
 				http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
 				return

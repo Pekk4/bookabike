@@ -6,6 +6,7 @@ import (
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
+// BookingActionRepository handles booking actions related database operations.
 type BookingActionRepository interface {
 	CreateAction(a m.BookingAction) (m.BookingAction, error)
 }

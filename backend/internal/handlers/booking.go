@@ -13,6 +13,10 @@ import (
 	s "github.com/pekk4/bookabike/backend/internal/services"
 )
 
+// BookingHandler handles all the HTTP requests sent to the booking-related endpoints.
+// It provides methods that are assigned to spesific routes in endpoint configuration.
+// It checks the user id provided by the middleware when necessary and calls appropriate service
+// layer methods to perform the actual business logic.
 type BookingHandler struct {
 	service *s.BookingService
 }
@@ -25,14 +29,12 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 	var booking m.Booking
 
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
-		// TODO: error handling and logging
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
-		// TODO: error handling and logging
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
 		return
@@ -40,7 +42,6 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 
 	createdBooking, err := h.service.CreateBooking(userID, booking)
 	if err != nil {
-		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)
 		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
 		return
@@ -53,7 +54,6 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
-		// TODO: error handling and logging
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
 		return
@@ -61,7 +61,6 @@ func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.R
 
 	bookings, err := h.service.GetAllBookingsByUserID(userID)
 	if err != nil {
-		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
 		http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
 		return
@@ -74,7 +73,6 @@ func (h *BookingHandler) GetAllBookingsByUserID(w http.ResponseWriter, r *http.R
 func (h *BookingHandler) GetAllBookedDates(w http.ResponseWriter, r *http.Request) {
 	bookedDates, err := h.service.GetAllBookedDates()
 	if err != nil {
-		//TODO: error handling and logging
 		log.Printf("Error retrieving all booked dates: %v", err)
 		http.Error(w, "Failed to retrieve booked dates", http.StatusInternalServerError)
 		return
@@ -94,7 +92,6 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
-		// TODO: error handling and logging
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
 		return
@@ -102,7 +99,6 @@ func (h *BookingHandler) DeleteBookingByID(w http.ResponseWriter, r *http.Reques
 
 	err = h.service.DeleteBookingByID(bookingID, userID)
 	if err != nil {
-		// TODO: error handling and logging
 		switch err {
 		case s.ErrBookingNotFound:
 			http.Error(w, "Booking not found", http.StatusNotFound)
@@ -129,14 +125,12 @@ func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Reques
 	var booking m.Booking
 
 	if err := json.NewDecoder(r.Body).Decode(&booking); err != nil {
-		// TODO: error handling and logging
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
 	userID, ok := r.Context().Value(mw.ContextKeyUserID).(string)
 	if !ok || userID == "" {
-		// TODO: error handling and logging
 		log.Println("User ID not found in context, interrupting...")
 		http.Error(w, "Unauthorized: User ID not found", http.StatusUnauthorized)
 		return
@@ -144,7 +138,6 @@ func (h *BookingHandler) UpdateBookingByID(w http.ResponseWriter, r *http.Reques
 
 	updatedBooking, err := h.service.UpdateBookingByID(bookingID, userID, booking)
 	if err != nil {
-		// TODO: error handling and logging
 		log.Printf("Error creating booking: %v", err)
 		http.Error(w, "Failed to create booking", http.StatusInternalServerError)
 		return

@@ -5,6 +5,7 @@ import (
 	m "github.com/pekk4/bookabike/backend/internal/models"
 )
 
+// AdminService is responsible for handling all the admin related logic.
 type AdminService struct {
 	repo     db.BookingRepository
 	kcClient *KeycloakClient
@@ -21,15 +22,13 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 
 	results, err = s.repo.GetAllBookings()
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, err
 	}
 
 	for _, result := range results {
-		// Could be cached, but only one active booking per user, so not necessary
+		// Could be cached, but only one active booking per user, so not very necessary
 		user, err := s.kcClient.FetchUserProfileByID(result.UserID)
 		if err != nil {
-			// TODO: error handling and logging
 			return nil, err
 		}
 
@@ -51,28 +50,17 @@ func (s *AdminService) GetAllBookings() ([]m.UserDataBooking, error) {
 func (s *AdminService) UpdateBookingStatus(bookingID int, bookingStatus string) (*m.UserDataBooking, error) {
 	result, err := s.repo.GetBookingByID(bookingID)
 	if err != nil {
-		// TODO: error handling and logging
-		//if err == db.ErrBookingNotFound {
-		//	return ErrBookingNotFound
-		//}
 		return nil, err
 	}
 
 	user, err := s.kcClient.FetchUserProfileByID(result.UserID)
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, err
 	}
-	//if booking.Status != "pending" && booking.Status != "confirmed" {
-	//	// TODO: error handling and logging
-	//	// ErrUnauthorized for PoC placeholding
-	//	return nil, ErrUnauthorized
-	//}
 
 	result.Status = bookingStatus
 	updatedBooking, err := s.repo.UpdateBookingByID(result.ID, result)
 	if err != nil {
-		// TODO: error handling and logging
 		return nil, err
 	}
 
@@ -82,7 +70,6 @@ func (s *AdminService) UpdateBookingStatus(bookingID int, bookingStatus string) 
 		StartDate: updatedBooking.StartDate,
 		EndDate:   updatedBooking.EndDate,
 		Status:    updatedBooking.Status,
-		//CreatedAt: updatedBooking.CreatedAt,
 		CreatedAt: updatedBooking.CreatedAt,
 	}
 

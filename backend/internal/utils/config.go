@@ -1,5 +1,6 @@
 package utils
 
+// Config holds the application configuration loaded from environment variables.
 type AppConfig struct {
 	// Server
 	Port string

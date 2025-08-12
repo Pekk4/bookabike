@@ -13,6 +13,10 @@ import (
 	s "github.com/pekk4/bookabike/backend/internal/services"
 )
 
+// AdminHandler handles all the HTTP requests sent to the /admin endpoints.
+// It provides methods that are assigned to spesific routes in endpoint configuration.
+// It checks the permission information provided by the middleware and calls appropriate service layer
+// methods to perform the actual business logic.
 type AdminHandler struct {
 	adminService  *s.AdminService
 	actionService *s.BookingActionService
@@ -30,14 +34,12 @@ func NewAdminHandler(adminService *s.AdminService, actionService *s.BookingActio
 func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 	isAdmin, ok := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
 	if !ok || !isAdmin {
-		// TODO: error handling and logging
 		http.Error(w, "Unauthorized: Admin access required", http.StatusUnauthorized)
 		return
 	}
 
 	bookings, err := h.adminService.GetAllBookings()
 	if err != nil {
-		// TODO: error handling and logging
 		log.Printf("Error retrieving all bookings: %v", err)
 		http.Error(w, "Failed to retrieve bookings", http.StatusInternalServerError)
 		return
@@ -50,7 +52,6 @@ func (h *AdminHandler) GetAllBookings(w http.ResponseWriter, r *http.Request) {
 func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Request) {
 	isAdmin, ok := r.Context().Value(mw.ContextKeyIsAdmin).(bool)
 	if !ok || !isAdmin {
-		// TODO: error handling and logging
 		http.Error(w, "Unauthorized: Admin access required", http.StatusUnauthorized)
 		return
 	}
@@ -65,14 +66,12 @@ func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Reques
 	var payload UpdateBookingPayload
 
 	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		// TODO: error handling and logging
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
 		return
 	}
 
 	updatedBooking, err := h.adminService.UpdateBookingStatus(bookingID, payload.Status)
 	if err != nil {
-		// TODO: error handling and logging
 		log.Printf("Error confirming booking with ID %d: %v", bookingID, err)
 		if err == s.ErrBookingNotFound {
 			http.Error(w, "Booking not found", http.StatusNotFound)
@@ -84,8 +83,7 @@ func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Reques
 
 	if payload.Status == "rejected" || payload.Status == "revoked" {
 		if payload.Reason == nil || *payload.Reason == "" {
-			// TODO: error handling and logging
-			// NOTE: Reason is compulsory for admins
+			// NOTE: Reason is mandatory for admins
 			http.Error(w, "Reason is required for this status", http.StatusBadRequest)
 			return
 		} else {
@@ -97,7 +95,6 @@ func (h *AdminHandler) UpdateBookingStatus(w http.ResponseWriter, r *http.Reques
 
 			bookingAction, err := h.actionService.CreateBookingAction(newAction)
 			if err != nil {
-				// TODO: error handling and logging
 				log.Printf("Error creating booking action: %v", err)
 				http.Error(w, "Failed to create booking action", http.StatusInternalServerError)
 				return

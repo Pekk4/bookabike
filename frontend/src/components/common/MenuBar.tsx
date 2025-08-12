@@ -30,7 +30,7 @@ const MenuBar = () => {
               absolute left-1/2 bottom-0
               w-[179px] h-[71px]
               -translate-x-1/2 translate-y-1/2
-              bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
+              bg-[url(./assets/images/logo.png)] bg-no-repeat bg-center
               drop-shadow-[20px_-4px_10px_rgba(255,255,255,0.75)]
             "
           />
@@ -40,7 +40,7 @@ const MenuBar = () => {
               absolute left-1/2 bottom-0
               w-[179px] h-[71px]
               -translate-x-1/2 translate-y-1/2
-              bg-[url(http://static.moottoripyora.org/img/logo.png)] bg-no-repeat bg-center
+              bg-[url(./assets/images/logo.png)] bg-no-repeat bg-center
               drop-shadow-[-20px_-4px_10px_rgba(255,255,255,0.75)]
             "
           />

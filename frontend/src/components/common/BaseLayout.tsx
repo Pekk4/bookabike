@@ -11,7 +11,7 @@ const BaseLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div
     className="
       flex relative h-screen w-screen items-center justify-center
-      text-center bg-[url('/bike4.png')] bg-cover bg-no-repeat
+      text-center bg-[url(./assets/images/background.png)] bg-cover bg-no-repeat
     "
   >
     {/* top-[7.5rem] is to account for the top bar height (5rem/80px) */}

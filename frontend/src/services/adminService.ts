@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import axios from 'axios';
 
 import { apiBaseUrl } from '@constants';
@@ -14,7 +15,7 @@ import { UserDataBooking } from '@types';
 export const useAdminService = () => {
   const { keycloak } = useKeycloak();
 
-  const buildHeader = async () => {
+  const buildHeader = useCallback(async () => {
     if (!keycloak) throw new Error('Keycloak instance is not available');
 
     // Ensure the token is still valid
@@ -23,28 +24,31 @@ export const useAdminService = () => {
     return {
       headers: { Authorization: `Bearer ${keycloak.token}` },
     };
-  };
+  }, [keycloak]);
 
-  const getAllBookings = async () => {
+  const getAllBookings = useCallback(async () => {
     const config = await buildHeader();
 
     return await axios.get<UserDataBooking[]>(`${apiBaseUrl}/admin/booking`, config);
-  };
+  }, [buildHeader]);
 
-  const updateBookingStatus = async (bookingId: number, status: string, reason?: string) => {
-    const config = await buildHeader();
+  const updateBookingStatus = useCallback(
+    async (bookingId: number, status: string, reason?: string) => {
+      const config = await buildHeader();
 
-    const payload = {
-      status,
-      reason: reason || undefined,
-    };
+      const payload = {
+        status,
+        reason: reason || undefined,
+      };
 
-    return await axios.post<UserDataBooking>(
-      `${apiBaseUrl}/admin/booking/${bookingId}/edit`,
-      payload,
-      config
-    );
-  };
+      return await axios.post<UserDataBooking>(
+        `${apiBaseUrl}/admin/booking/${bookingId}/edit`,
+        payload,
+        config
+      );
+    },
+    [buildHeader]
+  );
 
   return {
     getAllBookings,

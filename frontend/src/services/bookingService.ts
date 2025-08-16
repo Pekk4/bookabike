@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import axios from 'axios';
 
 import { apiBaseUrl } from '@constants';
@@ -14,7 +15,7 @@ import { BaseBooking, Booking } from '@types';
 export const useBookingService = () => {
   const { keycloak } = useKeycloak();
 
-  const buildHeader = async () => {
+  const buildHeader = useCallback(async () => {
     if (!keycloak) throw new Error('Keycloak instance is not available');
 
     // Ensure the token is still valid
@@ -23,48 +24,54 @@ export const useBookingService = () => {
     return {
       headers: { Authorization: `Bearer ${keycloak.token}` },
     };
-  };
+  }, [keycloak]);
 
-  const getAllBookedDates = async () => {
+  const getAllBookedDates = useCallback(async () => {
     const config = await buildHeader();
-
     return await axios.get<string[]>(`${apiBaseUrl}/calendar`, config);
-  };
+  }, [buildHeader]);
 
-  const createBooking = async (booking: BaseBooking) => {
+  const createBooking = useCallback(
+    async (booking: BaseBooking) => {
+      const config = await buildHeader();
+      const payload = {
+        startDate: booking.startDate.toDateString(),
+        endDate: booking.endDate.toDateString(),
+      };
+
+      return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
+    },
+    [buildHeader]
+  );
+
+  const getUserBookings = useCallback(async () => {
     const config = await buildHeader();
-    const payload = {
-      startDate: booking.startDate.toDateString(),
-      endDate: booking.endDate.toDateString(),
-    };
-
-    return await axios.post<Booking>(`${apiBaseUrl}/booking`, payload, config);
-  };
-
-  const getUserBookings = async () => {
-    const config = await buildHeader();
-
     return await axios.get<Booking[]>(`${apiBaseUrl}/me`, config);
-  };
+  }, [buildHeader]);
 
-  const deleteBooking = async (bookingId: number) => {
-    const config = await buildHeader();
+  const deleteBooking = useCallback(
+    async (bookingId: number) => {
+      const config = await buildHeader();
+      return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
+    },
+    [buildHeader]
+  );
 
-    return await axios.delete(`${apiBaseUrl}/booking/${bookingId}`, config);
-  };
+  const updateBooking = useCallback(
+    async (booking: Booking) => {
+      const config = await buildHeader();
 
-  const updateBooking = async (booking: Booking) => {
-    const config = await buildHeader();
+      const payload = {
+        startDate: booking.startDate.toDateString(),
+        endDate: booking.endDate.toDateString(),
+        status: booking.status,
+      };
+      const id = booking.id;
 
-    const payload = {
-      startDate: booking.startDate.toDateString(),
-      endDate: booking.endDate.toDateString(),
-      status: booking.status,
-    };
-    const id = booking.id;
-
-    return await axios.put<Booking>(`${apiBaseUrl}/booking/${id}`, payload, config);
-  };
+      return await axios.put<Booking>(`${apiBaseUrl}/booking/${id}`, payload, config);
+    },
+    [buildHeader]
+  );
 
   return {
     getAllBookedDates,

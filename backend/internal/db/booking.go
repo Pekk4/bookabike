@@ -146,7 +146,7 @@ func (c *conn) CountActiveBookingsForUser(userID string) (int, error) {
 	query := `
 		SELECT COUNT(*)
 		FROM bookings
-		WHERE user_id = $1 AND status != 'wished' AND status != 'cancelled'
+		WHERE user_id = $1 AND (status = 'confirmed' OR status = 'pending')
 	`
 	if err := c.db.QueryRow(query, userID).Scan(&count); err != nil {
 		return 0, fmt.Errorf("GetUsersActiveBookingsCount: %w", err)
@@ -223,7 +223,8 @@ func (c *conn) GetBookingByID(bookingID int) (m.Booking, error) {
 func (c *conn) HasBookingOverlap(startDate, endDate string, excludeBookingID *int) (bool, error) {
 	query := `
 		SELECT 1 FROM bookings
-		WHERE NOT (
+		WHERE (status = 'pending' OR status = 'confirmed')
+		  AND NOT (
 				$2 < start_date OR $1 > end_date
 		)
 	`

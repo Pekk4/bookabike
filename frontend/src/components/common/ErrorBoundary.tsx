@@ -1,3 +1,5 @@
+// This file is mostly based on https://github.com/darkaico/keycloak-poc/blob/main/keycloak-web/src/context/ErrorBoundary.tsx
+
 import React, { Component, ErrorInfo } from 'react';
 
 interface ErrorBoundaryProps {

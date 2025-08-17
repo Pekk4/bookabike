@@ -1,3 +1,10 @@
+/**
+ * This file is originally based on
+ * https://github.com/darkaico/keycloak-poc/blob/main/keycloak-web/src/context/KeycloakContext.tsx
+ *
+ * but I've extended it to fit the needs of the application.
+ */
+
 import React, { createContext, useEffect, useState, useRef } from 'react';
 import Keycloak from 'keycloak-js';
 

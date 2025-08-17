@@ -1,0 +1,81 @@
+import React, { createContext, useState } from 'react';
+
+import { ModalButtonMode } from '@types';
+
+interface ModalContextProps {
+  content: React.ReactNode;
+  buttonMode: ModalButtonMode;
+  showModal: (
+    modalContent: React.ReactNode,
+    buttonMode: ModalButtonMode,
+    confirmHandler?: () => void,
+    cancelHandler?: () => void,
+    errorMode?: boolean
+  ) => void;
+  hideModal: () => void;
+  confirmHandler?: () => void;
+  cancelHandler?: () => void;
+  errorMode?: boolean;
+}
+
+interface ModalProviderProps {
+  children: React.ReactNode;
+}
+
+/**
+ * ModalContext provides methods to show and hide modals in the centralized context
+ * instead of initializing and configuring modals in each component.
+ *
+ * ModalContext wraps the application and thus is always on top of everything,
+ * when it is set visible.
+ */
+const ModalContext = createContext<ModalContextProps | undefined>(undefined);
+
+const ModalProvider: React.FC<ModalProviderProps> = ({ children }) => {
+  const [content, setContent] = useState<React.ReactNode>(null);
+  const [buttonMode, setButtonMode] = useState<ModalButtonMode>(ModalButtonMode.NoButtons);
+  const [errorMode, setErrorMode] = useState<boolean>(false);
+  const [confirmHandler, setConfirmHandler] = useState<(() => void) | undefined>(undefined);
+  const [cancelHandler, setCancelHandler] = useState<(() => void) | undefined>(undefined);
+
+  const showModal = (
+    modalContent: React.ReactNode,
+    buttonMode: ModalButtonMode,
+    onConfirm?: () => void,
+    onCancel?: () => void,
+    errorMode?: boolean
+  ) => {
+    setContent(modalContent);
+    setButtonMode(buttonMode);
+    // Set handlers for confirm and cancel actions
+    setConfirmHandler(() => onConfirm);
+    setCancelHandler(() => onCancel);
+    // Set error mode if specified, default to false, error modal has red styling
+    setErrorMode(errorMode ?? false);
+  };
+
+  const hideModal = () => {
+    setContent(null);
+    setButtonMode(ModalButtonMode.NoButtons);
+    setConfirmHandler(undefined);
+    setCancelHandler(undefined);
+  };
+
+  return (
+    <ModalContext.Provider
+      value={{
+        content,
+        buttonMode,
+        showModal,
+        hideModal,
+        confirmHandler,
+        cancelHandler,
+        errorMode,
+      }}
+    >
+      {children}
+    </ModalContext.Provider>
+  );
+};
+
+export { ModalContext, ModalProvider };

@@ -1,0 +1,46 @@
+// This file is mostly based on https://github.com/darkaico/keycloak-poc/blob/main/keycloak-web/src/context/ErrorBoundary.tsx
+
+import React, { Component, ErrorInfo } from 'react';
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
+
+/**
+ * ErrorBoundary component that catches JavaScript errors in its child component tree,
+ * logs those errors, and displays a fallback UI instead of crashing the entire app.
+ *
+ * @param children - The content to be displayed within the error boundary.
+ */
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
+    console.error('Error getDerivedStateFromError:', error);
+    // update state to indicate about error
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // error logging
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      // fallback UI
+      return <div>Jotain meni pahasti pieleen, yritä myöhemmin uudelleen!</div>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;

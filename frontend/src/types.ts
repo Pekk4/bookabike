@@ -1,0 +1,45 @@
+export interface BaseBooking {
+  startDate: Date;
+  endDate: Date;
+}
+
+export interface Booking extends BaseBooking {
+  id: number;
+  status: BookingStatus;
+  userId: string;
+  createdAt: Date;
+}
+
+export interface UserDataBooking extends BaseBooking {
+  id: number;
+  status: BookingStatus;
+  user: User;
+  createdAt: Date;
+  reason?: string;
+}
+
+export type BookingEntry = UserDataBooking | Booking;
+
+export interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+}
+
+export enum ModalButtonMode {
+  NoButtons = 'noButtons',
+  OkButton = 'okButton',
+  YesNoButtons = 'yesNoButtons',
+  CloseButton = 'closeButton',
+}
+
+export enum BookingStatus {
+  Pending = 'pending',
+  Confirmed = 'confirmed',
+  Canceled = 'canceled',
+  Wished = 'wished',
+  Rejected = 'rejected',
+  Revoked = 'revoked',
+}

@@ -68,7 +68,10 @@ const CreateBookings = () => {
 
       if (data) {
         showModal(
-          getBookingSuccessMessage(String(data.startDate), String(data.endDate)),
+          getBookingSuccessMessage(
+            start.toLocaleDateString(dateLocale),
+            end.toLocaleDateString(dateLocale)
+          ),
           ModalButtonMode.OkButton,
           undefined,
           onBookingSuccess

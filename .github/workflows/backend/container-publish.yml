@@ -1,0 +1,62 @@
+name: Build Backend Container
+
+on:
+  push:
+    branches:
+        - dev
+    paths:
+      - 'backend/**'
+
+jobs:
+  check-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tagged: ${{ steps.tag_check.outputs.tagged }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if commit is tagged
+        id: tag_check
+        run: |
+          set -e
+          git fetch --tags
+          TAG=$(git tag --points-at HEAD | head -n 1)
+          echo "::notice::Tag found: $TAG"
+          if [ -z "$TAG" ]; then
+            echo "tagged=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "tagged=true" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+  build-backend:
+    needs: check-tag
+    if: needs.check-tag.outputs.tagged == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push backend container
+        run: |
+          TAG=$(git tag --points-at HEAD)
+          IMAGE=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-backend:$TAG
+          echo "Building and pushing backend container to GHCR as: $IMAGE"
+          docker build -t $IMAGE ./backend
+          docker push $IMAGE
